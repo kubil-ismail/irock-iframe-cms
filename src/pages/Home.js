@@ -21,6 +21,67 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
+function ButtonComp(props) {
+  return (
+    <>
+      <button
+        style={{
+          border: "1px solid white",
+          background: "none",
+          color: "white",
+          padding: "10px 20px",
+          fontWeight: "normal",
+          fontSize: "14px",
+        }}
+      >
+        button text
+      </button>
+    </>
+  );
+}
+
+function TextComp(props) {
+  return (
+    <>
+      <p>Lorem Ipsum</p>
+    </>
+  );
+}
+
+function ImageComp(props) {
+  return (
+    <>
+      <img
+        src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png"
+        alt="image"
+      />
+    </>
+  );
+}
+
+function LinkComp(props) {
+  return (
+    <>
+      <a>link test</a>
+    </>
+  );
+}
+
+function HandleContent(props) {
+  switch (props) {
+    case "button":
+      return <ButtonComp />;
+    case "text":
+      return <TextComp />;
+    case "image":
+      return <ImageComp />;
+    case "link":
+      return <LinkComp />;
+    default:
+      return "Unknown";
+  }
+}
+
 function Home(props) {
   const [collapseFullscreen, setCollapseFullscreen] = React.useState(false);
   const [isInsert, setIsInsert] = React.useState(false);
@@ -28,6 +89,7 @@ function Home(props) {
   const [onFormType, setOnFormType] = React.useState(null);
   const [selectedType, setSelectedType] = React.useState(0);
   const [open, setOpen] = React.useState(false);
+  const [contentType, setContentType] = React.useState(null);
 
   return (
     <Box p={2}>
@@ -364,7 +426,9 @@ function Home(props) {
                       mt={0}
                       ml={0}
                       sx={{ cursor: "pointer" }}
-                      onClick={() => {}}
+                      onClick={() => {
+                        setContentType("button");
+                      }}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-button.svg"
@@ -383,7 +447,9 @@ function Home(props) {
                       pt={0}
                       mt={0}
                       sx={{ cursor: "pointer" }}
-                      onClick={() => {}}
+                      onClick={() => {
+                        setContentType("text");
+                      }}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-text.svg"
@@ -403,7 +469,9 @@ function Home(props) {
                       mt={0}
                       mr={1}
                       sx={{ cursor: "pointer" }}
-                      onClick={() => {}}
+                      onClick={() => {
+                        setContentType("image");
+                      }}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-ux_image.svg"
@@ -422,7 +490,9 @@ function Home(props) {
                       pt={0}
                       ml={0}
                       sx={{ cursor: "pointer" }}
-                      onClick={() => {}}
+                      onClick={() => {
+                        setContentType("link");
+                      }}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-link.svg"
@@ -540,7 +610,7 @@ function Home(props) {
                     }}
                     onClick={() => setOnFormType("element")}
                   >
-                    Add elements
+                    {contentType ? HandleContent(contentType) : "Add elements"}
                   </Box>
                 </Box>
               </Box>
@@ -582,7 +652,7 @@ function Home(props) {
                     }}
                     onClick={() => setOnFormType("element")}
                   >
-                    Add elements
+                    {contentType ? HandleContent(contentType) : "Add elements"}
                   </Box>
                 </Box>
                 <Box
@@ -607,7 +677,7 @@ function Home(props) {
                     }}
                     onClick={() => setOnFormType("element")}
                   >
-                    Add elements
+                    {contentType ? HandleContent(contentType) : "Add elements"}
                   </Box>
                 </Box>
               </Box>
@@ -673,7 +743,7 @@ function Home(props) {
                     }}
                     onClick={() => setOnFormType("element")}
                   >
-                    Add elements
+                    {contentType ? HandleContent(contentType) : "Add elements"}
                   </Box>
                 </Box>
               </Box>
@@ -715,7 +785,7 @@ function Home(props) {
                     }}
                     onClick={() => setOnFormType("element")}
                   >
-                    Add elements
+                    {contentType ? HandleContent(contentType) : "Add elements"}
                   </Box>
                 </Box>
                 <Box
