@@ -2,9 +2,24 @@
 import React, { memo } from "react";
 import { connect } from "react-redux";
 import Box from "@mui/material/Box";
-import { Button, Grid, IconButton, Typography } from "@mui/material";
+import {
+  Button,
+  Grid,
+  ListItemButton,
+  List,
+  Typography,
+  TextField,
+  ListItemText,
+  Collapse,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
 function Home(props) {
   const [collapseFullscreen, setCollapseFullscreen] = React.useState(false);
@@ -12,6 +27,7 @@ function Home(props) {
   const [isOnForm, setIsOnForm] = React.useState(false);
   const [onFormType, setOnFormType] = React.useState(null);
   const [selectedType, setSelectedType] = React.useState(0);
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Box p={2}>
@@ -193,12 +209,135 @@ function Home(props) {
                       sx={{ border: "1px solid #a0a5aa", color: "#555" }}
                       fullWidth
                       disabled={selectedType === 0}
-                      onClick={() => setIsOnForm(true)}
+                      onClick={() => {
+                        setIsOnForm(true);
+                        setOnFormType("options");
+                      }}
                     >
                       Apply
                     </Button>
                   </Grid>
                 </Grid>
+              </>
+            )}
+
+            {isInsert && isOnForm && onFormType === "options" && (
+              <>
+                <List sx={{ width: "95%" }}>
+                  <ListItemButton
+                    sx={{ borderBottom: "2px solid #C1C1C1" }}
+                    onClick={() => {
+                      setOpen(!open);
+                    }}
+                  >
+                    <ListItemText primary="Options" />
+                    {open ? <ExpandLess /> : <ExpandMore />}
+                  </ListItemButton>
+                  <Collapse
+                    in={open}
+                    timeout="auto"
+                    unmountOnExit
+                    sx={{ p: 2 }}
+                  >
+                    <Typography variant="h6">Card Settings</Typography>
+
+                    <Box mt={1} mb={2}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Card label name"
+                      />
+                    </Box>
+
+                    <Typography variant="h6">Background</Typography>
+
+                    <Box mt={1} mb={2}>
+                      <Button
+                        component="label"
+                        variant="outlined"
+                        fullWidth
+                        sx={{
+                          mb: 2,
+                          color: "#C1C1C1",
+                          borderColor: "#C1C1C1",
+                          "&:hover": {
+                            borderColor: "#C1C1C1",
+                          },
+                        }}
+                        size="medium"
+                      >
+                        Select Media{" "}
+                        <input style={{ display: "none" }} type="file" />
+                      </Button>
+                      <TextField
+                        fullWidth
+                        type="color"
+                        size="small"
+                        label="Color"
+                      />
+                    </Box>
+
+                    <Typography variant="h6">Options</Typography>
+
+                    <Box my={1}>
+                      <FormControl size="small" fullWidth>
+                        <InputLabel id="visibility">Visibility</InputLabel>
+                        <Select labelId="visibility" label="Visibility">
+                          <MenuItem value={true}>Visible</MenuItem>
+                          <MenuItem value={false}>Hidden</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Collapse>
+                </List>
+
+                <Box
+                  sx={{
+                    backgroundColor: "#2e353b",
+                    width: "89%",
+                    p: 0.5,
+                    px: 2,
+                    borderRadius: "5px",
+                  }}
+                >
+                  <Typography color="#fff">Row</Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    ml: "4%",
+                    width: "100%",
+                    mt: 0.5,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      backgroundColor: "#2e353b",
+                      width: "85%",
+                      p: 0.5,
+                      px: 2,
+                      borderRadius: "5px",
+                    }}
+                  >
+                    <Typography color="#fff">
+                      Column{" "}
+                      <span style={{ color: "rgb(193 188 188)" }}>2/2</span>
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Button
+                  variant="outlined"
+                  sx={{
+                    ml: "8%",
+                    borderRadius: "10px",
+                    mt: 1,
+                  }}
+                  color="secondary"
+                  onClick={() => setOnFormType("element")}
+                >
+                  + Add to column
+                </Button>
               </>
             )}
 
@@ -224,10 +363,8 @@ function Home(props) {
                       pt={0}
                       mt={0}
                       ml={0}
-                      onClick={() => {
-                        setSelectedType(1);
-                        setIsOnForm(false);
-                      }}
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => {}}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-button.svg"
@@ -245,10 +382,8 @@ function Home(props) {
                       p={1}
                       pt={0}
                       mt={0}
-                      onClick={() => {
-                        setSelectedType(2);
-                        setIsOnForm(false);
-                      }}
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => {}}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-text.svg"
@@ -267,10 +402,8 @@ function Home(props) {
                       pt={0}
                       mt={0}
                       mr={1}
-                      onClick={() => {
-                        setSelectedType(3);
-                        setIsOnForm(false);
-                      }}
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => {}}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-ux_image.svg"
@@ -288,10 +421,8 @@ function Home(props) {
                       p={1}
                       pt={0}
                       ml={0}
-                      onClick={() => {
-                        setSelectedType(4);
-                        setIsOnForm(false);
-                      }}
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => {}}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-link.svg"
