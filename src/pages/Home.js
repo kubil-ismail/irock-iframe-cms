@@ -8,7 +8,9 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 
 function Home(props) {
   const [collapseFullscreen, setCollapseFullscreen] = React.useState(false);
-  const [isInsert, setIsInsert] = React.useState(true);
+  const [isInsert, setIsInsert] = React.useState(false);
+  const [isOnForm, setIsOnForm] = React.useState(false);
+  const [selectedType, setSelectedType] = React.useState(0);
 
   return (
     <Box p={2}>
@@ -51,21 +53,53 @@ function Home(props) {
                       pt={0}
                       mt={0}
                       ml={0}
+                      sx={{
+                        cursor: "pointer",
+                        ...(selectedType === 1
+                          ? {
+                              border: "2px solid #727CF5",
+                            }
+                          : {}),
+                      }}
+                      onClick={() => {
+                        setSelectedType(1);
+                        setIsOnForm(false);
+                      }}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-1-col.svg"
                         alt="image"
                         width="100%"
+                        height="80px"
                       />
                       <Typography>One Column</Typography>
                     </Box>
                   </Grid>
                   <Grid xs={4}>
-                    <Box border="1px solid #00a3d3" m={1} p={1} pt={0} mt={0}>
+                    <Box
+                      border="1px solid #00a3d3"
+                      m={1}
+                      p={1}
+                      pt={0}
+                      mt={0}
+                      sx={{
+                        cursor: "pointer",
+                        ...(selectedType === 2
+                          ? {
+                              border: "2px solid #727CF5",
+                            }
+                          : {}),
+                      }}
+                      onClick={() => {
+                        setSelectedType(2);
+                        setIsOnForm(false);
+                      }}
+                    >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-2-col.svg"
                         alt="image"
                         width="100%"
+                        height="80px"
                       />
                       <Typography>2 Column</Typography>
                     </Box>
@@ -78,21 +112,53 @@ function Home(props) {
                       pt={0}
                       mt={0}
                       mr={1}
+                      sx={{
+                        cursor: "pointer",
+                        ...(selectedType === 3
+                          ? {
+                              border: "2px solid #727CF5",
+                            }
+                          : {}),
+                      }}
+                      onClick={() => {
+                        setSelectedType(3);
+                        setIsOnForm(false);
+                      }}
                     >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-image-left.svg"
                         alt="image"
                         width="100%"
+                        height="80px"
                       />
                       <Typography>Image Left</Typography>
                     </Box>
                   </Grid>
                   <Grid xs={4}>
-                    <Box border="1px solid #00a3d3" m={1} p={1} pt={0} ml={0}>
+                    <Box
+                      border="1px solid #00a3d3"
+                      m={1}
+                      p={1}
+                      pt={0}
+                      ml={0}
+                      sx={{
+                        cursor: "pointer",
+                        ...(selectedType === 4
+                          ? {
+                              border: "2px solid #727CF5",
+                            }
+                          : {}),
+                      }}
+                      onClick={() => {
+                        setSelectedType(4);
+                        setIsOnForm(false);
+                      }}
+                    >
                       <img
                         src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-image-right.svg"
                         alt="image"
                         width="100%"
+                        height="80px"
                       />
                       <Typography>Image Right</Typography>
                     </Box>
@@ -113,6 +179,10 @@ function Home(props) {
                     <Button
                       sx={{ border: "1px solid #a0a5aa", color: "#555" }}
                       fullWidth
+                      onClick={() => {
+                        setIsInsert(false);
+                        setSelectedType(0);
+                      }}
                     >
                       Discard
                     </Button>
@@ -121,7 +191,8 @@ function Home(props) {
                     <Button
                       sx={{ border: "1px solid #a0a5aa", color: "#555" }}
                       fullWidth
-                      disabled
+                      disabled={selectedType === 0}
+                      onClick={() => setIsOnForm(true)}
                     >
                       Apply
                     </Button>
@@ -129,6 +200,8 @@ function Home(props) {
                 </Grid>
               </>
             )}
+
+            {isInsert && selectedType === 1 && isOnForm && <></>}
 
             <Box
               position="absolute"
@@ -149,7 +222,7 @@ function Home(props) {
           </Grid>
         )}
 
-        <Grid item xs={collapseFullscreen ? 12 : 9} position="relative">
+        <Grid item xs={collapseFullscreen ? 12 : 8.5} position="relative">
           <Typography variant="h3" color="secondary">
             Add Card
           </Typography>
@@ -159,8 +232,247 @@ function Home(props) {
               width: "100%",
               height: "80vh",
               marginTop: "30px",
+              padding: "20px",
+              display: "flex",
+              alignItems: "center",
             }}
-          />
+          >
+            {isInsert && selectedType === 1 && isOnForm && (
+              <Box
+                sx={{
+                  minHeight: "50%",
+                  width: "100%",
+                  backgroundColor: "rgb(193, 193, 193)",
+                  border: "3px dashed #00a3d3",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "100%",
+                    minHeight: "380px",
+                    backgroundColor: "rgb(193, 193, 193)",
+                    border: "3px dashed #00a3d3",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box
+                    component="button"
+                    sx={{
+                      background: "none",
+                      border: "none",
+                      color: "#00a3d3",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Add elements
+                  </Box>
+                </Box>
+              </Box>
+            )}
+
+            {isInsert && selectedType === 2 && isOnForm && (
+              <Box
+                sx={{
+                  minHeight: "50%",
+                  width: "100%",
+                  backgroundColor: "rgb(193, 193, 193)",
+                  border: "3px dashed #00a3d3",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "50%",
+                    minHeight: "380px",
+                    backgroundColor: "rgb(193, 193, 193)",
+                    border: "3px dashed #00a3d3",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box
+                    component="button"
+                    sx={{
+                      background: "none",
+                      border: "none",
+                      color: "#00a3d3",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Add elements
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    width: "50%",
+                    minHeight: "380px",
+                    backgroundColor: "rgb(193, 193, 193)",
+                    border: "3px dashed #00a3d3",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box
+                    component="button"
+                    sx={{
+                      background: "none",
+                      border: "none",
+                      color: "#00a3d3",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Add elements
+                  </Box>
+                </Box>
+              </Box>
+            )}
+
+            {isInsert && selectedType === 3 && isOnForm && (
+              <Box
+                sx={{
+                  minHeight: "50%",
+                  width: "100%",
+                  backgroundColor: "rgb(193, 193, 193)",
+                  border: "3px dashed #00a3d3",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "50%",
+                    minHeight: "380px",
+                    backgroundColor: "rgb(193, 193, 193)",
+                    border: "3px dashed #00a3d3",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box
+                    component="button"
+                    sx={{
+                      background: "none",
+                      border: "none",
+                      color: "#00a3d3",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Upload Image
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    width: "50%",
+                    minHeight: "380px",
+                    backgroundColor: "rgb(193, 193, 193)",
+                    border: "3px dashed #00a3d3",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box
+                    component="button"
+                    sx={{
+                      background: "none",
+                      border: "none",
+                      color: "#00a3d3",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Add elements
+                  </Box>
+                </Box>
+              </Box>
+            )}
+
+            {isInsert && selectedType === 4 && isOnForm && (
+              <Box
+                sx={{
+                  minHeight: "50%",
+                  width: "100%",
+                  backgroundColor: "rgb(193, 193, 193)",
+                  border: "3px dashed #00a3d3",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "50%",
+                    minHeight: "380px",
+                    backgroundColor: "rgb(193, 193, 193)",
+                    border: "3px dashed #00a3d3",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box
+                    component="button"
+                    sx={{
+                      background: "none",
+                      border: "none",
+                      color: "#00a3d3",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Add elements
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    width: "50%",
+                    minHeight: "380px",
+                    backgroundColor: "rgb(193, 193, 193)",
+                    border: "3px dashed #00a3d3",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Box
+                    component="button"
+                    sx={{
+                      background: "none",
+                      border: "none",
+                      color: "#00a3d3",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Upload Image
+                  </Box>
+                </Box>
+              </Box>
+            )}
+          </Box>
           <Box
             sx={{
               background: "#1010109e",
