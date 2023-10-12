@@ -67,8 +67,8 @@ function LinkComp(props) {
   );
 }
 
-function HandleContent(props) {
-  switch (props) {
+function HandleContent({ type, props }) {
+  switch (type) {
     case "button":
       return <ButtonComp />;
     case "text":
@@ -90,6 +90,7 @@ function Home(props) {
   const [selectedType, setSelectedType] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [contentType, setContentType] = React.useState(null);
+  const [selectedFormType, setSelectedFormType] = React.useState(0);
 
   return (
     <Box p={2}>
@@ -110,6 +111,7 @@ function Home(props) {
               </Button>
             )}
 
+            {/* Insert Layout step 1 */}
             {isInsert && !onFormType && (
               <>
                 <Typography sx={{ mt: 2 }}>Insert Layout</Typography>
@@ -283,6 +285,7 @@ function Home(props) {
               </>
             )}
 
+            {/* Options step 2 */}
             {isInsert && isOnForm && onFormType === "options" && (
               <>
                 <List sx={{ width: "95%" }}>
@@ -403,6 +406,7 @@ function Home(props) {
               </>
             )}
 
+            {/* Element step 3 */}
             {isInsert && isOnForm && onFormType === "element" && (
               <>
                 <Typography sx={{ mt: 2 }}>Insert Content</Typography>
@@ -425,9 +429,17 @@ function Home(props) {
                       pt={0}
                       mt={0}
                       ml={0}
-                      sx={{ cursor: "pointer" }}
+                      sx={{
+                        cursor: "pointer",
+                        ...(selectedFormType === 1
+                          ? {
+                              border: "2px solid #727CF5",
+                            }
+                          : {}),
+                      }}
                       onClick={() => {
                         setContentType("button");
+                        setSelectedFormType(1);
                       }}
                     >
                       <img
@@ -446,9 +458,17 @@ function Home(props) {
                       p={1}
                       pt={0}
                       mt={0}
-                      sx={{ cursor: "pointer" }}
+                      sx={{
+                        cursor: "pointer",
+                        ...(selectedFormType === 2
+                          ? {
+                              border: "2px solid #727CF5",
+                            }
+                          : {}),
+                      }}
                       onClick={() => {
                         setContentType("text");
+                        setSelectedFormType(2);
                       }}
                     >
                       <img
@@ -468,9 +488,17 @@ function Home(props) {
                       pt={0}
                       mt={0}
                       mr={1}
-                      sx={{ cursor: "pointer" }}
+                      sx={{
+                        cursor: "pointer",
+                        ...(selectedFormType === 3
+                          ? {
+                              border: "2px solid #727CF5",
+                            }
+                          : {}),
+                      }}
                       onClick={() => {
                         setContentType("image");
+                        setSelectedFormType(3);
                       }}
                     >
                       <img
@@ -489,9 +517,17 @@ function Home(props) {
                       p={1}
                       pt={0}
                       ml={0}
-                      sx={{ cursor: "pointer" }}
+                      sx={{
+                        cursor: "pointer",
+                        ...(selectedFormType === 4
+                          ? {
+                              border: "2px solid #727CF5",
+                            }
+                          : {}),
+                      }}
                       onClick={() => {
                         setContentType("link");
+                        setSelectedFormType(4);
                       }}
                     >
                       <img
@@ -530,8 +566,11 @@ function Home(props) {
                     <Button
                       sx={{ border: "1px solid #a0a5aa", color: "#555" }}
                       fullWidth
-                      disabled={selectedType === 0}
-                      onClick={() => setIsOnForm(true)}
+                      disabled={selectedFormType === 0}
+                      onClick={() => {
+                        setIsOnForm(true);
+                        setOnFormType("content");
+                      }}
                     >
                       Apply
                     </Button>
@@ -539,6 +578,532 @@ function Home(props) {
                 </Grid>
               </>
             )}
+
+            {/* Button */}
+            {isInsert &&
+              isOnForm &&
+              onFormType === "content" &&
+              selectedFormType === 1 && (
+                <>
+                  <Box pr={2}>
+                    <Typography variant="h6" sx={{ mt: 2 }}>
+                      Button
+                    </Typography>
+
+                    <Box mt={1} mb={2}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Text"
+                        margin="dense"
+                        multiline
+                        rows={4}
+                      />
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Letter_case">Letter Case</InputLabel>
+                        <Select labelId="Letter_case" label="Letter Case">
+                          <MenuItem value={true}>Uppercase</MenuItem>
+                          <MenuItem value={false}>Capitalize</MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Color">Color</InputLabel>
+                        <Select labelId="Color" label="Color">
+                          <MenuItem value={true}>Primary</MenuItem>
+                          <MenuItem value={false}>Secondary</MenuItem>
+                          <MenuItem value={false}>Alert</MenuItem>
+                          <MenuItem value={false}>Success</MenuItem>
+                          <MenuItem value={false}>White</MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Style">Style</InputLabel>
+                        <Select labelId="Style" label="Style">
+                          <MenuItem value={true}>Default</MenuItem>
+                          <MenuItem value={false}>Outline</MenuItem>
+                          <MenuItem value={false}>Simple</MenuItem>
+                          <MenuItem value={false}>Underline</MenuItem>
+                          <MenuItem value={false}>Shade</MenuItem>
+                          <MenuItem value={false}>Bevel</MenuItem>
+                          <MenuItem value={false}>Gloss</MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Size">Size</InputLabel>
+                        <Select labelId="Size" label="Size">
+                          <MenuItem value={true}>XX-Small</MenuItem>
+                          <MenuItem value={false}>X-Small</MenuItem>
+                          <MenuItem value={false}>Smaller</MenuItem>
+                          <MenuItem value={false}>Small</MenuItem>
+                          <MenuItem value={false}>Normal</MenuItem>
+                          <MenuItem value={false}>Large</MenuItem>
+                          <MenuItem value={false}>Larger</MenuItem>
+                          <MenuItem value={false}>X-Larger</MenuItem>
+                          <MenuItem value={false}>XX-Larger</MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <Typography sx={{ mt: 1 }}>Padding</Typography>
+                      <Box display="flex" gap={1}>
+                        <TextField
+                          size="small"
+                          label="Top"
+                          margin="dense"
+                          variant="outlined"
+                        />
+                        <TextField
+                          size="small"
+                          label="Right"
+                          margin="dense"
+                          variant="outlined"
+                        />
+                        <TextField
+                          size="small"
+                          label="Bottom"
+                          margin="dense"
+                          variant="outlined"
+                        />
+                        <TextField
+                          size="small"
+                          label="Left"
+                          margin="dense"
+                          variant="outlined"
+                        />
+                      </Box>
+
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Radius"
+                        margin="dense"
+                        type="range"
+                        variant="outlined"
+                      />
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Expand">Expand</InputLabel>
+                        <Select labelId="Expand" label="Expand">
+                          <MenuItem value={true}>True</MenuItem>
+                          <MenuItem value={false}>False</MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Link"
+                        margin="dense"
+                        variant="outlined"
+                      />
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Target">Target</InputLabel>
+                        <Select labelId="Target" label="Visibility">
+                          <MenuItem value={true}>Same window</MenuItem>
+                          <MenuItem value={false}>New window</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+
+                    <Typography variant="h6">Options</Typography>
+
+                    <Box my={1}>
+                      <FormControl size="small" fullWidth>
+                        <InputLabel id="visibility">Visibility</InputLabel>
+                        <Select labelId="visibility" label="Visibility">
+                          <MenuItem value={true}>Visible</MenuItem>
+                          <MenuItem value={false}>Hidden</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        borderTop: "2px solid rgb(56 56 56 / 14%)",
+                        mt: 3,
+                        width: "98%",
+                        mb: 2,
+                      }}
+                    />
+
+                    <Grid
+                      container
+                      gap={1}
+                      justifyContent="space-between"
+                      px={1}
+                    >
+                      <Grid item md={5.8}>
+                        <Button
+                          sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                          fullWidth
+                          onClick={() => {
+                            setOnFormType("element");
+                          }}
+                        >
+                          Discard
+                        </Button>
+                      </Grid>
+                      <Grid item md={5.8}>
+                        <Button
+                          sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                          fullWidth
+                          disabled={selectedFormType === 0}
+                          onClick={() => {
+                            setIsOnForm(true);
+                            setOnFormType("content");
+                          }}
+                        >
+                          Apply
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </>
+              )}
+
+            {/* Typhography */}
+            {isInsert &&
+              isOnForm &&
+              onFormType === "content" &&
+              selectedFormType === 2 && (
+                <Box pr={2}>
+                  <Typography variant="h6" sx={{ mt: 2 }}>
+                    Text
+                  </Typography>
+
+                  <Box mt={1} mb={2}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Content"
+                      margin="dense"
+                      multiline
+                      rows={4}
+                    />
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Font Size"
+                      margin="dense"
+                      type="range"
+                      variant="outlined"
+                    />
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Line Height"
+                      margin="dense"
+                      type="range"
+                      variant="outlined"
+                    />
+                    <FormControl size="small" margin="dense" fullWidth>
+                      <InputLabel id="text_align">Text Align</InputLabel>
+                      <Select labelId="text_align" label="Text Align">
+                        <MenuItem value={true}>None</MenuItem>
+                        <MenuItem value={false}>Left</MenuItem>
+                        <MenuItem value={false}>Center</MenuItem>
+                        <MenuItem value={false}>Right</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Text Color"
+                      margin="dense"
+                      type="color"
+                      variant="outlined"
+                    />
+                  </Box>
+
+                  <Typography variant="h6">Options</Typography>
+
+                  <Box my={1}>
+                    <FormControl size="small" fullWidth>
+                      <InputLabel id="visibility">Visibility</InputLabel>
+                      <Select labelId="visibility" label="Visibility">
+                        <MenuItem value={true}>Visible</MenuItem>
+                        <MenuItem value={false}>Hidden</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      borderTop: "2px solid rgb(56 56 56 / 14%)",
+                      mt: 3,
+                      width: "98%",
+                      mb: 2,
+                    }}
+                  />
+
+                  <Grid container gap={1} justifyContent="space-between" px={1}>
+                    <Grid item md={5.8}>
+                      <Button
+                        sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                        fullWidth
+                        onClick={() => {
+                          setOnFormType("element");
+                        }}
+                      >
+                        Discard
+                      </Button>
+                    </Grid>
+                    <Grid item md={5.8}>
+                      <Button
+                        sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                        fullWidth
+                        disabled={selectedFormType === 0}
+                        onClick={() => {
+                          setIsOnForm(true);
+                          setOnFormType("content");
+                        }}
+                      >
+                        Apply
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Box>
+              )}
+
+            {/* Media */}
+            {isInsert &&
+              isOnForm &&
+              onFormType === "content" &&
+              selectedFormType === 3 && (
+                <>
+                  <Box pr={2}>
+                    <Typography variant="h6" sx={{ mt: 2 }}>
+                      Image
+                    </Typography>
+
+                    <Box mt={1} mb={2}>
+                      <Button
+                        component="label"
+                        variant="outlined"
+                        fullWidth
+                        sx={{
+                          mb: 2,
+                          color: "#C1C1C1",
+                          borderColor: "#C1C1C1",
+                          "&:hover": {
+                            borderColor: "#C1C1C1",
+                          },
+                        }}
+                        size="medium"
+                      >
+                        Select Media{" "}
+                        <input style={{ display: "none" }} type="file" />
+                      </Button>
+
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Width"
+                        margin="dense"
+                        type="range"
+                        variant="outlined"
+                      />
+
+                      <Typography sx={{ mt: 1 }}>Margin</Typography>
+                      <Box display="flex" gap={1}>
+                        <TextField
+                          size="small"
+                          label="Top"
+                          margin="dense"
+                          variant="outlined"
+                        />
+                        <TextField
+                          size="small"
+                          label="Right"
+                          margin="dense"
+                          variant="outlined"
+                        />
+                        <TextField
+                          size="small"
+                          label="Bottom"
+                          margin="dense"
+                          variant="outlined"
+                        />
+                        <TextField
+                          size="small"
+                          label="Left"
+                          margin="dense"
+                          variant="outlined"
+                        />
+                      </Box>
+
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Link"
+                        margin="dense"
+                        variant="outlined"
+                      />
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Target">Target</InputLabel>
+                        <Select labelId="Target" label="Visibility">
+                          <MenuItem value={true}>Same window</MenuItem>
+                          <MenuItem value={false}>New window</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+
+                    <Typography variant="h6">Options</Typography>
+
+                    <Box my={1}>
+                      <FormControl size="small" fullWidth>
+                        <InputLabel id="visibility">Visibility</InputLabel>
+                        <Select labelId="visibility" label="Visibility">
+                          <MenuItem value={true}>Visible</MenuItem>
+                          <MenuItem value={false}>Hidden</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        borderTop: "2px solid rgb(56 56 56 / 14%)",
+                        mt: 3,
+                        width: "98%",
+                        mb: 2,
+                      }}
+                    />
+
+                    <Grid
+                      container
+                      gap={1}
+                      justifyContent="space-between"
+                      px={1}
+                    >
+                      <Grid item md={5.8}>
+                        <Button
+                          sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                          fullWidth
+                          onClick={() => {
+                            setOnFormType("element");
+                          }}
+                        >
+                          Discard
+                        </Button>
+                      </Grid>
+                      <Grid item md={5.8}>
+                        <Button
+                          sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                          fullWidth
+                          disabled={selectedFormType === 0}
+                          onClick={() => {
+                            setIsOnForm(true);
+                            setOnFormType("content");
+                          }}
+                        >
+                          Apply
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </>
+              )}
+
+            {/* Link */}
+            {isInsert &&
+              isOnForm &&
+              onFormType === "content" &&
+              selectedFormType === 4 && (
+                <Box pr={2}>
+                  <Typography variant="h6" sx={{ mt: 2 }}>
+                    Link
+                  </Typography>
+
+                  <Box mt={1} mb={2}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Text"
+                      margin="dense"
+                    />
+                    <FormControl size="small" margin="dense" fullWidth>
+                      <InputLabel id="Letter_case">Letter Case</InputLabel>
+                      <Select labelId="Letter_case" label="Letter Case">
+                        <MenuItem value={true}>Uppercase</MenuItem>
+                        <MenuItem value={false}>Capitalize</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <FormControl size="small" margin="dense" fullWidth>
+                      <InputLabel id="Style">Style</InputLabel>
+                      <Select labelId="Style" label="Visibility">
+                        <MenuItem value={true}>Default</MenuItem>
+                        <MenuItem value={false}>Underline</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      label="Link"
+                      margin="dense"
+                    />
+                    <FormControl size="small" margin="dense" fullWidth>
+                      <InputLabel id="Target">Target</InputLabel>
+                      <Select labelId="Target" label="Visibility">
+                        <MenuItem value={true}>Same window</MenuItem>
+                        <MenuItem value={false}>New window</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+
+                  <Typography variant="h6">Options</Typography>
+
+                  <Box my={1}>
+                    <FormControl size="small" fullWidth>
+                      <InputLabel id="visibility">Visibility</InputLabel>
+                      <Select labelId="visibility" label="Visibility">
+                        <MenuItem value={true}>Visible</MenuItem>
+                        <MenuItem value={false}>Hidden</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      borderTop: "2px solid rgb(56 56 56 / 14%)",
+                      mt: 3,
+                      width: "98%",
+                      mb: 2,
+                    }}
+                  />
+
+                  <Grid container gap={1} justifyContent="space-between" px={1}>
+                    <Grid item md={5.8}>
+                      <Button
+                        sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                        fullWidth
+                        onClick={() => {
+                          setOnFormType("element");
+                        }}
+                      >
+                        Discard
+                      </Button>
+                    </Grid>
+                    <Grid item md={5.8}>
+                      <Button
+                        sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                        fullWidth
+                        disabled={selectedFormType === 0}
+                        onClick={() => {
+                          setIsOnForm(true);
+                          setOnFormType("content");
+                        }}
+                      >
+                        Apply
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Box>
+              )}
 
             <Box
               position="absolute"
@@ -574,7 +1139,7 @@ function Home(props) {
               alignItems: "center",
             }}
           >
-            {isInsert && selectedType === 1 && isOnForm && (
+            {isInsert && selectedType === 1 && (
               <Box
                 sx={{
                   minHeight: "50%",
@@ -610,13 +1175,15 @@ function Home(props) {
                     }}
                     onClick={() => setOnFormType("element")}
                   >
-                    {contentType ? HandleContent(contentType) : "Add elements"}
+                    {contentType
+                      ? HandleContent({ type: contentType })
+                      : "Add elements"}
                   </Box>
                 </Box>
               </Box>
             )}
 
-            {isInsert && selectedType === 2 && isOnForm && (
+            {isInsert && selectedType === 2 && (
               <Box
                 sx={{
                   minHeight: "50%",
@@ -683,7 +1250,7 @@ function Home(props) {
               </Box>
             )}
 
-            {isInsert && selectedType === 3 && isOnForm && (
+            {isInsert && selectedType === 3 && (
               <Box
                 sx={{
                   minHeight: "50%",
@@ -749,7 +1316,7 @@ function Home(props) {
               </Box>
             )}
 
-            {isInsert && selectedType === 4 && isOnForm && (
+            {isInsert && selectedType === 4 && (
               <Box
                 sx={{
                   minHeight: "50%",
