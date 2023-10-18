@@ -21,7 +21,7 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
-function ButtonComp(props) {
+function ButtonCompR(props) {
   return (
     <a
       href={props?.[props?.currentPosition]?.event?.link ?? ""}
@@ -46,12 +46,12 @@ function ButtonComp(props) {
   );
 }
 
-function TextComp(props) {
+function TextCompR(props) {
   return (
     <div>
       <p
         style={{
-          ...props?.[props?.currentPosition]?.style
+          ...props?.[props?.currentPosition]?.style,
         }}
       >
         {props?.[props?.currentPosition]?.content ?? "Lorem Ipsum"}
@@ -60,7 +60,7 @@ function TextComp(props) {
   );
 }
 
-function ImageComp(props) {
+function ImageCompR(props) {
   return (
     <>
       <img
@@ -71,7 +71,7 @@ function ImageComp(props) {
   );
 }
 
-function LinkComp(props) {
+function LinkCompR(props) {
   return (
     <>
       <a>link test</a>
@@ -79,19 +79,62 @@ function LinkComp(props) {
   );
 }
 
-function HandleContent({ type, props }) {
-  switch (type) {
-    case "button":
-      return <ButtonComp {...props} />;
-    case "text":
-      return <TextComp {...props} />;
-    case "image":
-      return <ImageComp {...props} />;
-    case "link":
-      return <LinkComp {...props} />;
-    default:
-      return "Unknown";
-  }
+function ButtonCompL(props) {
+  return (
+    <a
+      href={props?.[props?.currentPosition]?.event?.link ?? ""}
+      target={props?.[props?.currentPosition]?.event?.target ?? "_self"}
+    >
+      <button
+        style={
+          props?.[props?.currentPosition]?.style ?? {
+            border: "1px solid white",
+            background: "none",
+            color: "white",
+            padding: "10px 20px",
+            fontWeight: "normal",
+            fontSize: "14px",
+            cursor: "pointer",
+          }
+        }
+      >
+        {props?.[props?.currentPosition]?.content ?? "Button Text"}
+      </button>
+    </a>
+  );
+}
+
+function TextCompL(props) {
+  return (
+    <div>
+      <p
+        style={{
+          ...props?.[props?.currentPosition]?.style,
+        }}
+      >
+        {props?.[props?.currentPosition]?.content ?? "Lorem Ipsum"}
+      </p>
+    </div>
+  );
+}
+
+function ImageCompL(props) {
+  return (
+    <>
+      <img
+        src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png"
+        alt="image"
+      />
+    </>
+  );
+}
+
+function LinkCompL(props) {
+  return (
+    <>
+      <a>link test</a>
+    </>
+  );
 }
 
 function Home(props) {
@@ -99,31 +142,27 @@ function Home(props) {
   const [isInsert, setIsInsert] = React.useState(false);
   const [isOnForm, setIsOnForm] = React.useState(false);
   const [onFormType, setOnFormType] = React.useState(null);
-  const [selectedType, setSelectedType] = React.useState(0);
   const [open, setOpen] = React.useState(false);
-  const [contentType, setContentType] = React.useState(null);
   const [selectedFormType, setSelectedFormType] = React.useState(0);
   const [isDouble, setIsDouble] = React.useState(true);
-  const [contentPosition, setContentPosition] = React.useState("left");
-  const [contentSelectedType, setContentSelectedType] = React.useState({
-    left: {
-      style: {},
-      content: null,
-      event: {},
-    },
-    right: null,
-  });
 
-  const handleChangeStyle = (value, styleName) => {
-    setContentSelectedType({
-      ...contentSelectedType,
+  // new logic
+  const [selectedType, setSelectedType] = React.useState(0);
+  const [contentPosition, setContentPosition] = React.useState(null);
+  const [contentType, setContentType] = React.useState(null);
+  const [contentSelectedType, setContentSelectedType] = React.useState({});
+  const [styleSelectedType, setStyleSelectedType] = React.useState({});
+
+  const handleChangeStyle = (value) => {
+    setStyleSelectedType({
+      ...styleSelectedType,
       ...{
-        [contentPosition]: {
-          style: {
-            ...contentSelectedType[contentPosition].style,
-            ...{ [styleName]: value },
+        [selectedType]: {
+          [contentType]: {
+            [contentPosition]: {
+              style: value,
+            },
           },
-          content: contentSelectedType[contentPosition].content,
         },
       },
     });
@@ -133,30 +172,26 @@ function Home(props) {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [contentPosition]: {
-          style: {
-            ...contentSelectedType[contentPosition].style,
+        [selectedType]: {
+          [contentType]: {
+            [contentPosition]: {
+              content: value,
+            },
           },
-          content: value,
         },
       },
     });
   };
 
-  const handleChangeEvent = (value, eventName) => {
+  const handleChangeEvent = (value, eventName) => {};
+
+  const HandleContent = (props) => {
+    const { layout, type, position, value } = props;
+
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [contentPosition]: {
-          style: {
-            ...contentSelectedType[contentPosition].style,
-          },
-          content: contentSelectedType[contentPosition].content,
-          event: {
-            ...contentSelectedType[contentPosition].event,
-            ...{ [eventName]: value },
-          },
-        },
+        [layout]: { [type]: { [position]: value } },
       },
     });
   };
@@ -572,13 +607,16 @@ function Home(props) {
                       onClick={() => {
                         setContentType("button");
                         setSelectedFormType(1);
-                        setContentSelectedType({
-                          left: {
+
+                        HandleContent({
+                          layout: selectedType,
+                          position: contentPosition,
+                          type: "button",
+                          value: {
                             style: {},
-                            content: null,
+                            content: <button>test</button>,
                             event: {},
                           },
-                          right: null,
                         });
                       }}
                     >
@@ -609,13 +647,16 @@ function Home(props) {
                       onClick={() => {
                         setContentType("text");
                         setSelectedFormType(2);
-                        setContentSelectedType({
-                          left: {
+
+                        HandleContent({
+                          layout: selectedType,
+                          position: contentPosition,
+                          type: "text",
+                          value: {
                             style: {},
-                            content: null,
+                            content: <p>test</p>,
                             event: {},
                           },
-                          right: null,
                         });
                       }}
                     >
@@ -647,13 +688,18 @@ function Home(props) {
                       onClick={() => {
                         setContentType("image");
                         setSelectedFormType(3);
-                        setContentSelectedType({
-                          left: {
+
+                        HandleContent({
+                          layout: selectedType,
+                          position: contentPosition,
+                          type: "image",
+                          value: {
                             style: {},
-                            content: null,
+                            content: (
+                              <img src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png" />
+                            ),
                             event: {},
                           },
-                          right: null,
                         });
                       }}
                     >
@@ -684,13 +730,16 @@ function Home(props) {
                       onClick={() => {
                         setContentType("link");
                         setSelectedFormType(4);
-                        setContentSelectedType({
-                          left: {
+
+                        HandleContent({
+                          layout: selectedType,
+                          position: contentPosition,
+                          type: "link",
+                          value: {
                             style: {},
-                            content: null,
+                            content: <a href="#">Link</a>,
                             event: {},
                           },
-                          right: null,
                         });
                       }}
                     >
@@ -762,7 +811,19 @@ function Home(props) {
                         margin="dense"
                         multiline
                         rows={4}
-                        onChange={(e) => handleChangeContent(e.target.value)}
+                        onChange={(e) =>
+                          handleChangeContent(
+                            <button
+                              style={
+                                styleSelectedType?.[selectedType]?.[
+                                  contentType
+                                ]?.[contentPosition]?.style
+                              }
+                            >
+                              {e.target.value}
+                            </button>
+                          )
+                        }
                       />
 
                       <FormControl size="small" margin="dense" fullWidth>
@@ -770,7 +831,14 @@ function Home(props) {
                         <Select
                           labelId="Letter_case"
                           onChange={(e) => {
-                            handleChangeStyle(e.target.value, "textTransform");
+                            handleChangeStyle(
+                              {
+                                ...(styleSelectedType?.[selectedType]?.[
+                                  contentType
+                                ]?.[contentPosition]?.style ?? {}),
+                                ...{ textTransform: e.target.value },
+                              }
+                            );
                           }}
                           label="Letter Case"
                         >
@@ -826,12 +894,14 @@ function Home(props) {
                           margin="dense"
                           variant="outlined"
                           type="number"
-                          onChange={(e) =>
-                            handleChangeStyle(
-                              `${e.target.value}px`,
-                              "paddingTop"
-                            )
-                          }
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ paddingTop: `${e.target.value}px` },
+                            });
+                          }}
                         />
                         <TextField
                           size="small"
@@ -839,12 +909,14 @@ function Home(props) {
                           margin="dense"
                           variant="outlined"
                           type="number"
-                          onChange={(e) =>
-                            handleChangeStyle(
-                              `${e.target.value}px`,
-                              "paddingRight"
-                            )
-                          }
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ paddingRight: `${e.target.value}px` },
+                            });
+                          }}
                         />
                         <TextField
                           size="small"
@@ -852,12 +924,14 @@ function Home(props) {
                           margin="dense"
                           variant="outlined"
                           type="number"
-                          onChange={(e) =>
-                            handleChangeStyle(
-                              `${e.target.value}px`,
-                              "paddingBottom"
-                            )
-                          }
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ paddingBottom: `${e.target.value}px` },
+                            });
+                          }}
                         />
                         <TextField
                           size="small"
@@ -865,12 +939,14 @@ function Home(props) {
                           margin="dense"
                           variant="outlined"
                           type="number"
-                          onChange={(e) =>
-                            handleChangeStyle(
-                              `${e.target.value}px`,
-                              "paddingLeft"
-                            )
-                          }
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ paddingLeft: `${e.target.value}px` },
+                            });
+                          }}
                         />
                       </Box>
 
@@ -881,9 +957,14 @@ function Home(props) {
                         margin="dense"
                         type="range"
                         variant="outlined"
-                        onChange={(e) =>
-                          handleChangeStyle(`${e.target.value}px`, "width")
-                        }
+                        onChange={(e) => {
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.style ?? {}),
+                            ...{ width: `${e.target.value}px` },
+                          });
+                        }}
                       />
 
                       <FormControl size="small" margin="dense" fullWidth>
@@ -1429,32 +1510,12 @@ function Home(props) {
                     backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  {contentType ? (
-                    HandleContent({
-                      type: contentType,
-                      props: {
-                        ...contentSelectedType,
-                        currentPosition: contentPosition,
-                      },
-                    })
-                  ) : (
-                    <Box
-                      component="button"
-                      sx={{
-                        background: "none",
-                        border: "none",
-                        color: "#00a3d3",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Add Elements
-                    </Box>
-                  )}
+                  {
+                    contentSelectedType?.["1"]?.[contentType]?.[contentPosition]
+                      ?.content
+                  }
                 </Box>
               </Box>
             )}
@@ -1482,28 +1543,7 @@ function Home(props) {
                     borderRadius: "10px",
                   }}
                 >
-                  {contentType ? (
-                    HandleContent({
-                      type: contentType,
-                      props: {
-                        ...contentSelectedType,
-                        currentPosition: contentPosition,
-                      },
-                    })
-                  ) : (
-                    <Box
-                      component="button"
-                      sx={{
-                        background: "none",
-                        border: "none",
-                        color: "#00a3d3",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => setOnFormType("element")}
-                    >
-                      Add Elements
-                    </Box>
-                  )}
+                  {contentSelectedType?.["2"]?.[contentType]?.["left"]?.content}
                 </Box>
                 <Box
                   sx={{
@@ -1512,23 +1552,12 @@ function Home(props) {
                     backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  <Box
-                    component="button"
-                    sx={{
-                      background: "none",
-                      border: "none",
-                      color: "#00a3d3",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => setOnFormType("element")}
-                  >
-                    {contentType ? HandleContent(contentType) : "Add elements"}
-                  </Box>
+                  {
+                    contentSelectedType?.["2"]?.[contentType]?.["right"]
+                      ?.content
+                  }
                 </Box>
               </Box>
             )}
@@ -1554,22 +1583,9 @@ function Home(props) {
                     backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  <Box
-                    component="button"
-                    sx={{
-                      background: "none",
-                      border: "none",
-                      color: "#00a3d3",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Upload Image
-                  </Box>
+                  {contentSelectedType?.["3"]?.[contentType]?.["left"]?.content}
                 </Box>
                 <Box
                   sx={{
@@ -1578,23 +1594,12 @@ function Home(props) {
                     backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  <Box
-                    component="button"
-                    sx={{
-                      background: "none",
-                      border: "none",
-                      color: "#00a3d3",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => setOnFormType("element")}
-                  >
-                    {contentType ? HandleContent(contentType) : "Add elements"}
-                  </Box>
+                  {
+                    contentSelectedType?.["3"]?.[contentType]?.["right"]
+                      ?.content
+                  }
                 </Box>
               </Box>
             )}
@@ -1620,23 +1625,9 @@ function Home(props) {
                     backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  <Box
-                    component="button"
-                    sx={{
-                      background: "none",
-                      border: "none",
-                      color: "#00a3d3",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => setOnFormType("element")}
-                  >
-                    {contentType ? HandleContent(contentType) : "Add elements"}
-                  </Box>
+                  {contentSelectedType?.["4"]?.[contentType]?.["left"]?.content}
                 </Box>
                 <Box
                   sx={{
@@ -1645,22 +1636,12 @@ function Home(props) {
                     backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  <Box
-                    component="button"
-                    sx={{
-                      background: "none",
-                      border: "none",
-                      color: "#00a3d3",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Upload Image
-                  </Box>
+                  {
+                    contentSelectedType?.["4"]?.[contentType]?.["right"]
+                      ?.content
+                  }
                 </Box>
               </Box>
             )}
