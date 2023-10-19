@@ -21,122 +21,6 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
-function ButtonCompR(props) {
-  return (
-    <a
-      href={props?.[props?.currentPosition]?.event?.link ?? ""}
-      target={props?.[props?.currentPosition]?.event?.target ?? "_self"}
-    >
-      <button
-        style={
-          props?.[props?.currentPosition]?.style ?? {
-            border: "1px solid white",
-            background: "none",
-            color: "white",
-            padding: "10px 20px",
-            fontWeight: "normal",
-            fontSize: "14px",
-            cursor: "pointer",
-          }
-        }
-      >
-        {props?.[props?.currentPosition]?.content ?? "Button Text"}
-      </button>
-    </a>
-  );
-}
-
-function TextCompR(props) {
-  return (
-    <div>
-      <p
-        style={{
-          ...props?.[props?.currentPosition]?.style,
-        }}
-      >
-        {props?.[props?.currentPosition]?.content ?? "Lorem Ipsum"}
-      </p>
-    </div>
-  );
-}
-
-function ImageCompR(props) {
-  return (
-    <>
-      <img
-        src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png"
-        alt="image"
-      />
-    </>
-  );
-}
-
-function LinkCompR(props) {
-  return (
-    <>
-      <a>link test</a>
-    </>
-  );
-}
-
-function ButtonCompL(props) {
-  return (
-    <a
-      href={props?.[props?.currentPosition]?.event?.link ?? ""}
-      target={props?.[props?.currentPosition]?.event?.target ?? "_self"}
-    >
-      <button
-        style={
-          props?.[props?.currentPosition]?.style ?? {
-            border: "1px solid white",
-            background: "none",
-            color: "white",
-            padding: "10px 20px",
-            fontWeight: "normal",
-            fontSize: "14px",
-            cursor: "pointer",
-          }
-        }
-      >
-        {props?.[props?.currentPosition]?.content ?? "Button Text"}
-      </button>
-    </a>
-  );
-}
-
-function TextCompL(props) {
-  return (
-    <div>
-      <p
-        style={{
-          ...props?.[props?.currentPosition]?.style,
-        }}
-      >
-        {props?.[props?.currentPosition]?.content ?? "Lorem Ipsum"}
-      </p>
-    </div>
-  );
-}
-
-function ImageCompL(props) {
-  return (
-    <>
-      <img
-        src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png"
-        alt="image"
-      />
-    </>
-  );
-}
-
-function LinkCompL(props) {
-  return (
-    <>
-      <a>link test</a>
-    </>
-  );
-}
-
 function Home(props) {
   const [collapseFullscreen, setCollapseFullscreen] = React.useState(false);
   const [isInsert, setIsInsert] = React.useState(false);
@@ -150,10 +34,21 @@ function Home(props) {
   const [selectedType, setSelectedType] = React.useState(0);
   const [contentPosition, setContentPosition] = React.useState(null);
   const [contentType, setContentType] = React.useState(null);
+  const [styleLayout, setStyleLayout] = React.useState({});
   const [contentSelectedType, setContentSelectedType] = React.useState({});
   const [styleSelectedType, setStyleSelectedType] = React.useState({});
+  const [eventSelectedType, setEventSelectedType] = React.useState({});
 
   const handleChangeStyle = (value) => {
+    // Dapatkan elemen yang ingin Anda ubah gayanya
+    const elementToUpdate =
+      contentSelectedType[selectedType][contentType][contentPosition].content;
+
+    // Buat elemen baru dengan gaya yang diubah
+    const updatedElement = React.cloneElement(elementToUpdate, {
+      style: value,
+    });
+
     setStyleSelectedType({
       ...styleSelectedType,
       ...{
@@ -166,6 +61,10 @@ function Home(props) {
         },
       },
     });
+
+    // Perbarui elemen dalam state contentSelectedType
+    contentSelectedType[selectedType][contentType][contentPosition].content =
+      updatedElement;
   };
 
   const handleChangeContent = (value) => {
@@ -183,7 +82,41 @@ function Home(props) {
     });
   };
 
-  const handleChangeEvent = (value, eventName) => {};
+  const handleChangeEvent = (value) => {
+    // Dapatkan elemen yang ingin Anda ubah event-nya
+    const elementToUpdate =
+      contentSelectedType[selectedType][contentType][contentPosition].content;
+
+    // Buat elemen baru dengan event yang diubah
+    const updatedElement = React.cloneElement(elementToUpdate, {
+      onClick: () => {
+        if (value.link) {
+          if (value.target === "_blank") {
+            window.open(value.link, value.target);
+          } else {
+            window.open(value.link, value.target);
+          }
+        }
+      }, // Ganti dengan event yang Anda inginkan
+    });
+
+    setEventSelectedType({
+      ...eventSelectedType,
+      ...{
+        [selectedType]: {
+          [contentType]: {
+            [contentPosition]: {
+              event: value,
+            },
+          },
+        },
+      },
+    });
+
+    // Perbarui elemen dalam state contentSelectedType
+    contentSelectedType[selectedType][contentType][contentPosition].content =
+      updatedElement;
+  };
 
   const HandleContent = (props) => {
     const { layout, type, position, value } = props;
@@ -448,6 +381,12 @@ function Home(props) {
                         type="color"
                         size="small"
                         label="Color"
+                        onChange={(e) => {
+                          setStyleLayout({
+                            ...styleLayout,
+                            ...{ backgroundColor: e.target.value },
+                          });
+                        }}
                       />
                     </Box>
 
@@ -456,7 +395,23 @@ function Home(props) {
                     <Box my={1}>
                       <FormControl size="small" fullWidth>
                         <InputLabel id="visibility">Visibility</InputLabel>
-                        <Select labelId="visibility" label="Visibility">
+                        <Select
+                          labelId="visibility"
+                          onChange={(e) => {
+                            if (e.target.value === true) {
+                              setStyleLayout({
+                                ...styleLayout,
+                                ...{ display: "block", visibility: "inherit" },
+                              });
+                            } else {
+                              setStyleLayout({
+                                ...styleLayout,
+                                ...{ display: "none", visibility: "hidden" },
+                              });
+                            }
+                          }}
+                          label="Visibility"
+                        >
                           <MenuItem value={true}>Visible</MenuItem>
                           <MenuItem value={false}>Hidden</MenuItem>
                         </Select>
@@ -831,14 +786,12 @@ function Home(props) {
                         <Select
                           labelId="Letter_case"
                           onChange={(e) => {
-                            handleChangeStyle(
-                              {
-                                ...(styleSelectedType?.[selectedType]?.[
-                                  contentType
-                                ]?.[contentPosition]?.style ?? {}),
-                                ...{ textTransform: e.target.value },
-                              }
-                            );
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ textTransform: e.target.value },
+                            });
                           }}
                           label="Letter Case"
                         >
@@ -962,14 +915,28 @@ function Home(props) {
                             ...(styleSelectedType?.[selectedType]?.[
                               contentType
                             ]?.[contentPosition]?.style ?? {}),
-                            ...{ width: `${e.target.value}px` },
+                            ...{ borderRadius: `${e.target.value}px` },
                           });
                         }}
                       />
 
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Expand">Expand</InputLabel>
-                        <Select labelId="Expand" label="Expand">
+                        <Select
+                          labelId="Expand"
+                          label="Expand"
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{
+                                width:
+                                  e.target.value === true ? "100%" : "unset",
+                              },
+                            });
+                          }}
+                        >
                           <MenuItem value={true}>True</MenuItem>
                           <MenuItem value={false}>False</MenuItem>
                         </Select>
@@ -981,19 +948,29 @@ function Home(props) {
                         label="Link"
                         margin="dense"
                         variant="outlined"
-                        onChange={(e) =>
-                          handleChangeEvent(e.target.value, "link")
-                        }
+                        onChange={(e) => {
+                          handleChangeEvent({
+                            ...(eventSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.event ?? {}),
+                            ...{ link: e.target.value },
+                          });
+                        }}
                       />
 
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Target">Target</InputLabel>
                         <Select
                           labelId="Target"
-                          onChange={(e) =>
-                            handleChangeEvent(e.target.value, "target")
-                          }
-                          label="Visibility"
+                          onChange={(e) => {
+                            handleChangeEvent({
+                              ...(eventSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.event ?? {}),
+                              ...{ target: e.target.value },
+                            });
+                          }}
+                          label="Target"
                         >
                           <MenuItem value="_self">Same window</MenuItem>
                           <MenuItem value="_blank">New window</MenuItem>
@@ -1011,11 +988,25 @@ function Home(props) {
                           label="Visibility"
                           onChange={(e) => {
                             if (e.target.value === true) {
-                              handleChangeStyle("block", "display");
-                              handleChangeStyle("inherit", "visibility");
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[selectedType]?.[
+                                  contentType
+                                ]?.[contentPosition]?.style ?? {}),
+                                ...{
+                                  display: "block",
+                                  visibility: "inherit",
+                                },
+                              });
                             } else {
-                              handleChangeStyle("none", "display");
-                              handleChangeStyle("hidden", "visibility");
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[selectedType]?.[
+                                  contentType
+                                ]?.[contentPosition]?.style ?? {}),
+                                ...{
+                                  display: "none",
+                                  visibility: "hidden",
+                                },
+                              });
                             }
                           }}
                         >
@@ -1087,7 +1078,19 @@ function Home(props) {
                       margin="dense"
                       multiline
                       rows={4}
-                      onChange={(e) => handleChangeContent(e.target.value)}
+                      onChange={(e) => {
+                        handleChangeContent(
+                          <p
+                            style={
+                              styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style
+                            }
+                          >
+                            {e.target.value}
+                          </p>
+                        );
+                      }}
                     />
                     <TextField
                       fullWidth
@@ -1096,9 +1099,14 @@ function Home(props) {
                       margin="dense"
                       type="range"
                       variant="outlined"
-                      onChange={(e) =>
-                        handleChangeStyle(`${e.target.value}px`, "fontSize")
-                      }
+                      onChange={(e) => {
+                        handleChangeStyle({
+                          ...(styleSelectedType?.[selectedType]?.[
+                            contentType
+                          ]?.[contentPosition]?.style ?? {}),
+                          ...{ fontSize: `${e.target.value}px` },
+                        });
+                      }}
                     />
                     <TextField
                       fullWidth
@@ -1107,17 +1115,27 @@ function Home(props) {
                       margin="dense"
                       type="range"
                       variant="outlined"
-                      onChange={(e) =>
-                        handleChangeStyle(`${e.target.value}px`, "lineHeight")
-                      }
+                      onChange={(e) => {
+                        handleChangeStyle({
+                          ...(styleSelectedType?.[selectedType]?.[
+                            contentType
+                          ]?.[contentPosition]?.style ?? {}),
+                          ...{ lineHeight: `${e.target.value}px` },
+                        });
+                      }}
                     />
                     <FormControl size="small" margin="dense" fullWidth>
                       <InputLabel id="text_align">Text Align</InputLabel>
                       <Select
                         labelId="text_align"
-                        onChange={(e) =>
-                          handleChangeStyle(e.target.value, "textAlign")
-                        }
+                        onChange={(e) => {
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.style ?? {}),
+                            ...{ textAlign: e.target.value },
+                          });
+                        }}
                         label="Text Align"
                       >
                         <MenuItem value="unset">None</MenuItem>
@@ -1133,9 +1151,14 @@ function Home(props) {
                       margin="dense"
                       type="color"
                       variant="outlined"
-                      onChange={(e) =>
-                        handleChangeStyle(e.target.value, "color")
-                      }
+                      onChange={(e) => {
+                        handleChangeStyle({
+                          ...(styleSelectedType?.[selectedType]?.[
+                            contentType
+                          ]?.[contentPosition]?.style ?? {}),
+                          ...{ color: e.target.value },
+                        });
+                      }}
                     />
                   </Box>
 
@@ -1148,11 +1171,25 @@ function Home(props) {
                         labelId="visibility"
                         onChange={(e) => {
                           if (e.target.value === true) {
-                            handleChangeStyle("block", "display");
-                            handleChangeStyle("inherit", "visibility");
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{
+                                display: "block",
+                                visibility: "inherit",
+                              },
+                            });
                           } else {
-                            handleChangeStyle("none", "display");
-                            handleChangeStyle("hidden", "visibility");
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{
+                                display: "none",
+                                visibility: "hidden",
+                              },
+                            });
                           }
                         }}
                         label="Visibility"
@@ -1238,6 +1275,14 @@ function Home(props) {
                         margin="dense"
                         type="range"
                         variant="outlined"
+                        onChange={(e) => {
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.style ?? {}),
+                            ...{ width: `${e.target.value}%` },
+                          });
+                        }}
                       />
 
                       <Typography sx={{ mt: 1 }}>Margin</Typography>
@@ -1247,24 +1292,56 @@ function Home(props) {
                           label="Top"
                           margin="dense"
                           variant="outlined"
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ marginTop: `${e.target.value}px` },
+                            });
+                          }}
                         />
                         <TextField
                           size="small"
                           label="Right"
                           margin="dense"
                           variant="outlined"
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ marginRight: `${e.target.value}px` },
+                            });
+                          }}
                         />
                         <TextField
                           size="small"
                           label="Bottom"
                           margin="dense"
                           variant="outlined"
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ marginBottom: `${e.target.value}px` },
+                            });
+                          }}
                         />
                         <TextField
                           size="small"
                           label="Left"
                           margin="dense"
                           variant="outlined"
+                          onChange={(e) => {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{ marginLeft: `${e.target.value}px` },
+                            });
+                          }}
                         />
                       </Box>
 
@@ -1274,13 +1351,39 @@ function Home(props) {
                         label="Link"
                         margin="dense"
                         variant="outlined"
+                        onChange={(e) => {
+                          handleChangeEvent({
+                            ...(eventSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.event ?? {}),
+                            ...{ link: e.target.value },
+                          });
+
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.style ?? {}),
+                            ...{ cursor: `pointer` },
+                          });
+                        }}
                       />
 
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Target">Target</InputLabel>
-                        <Select labelId="Target" label="Visibility">
-                          <MenuItem value={true}>Same window</MenuItem>
-                          <MenuItem value={false}>New window</MenuItem>
+                        <Select
+                          labelId="Target"
+                          onChange={(e) => {
+                            handleChangeEvent({
+                              ...(eventSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.event ?? {}),
+                              ...{ target: e.target.value },
+                            });
+                          }}
+                          label="Target"
+                        >
+                          <MenuItem value="_self">Same window</MenuItem>
+                          <MenuItem value="_blank">New window</MenuItem>
                         </Select>
                       </FormControl>
                     </Box>
@@ -1290,7 +1393,33 @@ function Home(props) {
                     <Box my={1}>
                       <FormControl size="small" fullWidth>
                         <InputLabel id="visibility">Visibility</InputLabel>
-                        <Select labelId="visibility" label="Visibility">
+                        <Select
+                          labelId="visibility"
+                          label="Visibility"
+                          onChange={(e) => {
+                            if (e.target.value === true) {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[selectedType]?.[
+                                  contentType
+                                ]?.[contentPosition]?.style ?? {}),
+                                ...{
+                                  display: "block",
+                                  visibility: "inherit",
+                                },
+                              });
+                            } else {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[selectedType]?.[
+                                  contentType
+                                ]?.[contentPosition]?.style ?? {}),
+                                ...{
+                                  display: "none",
+                                  visibility: "hidden",
+                                },
+                              });
+                            }
+                          }}
+                        >
                           <MenuItem value={true}>Visible</MenuItem>
                           <MenuItem value={false}>Hidden</MenuItem>
                         </Select>
@@ -1357,20 +1486,59 @@ function Home(props) {
                       size="small"
                       label="Text"
                       margin="dense"
-                      onChange={(e) => handleChangeContent(e.target.value)}
+                      onChange={(e) => {
+                        handleChangeContent(
+                          <a
+                            href={
+                              eventSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.event?.link ?? "/#"
+                            }
+                            style={
+                              styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style
+                            }
+                          >
+                            {e.target.value}
+                          </a>
+                        );
+                      }}
                     />
                     <FormControl size="small" margin="dense" fullWidth>
                       <InputLabel id="Letter_case">Letter Case</InputLabel>
-                      <Select labelId="Letter_case" label="Letter Case">
-                        <MenuItem value={true}>Uppercase</MenuItem>
-                        <MenuItem value={false}>Capitalize</MenuItem>
+                      <Select
+                        labelId="Letter_case"
+                        label="Letter Case"
+                        onChange={(e) => {
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.style ?? {}),
+                            ...{ textTransform: e.target.value },
+                          });
+                        }}
+                      >
+                        <MenuItem value="uppercase">Uppercase</MenuItem>
+                        <MenuItem value="capitalize">Capitalize</MenuItem>
                       </Select>
                     </FormControl>
                     <FormControl size="small" margin="dense" fullWidth>
                       <InputLabel id="Style">Style</InputLabel>
-                      <Select labelId="Style" label="Visibility">
-                        <MenuItem value={true}>Default</MenuItem>
-                        <MenuItem value={false}>Underline</MenuItem>
+                      <Select
+                        labelId="Style"
+                        label="Style"
+                        onChange={(e) => {
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.style ?? {}),
+                            ...{ textDecoration: e.target.value },
+                          });
+                        }}
+                      >
+                        <MenuItem value="none">Default</MenuItem>
+                        <MenuItem value="underline">Underline</MenuItem>
                       </Select>
                     </FormControl>
                     <TextField
@@ -1378,18 +1546,28 @@ function Home(props) {
                       size="small"
                       label="Link"
                       margin="dense"
-                      onChange={(e) =>
-                        handleChangeEvent(e.target.value, "link")
-                      }
+                      onChange={(e) => {
+                        handleChangeEvent({
+                          ...(eventSelectedType?.[selectedType]?.[
+                            contentType
+                          ]?.[contentPosition]?.event ?? {}),
+                          ...{ link: e.target.value },
+                        });
+                      }}
                     />
                     <FormControl size="small" margin="dense" fullWidth>
                       <InputLabel id="Target">Target</InputLabel>
                       <Select
                         labelId="Target"
-                        onChange={(e) =>
-                          handleChangeEvent(e.target.value, "target")
-                        }
-                        label="Visibility"
+                        onChange={(e) => {
+                          handleChangeEvent({
+                            ...(eventSelectedType?.[selectedType]?.[
+                              contentType
+                            ]?.[contentPosition]?.event ?? {}),
+                            ...{ target: e.target.value },
+                          });
+                        }}
+                        label="Target"
                       >
                         <MenuItem value="_self">Same window</MenuItem>
                         <MenuItem value="_blank">New window</MenuItem>
@@ -1402,7 +1580,33 @@ function Home(props) {
                   <Box my={1}>
                     <FormControl size="small" fullWidth>
                       <InputLabel id="visibility">Visibility</InputLabel>
-                      <Select labelId="visibility" label="Visibility">
+                      <Select
+                        labelId="visibility"
+                        label="Visibility"
+                        onChange={(e) => {
+                          if (e.target.value === true) {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{
+                                display: "block",
+                                visibility: "inherit",
+                              },
+                            });
+                          } else {
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[selectedType]?.[
+                                contentType
+                              ]?.[contentPosition]?.style ?? {}),
+                              ...{
+                                display: "none",
+                                visibility: "hidden",
+                              },
+                            });
+                          }
+                        }}
+                      >
                         <MenuItem value={true}>Visible</MenuItem>
                         <MenuItem value={false}>Hidden</MenuItem>
                       </Select>
@@ -1501,13 +1705,13 @@ function Home(props) {
                   display: "flex",
                   alignItems: "center",
                   gap: 2,
+                  ...styleLayout,
                 }}
               >
                 <Box
                   sx={{
                     width: "100%",
                     minHeight: "380px",
-                    backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
                   }}
@@ -1532,13 +1736,13 @@ function Home(props) {
                   display: "flex",
                   alignItems: "center",
                   gap: 2,
+                  ...styleLayout,
                 }}
               >
                 <Box
                   sx={{
                     width: "50%",
                     minHeight: "380px",
-                    backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
                   }}
@@ -1549,7 +1753,6 @@ function Home(props) {
                   sx={{
                     width: "50%",
                     minHeight: "380px",
-                    backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
                   }}
@@ -1574,13 +1777,13 @@ function Home(props) {
                   display: "flex",
                   alignItems: "center",
                   gap: 2,
+                  ...styleLayout,
                 }}
               >
                 <Box
                   sx={{
                     width: "50%",
                     minHeight: "380px",
-                    backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
                   }}
@@ -1591,7 +1794,6 @@ function Home(props) {
                   sx={{
                     width: "50%",
                     minHeight: "380px",
-                    backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
                   }}
@@ -1616,13 +1818,13 @@ function Home(props) {
                   display: "flex",
                   alignItems: "center",
                   gap: 2,
+                  ...styleLayout,
                 }}
               >
                 <Box
                   sx={{
                     width: "50%",
                     minHeight: "380px",
-                    backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
                   }}
@@ -1633,7 +1835,6 @@ function Home(props) {
                   sx={{
                     width: "50%",
                     minHeight: "380px",
-                    backgroundColor: "rgb(193, 193, 193)",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
                   }}
