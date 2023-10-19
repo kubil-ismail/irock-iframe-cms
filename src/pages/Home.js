@@ -16,6 +16,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import Swal from "sweetalert2";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -30,6 +31,7 @@ function Home(props) {
   const [open, setOpen] = React.useState(false);
   const [selectedFormType, setSelectedFormType] = React.useState(0);
   const [isDouble, setIsDouble] = React.useState(true);
+  const [cardName, setCardName] = React.useState("")
 
   // new logic
   const [selectedType, setSelectedType] = React.useState(0);
@@ -137,6 +139,32 @@ function Home(props) {
       });
     } catch (error) {}
   };
+
+  const handleSave = async () => {
+    // Dapatkan elemen yang sesuai
+    const contentElement = document.querySelector(
+      `#content_tipe_${selectedType}`
+    );
+
+    // Dapatkan konten teks dari elemen tersebut
+    const contentText = contentElement.outerHTML;
+
+    http.post("/ui-build/save-new-card", {
+      type: "card",
+      title: cardName,
+      content: contentText,
+      section: "faq",
+    }).then(() => {
+      Swal.fire({
+        title: "",
+        html: "Success add card.",
+        icon: "success",
+        timer: 2000,
+        showCancelButton: false,
+        showConfirmButton: false,
+      });
+    })
+  }
 
   return (
     <Box p={2}>
@@ -362,6 +390,7 @@ function Home(props) {
                         fullWidth
                         size="small"
                         label="Card label name"
+                        onChange={(e) => setCardName(e.target.value)}
                       />
                     </Box>
 
@@ -1828,6 +1857,7 @@ function Home(props) {
             >
               <Button
                 sx={{ backgroundColor: "#ff0016", color: "#fff", mr: 1, px: 3 }}
+                onClick={() => handleSave()}
               >
                 Save
               </Button>
@@ -1851,7 +1881,7 @@ function Home(props) {
             Add Card
           </Typography>
           <Box
-            sx={{
+            style={{
               background: "#555555",
               width: "100%",
               height: "80vh",
@@ -1863,12 +1893,15 @@ function Home(props) {
           >
             {isInsert && selectedType === 1 && (
               <Box
+                id="content_tipe_1"
                 sx={{
-                  minHeight: "50%",
-                  width: "100%",
                   backgroundColor: "rgb(193, 193, 193)",
                   border: "3px dashed #00a3d3",
                   borderRadius: "10px",
+                }}
+                style={{
+                  minHeight: "50%",
+                  width: "100%",
                   padding: "20px",
                   display: "flex",
                   alignItems: "center",
@@ -1878,10 +1911,12 @@ function Home(props) {
               >
                 <Box
                   sx={{
-                    width: "100%",
-                    minHeight: "380px",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
+                  }}
+                  style={{
+                    width: "100%",
+                    minHeight: "380px",
                   }}
                 >
                   {
@@ -1894,12 +1929,15 @@ function Home(props) {
 
             {isInsert && selectedType === 2 && (
               <Box
+                id="content_tipe_2"
                 sx={{
-                  minHeight: "50%",
-                  width: "100%",
                   backgroundColor: "rgb(193, 193, 193)",
                   border: "3px dashed #00a3d3",
                   borderRadius: "10px",
+                }}
+                style={{
+                  minHeight: "50%",
+                  width: "100%",
                   padding: "20px",
                   display: "flex",
                   alignItems: "center",
@@ -1909,10 +1947,12 @@ function Home(props) {
               >
                 <Box
                   sx={{
-                    width: "50%",
-                    minHeight: "380px",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
+                  }}
+                  style={{
+                    width: "50%",
+                    minHeight: "380px",
                   }}
                 >
                   {contentSelectedType?.[`2_${contentType}_left`]?.content ??
@@ -1921,10 +1961,12 @@ function Home(props) {
                 </Box>
                 <Box
                   sx={{
-                    width: "50%",
-                    minHeight: "380px",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
+                  }}
+                  style={{
+                    width: "50%",
+                    minHeight: "380px",
                   }}
                 >
                   {contentSelectedType?.[`2_${contentType}_right`]?.content ??
@@ -1936,12 +1978,15 @@ function Home(props) {
 
             {isInsert && selectedType === 3 && (
               <Box
+                id="content_tipe_3"
                 sx={{
-                  minHeight: "50%",
-                  width: "100%",
                   backgroundColor: "rgb(193, 193, 193)",
                   border: "3px dashed #00a3d3",
                   borderRadius: "10px",
+                }}
+                style={{
+                  minHeight: "50%",
+                  width: "100%",
                   padding: "20px",
                   display: "flex",
                   alignItems: "center",
@@ -1951,20 +1996,24 @@ function Home(props) {
               >
                 <Box
                   sx={{
-                    width: "50%",
-                    minHeight: "380px",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
+                  }}
+                  style={{
+                    width: "50%",
+                    minHeight: "380px",
                   }}
                 >
                   {contentSelectedType?.[`3_${contentType}_left`]?.content}
                 </Box>
                 <Box
                   sx={{
-                    width: "50%",
-                    minHeight: "380px",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
+                  }}
+                  style={{
+                    width: "50%",
+                    minHeight: "380px",
                   }}
                 >
                   {contentSelectedType?.[`3_${contentType}_right`]?.content}
@@ -1974,12 +2023,15 @@ function Home(props) {
 
             {isInsert && selectedType === 4 && (
               <Box
+                id="content_tipe_4"
                 sx={{
-                  minHeight: "50%",
-                  width: "100%",
                   backgroundColor: "rgb(193, 193, 193)",
                   border: "3px dashed #00a3d3",
                   borderRadius: "10px",
+                }}
+                style={{
+                  minHeight: "50%",
+                  width: "100%",
                   padding: "20px",
                   display: "flex",
                   alignItems: "center",
@@ -1989,20 +2041,24 @@ function Home(props) {
               >
                 <Box
                   sx={{
-                    width: "50%",
-                    minHeight: "380px",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
+                  }}
+                  style={{
+                    width: "50%",
+                    minHeight: "380px",
                   }}
                 >
                   {contentSelectedType?.[`4_${contentType}_left`]?.content}
                 </Box>
                 <Box
                   sx={{
-                    width: "50%",
-                    minHeight: "380px",
                     border: "3px dashed #00a3d3",
                     borderRadius: "10px",
+                  }}
+                  style={{
+                    width: "50%",
+                    minHeight: "380px",
                   }}
                 >
                   {contentSelectedType?.[`4_${contentType}_right`]?.content}
