@@ -20,6 +20,7 @@ import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import http from "utils/http";
 
 function Home(props) {
   const [collapseFullscreen, setCollapseFullscreen] = React.useState(false);
@@ -34,15 +35,22 @@ function Home(props) {
   const [selectedType, setSelectedType] = React.useState(0);
   const [contentPosition, setContentPosition] = React.useState(null);
   const [contentType, setContentType] = React.useState(null);
+  const [contentType2, setContentType2] = React.useState({
+    left: null,
+    right: null,
+  });
   const [styleLayout, setStyleLayout] = React.useState({});
   const [contentSelectedType, setContentSelectedType] = React.useState({});
   const [styleSelectedType, setStyleSelectedType] = React.useState({});
   const [eventSelectedType, setEventSelectedType] = React.useState({});
+  const [leftColumnLength, setLeftColumnLength] = React.useState(1);
+  const [rightColumnLength, setRightColumnLength] = React.useState(1);
 
   const handleChangeStyle = (value) => {
     // Dapatkan elemen yang ingin Anda ubah gayanya
     const elementToUpdate =
-      contentSelectedType[selectedType][contentType][contentPosition].content;
+      contentSelectedType?.[`${selectedType}_${contentType}_${contentPosition}`]
+        ?.content;
 
     // Buat elemen baru dengan gaya yang diubah
     const updatedElement = React.cloneElement(elementToUpdate, {
@@ -52,31 +60,22 @@ function Home(props) {
     setStyleSelectedType({
       ...styleSelectedType,
       ...{
-        [selectedType]: {
-          [contentType]: {
-            [contentPosition]: {
-              style: value,
-            },
-          },
-        },
+        [`${selectedType}_${contentType}_${contentPosition}`]: value,
       },
     });
 
     // Perbarui elemen dalam state contentSelectedType
-    contentSelectedType[selectedType][contentType][contentPosition].content =
-      updatedElement;
+    contentSelectedType[
+      `${selectedType}_${contentType}_${contentPosition}`
+    ].content = updatedElement;
   };
 
   const handleChangeContent = (value) => {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [selectedType]: {
-          [contentType]: {
-            [contentPosition]: {
-              content: value,
-            },
-          },
+        [`${selectedType}_${contentType}_${contentPosition}`]: {
+          content: value,
         },
       },
     });
@@ -85,7 +84,8 @@ function Home(props) {
   const handleChangeEvent = (value) => {
     // Dapatkan elemen yang ingin Anda ubah event-nya
     const elementToUpdate =
-      contentSelectedType[selectedType][contentType][contentPosition].content;
+      contentSelectedType?.[`${selectedType}_${contentType}_${contentPosition}`]
+        ?.content;
 
     // Buat elemen baru dengan event yang diubah
     const updatedElement = React.cloneElement(elementToUpdate, {
@@ -103,19 +103,14 @@ function Home(props) {
     setEventSelectedType({
       ...eventSelectedType,
       ...{
-        [selectedType]: {
-          [contentType]: {
-            [contentPosition]: {
-              event: value,
-            },
-          },
-        },
+        [`${selectedType}_${contentType}_${contentPosition}`]: value,
       },
     });
 
     // Perbarui elemen dalam state contentSelectedType
-    contentSelectedType[selectedType][contentType][contentPosition].content =
-      updatedElement;
+    contentSelectedType[
+      `${selectedType}_${contentType}_${contentPosition}`
+    ].content = updatedElement;
   };
 
   const HandleContent = (props) => {
@@ -124,9 +119,23 @@ function Home(props) {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [layout]: { [type]: { [position]: value } },
+        [`${layout}_${type}_${position}`]: value,
       },
     });
+  };
+
+  const handleUpload = async (props, type) => {
+    try {
+      var formData = new FormData();
+      formData.append("image", props.target.files[0]);
+      formData.append("name", type);
+
+      return await http.post("/ui-build/img-upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    } catch (error) {}
   };
 
   return (
@@ -374,7 +383,24 @@ function Home(props) {
                         size="medium"
                       >
                         Select Media{" "}
-                        <input style={{ display: "none" }} type="file" />
+                        <input
+                          style={{ display: "none" }}
+                          onChange={(e) =>
+                            handleUpload(e, "layoutBackground").then(
+                              (result) => {
+                                setStyleLayout({
+                                  ...styleLayout,
+                                  ...{
+                                    backgroundImage: `url(${result?.data?.image?.url})`,
+                                    backgroundSize: "cover",
+                                    backgroundPosition: "center",
+                                  },
+                                });
+                              }
+                            )
+                          }
+                          type="file"
+                        />
                       </Button>
                       <TextField
                         fullWidth
@@ -439,20 +465,30 @@ function Home(props) {
                     mt: 0.5,
                   }}
                 >
-                  <Box
-                    sx={{
-                      backgroundColor: "#2e353b",
-                      width: "85%",
-                      p: 0.5,
-                      px: 2,
-                      borderRadius: "5px",
-                    }}
-                  >
-                    <Typography color="#fff">
-                      Column{" "}
-                      <span style={{ color: "rgb(193 188 188)" }}>2/2</span>
-                    </Typography>
-                  </Box>
+                  {[...new Array(leftColumnLength)].map((item, key) => (
+                    <Box
+                      sx={{
+                        backgroundColor: "#2e353b",
+                        width: "85%",
+                        p: 0.5,
+                        px: 2,
+                        mb: 1,
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        setOnFormType("element");
+                        setContentPosition("left");
+                      }}
+                    >
+                      <Typography color="#fff">
+                        Column{" "}
+                        <span style={{ color: "rgb(193 188 188)" }}>
+                          {++key}/{leftColumnLength}
+                        </span>
+                      </Typography>
+                    </Box>
+                  ))}
                 </Box>
 
                 <Button
@@ -462,11 +498,11 @@ function Home(props) {
                     borderRadius: "10px",
                     mt: 1,
                   }}
-                  color="secondary"
                   onClick={() => {
-                    setOnFormType("element");
-                    setContentPosition("left");
+                    const next = leftColumnLength + 1;
+                    setLeftColumnLength(next);
                   }}
+                  color="secondary"
                 >
                   + Add to column
                 </Button>
@@ -492,20 +528,29 @@ function Home(props) {
                         mt: 0.5,
                       }}
                     >
-                      <Box
-                        sx={{
-                          backgroundColor: "#2e353b",
-                          width: "85%",
-                          p: 0.5,
-                          px: 2,
-                          borderRadius: "5px",
-                        }}
-                      >
-                        <Typography color="#fff">
-                          Column{" "}
-                          <span style={{ color: "rgb(193 188 188)" }}>2/2</span>
-                        </Typography>
-                      </Box>
+                      {[...new Array(rightColumnLength)].map((item, key) => (
+                        <Box
+                          sx={{
+                            backgroundColor: "#2e353b",
+                            width: "85%",
+                            p: 0.5,
+                            mb: 1,
+                            px: 2,
+                            borderRadius: "5px",
+                          }}
+                          onClick={() => {
+                            setOnFormType("element");
+                            setContentPosition("right");
+                          }}
+                        >
+                          <Typography color="#fff">
+                            Column{" "}
+                            <span style={{ color: "rgb(193 188 188)" }}>
+                              {++key}/{rightColumnLength}
+                            </span>
+                          </Typography>
+                        </Box>
+                      ))}
                     </Box>
 
                     <Button
@@ -517,8 +562,8 @@ function Home(props) {
                       }}
                       color="secondary"
                       onClick={() => {
-                        setOnFormType("element");
-                        setContentPosition("right");
+                        const next = rightColumnLength + 1;
+                        setRightColumnLength(next);
                       }}
                     >
                       + Add to column
@@ -770,9 +815,9 @@ function Home(props) {
                           handleChangeContent(
                             <button
                               style={
-                                styleSelectedType?.[selectedType]?.[
-                                  contentType
-                                ]?.[contentPosition]?.style
+                                styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}`
+                                ]
                               }
                             >
                               {e.target.value}
@@ -787,9 +832,9 @@ function Home(props) {
                           labelId="Letter_case"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ textTransform: e.target.value },
                             });
                           }}
@@ -800,31 +845,89 @@ function Home(props) {
                         </Select>
                       </FormControl>
 
-                      <FormControl size="small" margin="dense" fullWidth>
-                        <InputLabel id="Color">Color</InputLabel>
-                        <Select labelId="Color" label="Color">
-                          <MenuItem value={true}>Primary</MenuItem>
-                          <MenuItem value={false}>Secondary</MenuItem>
-                          <MenuItem value={false}>Alert</MenuItem>
-                          <MenuItem value={false}>Success</MenuItem>
-                          <MenuItem value={false}>White</MenuItem>
-                        </Select>
-                      </FormControl>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Background Color"
+                        margin="dense"
+                        type="color"
+                        onChange={(e) => {
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}`
+                            ] ?? {}),
+                            ...{
+                              backgroundColor: e.target.value,
+                              borderColor: e.target.value,
+                            },
+                          });
+                        }}
+                      />
+
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Text Color"
+                        margin="dense"
+                        type="color"
+                        onChange={(e) => {
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}`
+                            ] ?? {}),
+                            ...{
+                              color: e.target.value,
+                            },
+                          });
+                        }}
+                      />
 
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Style">Style</InputLabel>
-                        <Select labelId="Style" label="Style">
-                          <MenuItem value={true}>Default</MenuItem>
-                          <MenuItem value={false}>Outline</MenuItem>
-                          <MenuItem value={false}>Simple</MenuItem>
-                          <MenuItem value={false}>Underline</MenuItem>
-                          <MenuItem value={false}>Shade</MenuItem>
-                          <MenuItem value={false}>Bevel</MenuItem>
-                          <MenuItem value={false}>Gloss</MenuItem>
+                        <Select
+                          labelId="Style"
+                          onChange={(e) => {
+                            if (e.target.value === "Outline") {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}`
+                                ] ?? {}),
+                                ...{
+                                  backgroundColor: "transparent",
+                                  border: "1px solid",
+                                },
+                              });
+                            } else if (e.target.value === "Default") {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}`
+                                ] ?? {}),
+                                ...{
+                                  backgroundColor: "white",
+                                  border: "none",
+                                },
+                              });
+                            } else {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}`
+                                ] ?? {}),
+                                ...{
+                                  backgroundColor: "transparent",
+                                  border: "none",
+                                },
+                              });
+                            }
+                          }}
+                          label="Style"
+                        >
+                          <MenuItem value="Default">Default</MenuItem>
+                          <MenuItem value="Outline">Outline</MenuItem>
+                          <MenuItem value="Simple">Simple</MenuItem>
                         </Select>
                       </FormControl>
 
-                      <FormControl size="small" margin="dense" fullWidth>
+                      {/* <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Size">Size</InputLabel>
                         <Select labelId="Size" label="Size">
                           <MenuItem value={true}>XX-Small</MenuItem>
@@ -837,7 +940,7 @@ function Home(props) {
                           <MenuItem value={false}>X-Larger</MenuItem>
                           <MenuItem value={false}>XX-Larger</MenuItem>
                         </Select>
-                      </FormControl>
+                      </FormControl> */}
 
                       <Typography sx={{ mt: 1 }}>Padding</Typography>
                       <Box display="flex" gap={1}>
@@ -849,9 +952,9 @@ function Home(props) {
                           type="number"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ paddingTop: `${e.target.value}px` },
                             });
                           }}
@@ -864,9 +967,9 @@ function Home(props) {
                           type="number"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ paddingRight: `${e.target.value}px` },
                             });
                           }}
@@ -879,9 +982,9 @@ function Home(props) {
                           type="number"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ paddingBottom: `${e.target.value}px` },
                             });
                           }}
@@ -894,9 +997,9 @@ function Home(props) {
                           type="number"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ paddingLeft: `${e.target.value}px` },
                             });
                           }}
@@ -912,9 +1015,9 @@ function Home(props) {
                         variant="outlined"
                         onChange={(e) => {
                           handleChangeStyle({
-                            ...(styleSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.style ?? {}),
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}`
+                            ] ?? {}),
                             ...{ borderRadius: `${e.target.value}px` },
                           });
                         }}
@@ -927,9 +1030,9 @@ function Home(props) {
                           label="Expand"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{
                                 width:
                                   e.target.value === true ? "100%" : "unset",
@@ -1048,8 +1151,19 @@ function Home(props) {
                           fullWidth
                           disabled={selectedFormType === 0}
                           onClick={() => {
-                            setIsOnForm(true);
-                            setOnFormType("content");
+                            setOnFormType("options");
+
+                            if (contentPosition === "left") {
+                              setContentType2({
+                                left: "button",
+                                right: contentType2.right,
+                              });
+                            } else {
+                              setContentType2({
+                                right: "button",
+                                left: contentType2.left,
+                              });
+                            }
                           }}
                         >
                           Apply
@@ -1081,11 +1195,12 @@ function Home(props) {
                       onChange={(e) => {
                         handleChangeContent(
                           <p
-                            style={
-                              styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style
-                            }
+                            style={{
+                              ...styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ],
+                              margin: 0,
+                            }}
                           >
                             {e.target.value}
                           </p>
@@ -1101,9 +1216,9 @@ function Home(props) {
                       variant="outlined"
                       onChange={(e) => {
                         handleChangeStyle({
-                          ...(styleSelectedType?.[selectedType]?.[
-                            contentType
-                          ]?.[contentPosition]?.style ?? {}),
+                          ...(styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}`
+                          ] ?? {}),
                           ...{ fontSize: `${e.target.value}px` },
                         });
                       }}
@@ -1117,10 +1232,10 @@ function Home(props) {
                       variant="outlined"
                       onChange={(e) => {
                         handleChangeStyle({
-                          ...(styleSelectedType?.[selectedType]?.[
-                            contentType
-                          ]?.[contentPosition]?.style ?? {}),
-                          ...{ lineHeight: `${e.target.value}px` },
+                          ...(styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}`
+                          ] ?? {}),
+                          ...{ lineHeight: `${e.target.value}px`, margin: 0 },
                         });
                       }}
                     />
@@ -1130,9 +1245,9 @@ function Home(props) {
                         labelId="text_align"
                         onChange={(e) => {
                           handleChangeStyle({
-                            ...(styleSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.style ?? {}),
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}`
+                            ] ?? {}),
                             ...{ textAlign: e.target.value },
                           });
                         }}
@@ -1153,9 +1268,9 @@ function Home(props) {
                       variant="outlined"
                       onChange={(e) => {
                         handleChangeStyle({
-                          ...(styleSelectedType?.[selectedType]?.[
-                            contentType
-                          ]?.[contentPosition]?.style ?? {}),
+                          ...(styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}`
+                          ] ?? {}),
                           ...{ color: e.target.value },
                         });
                       }}
@@ -1172,9 +1287,9 @@ function Home(props) {
                         onChange={(e) => {
                           if (e.target.value === true) {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{
                                 display: "block",
                                 visibility: "inherit",
@@ -1182,9 +1297,9 @@ function Home(props) {
                             });
                           } else {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{
                                 display: "none",
                                 visibility: "hidden",
@@ -1227,8 +1342,19 @@ function Home(props) {
                         fullWidth
                         disabled={selectedFormType === 0}
                         onClick={() => {
-                          setIsOnForm(true);
-                          setOnFormType("content");
+                          setOnFormType("options");
+
+                          if (contentPosition === "left") {
+                            setContentType2({
+                              left: "text",
+                              right: contentType2.right,
+                            });
+                          } else {
+                            setContentType2({
+                              right: "text",
+                              left: contentType2.left,
+                            });
+                          }
                         }}
                       >
                         Apply
@@ -1265,7 +1391,27 @@ function Home(props) {
                         size="medium"
                       >
                         Select Media{" "}
-                        <input style={{ display: "none" }} type="file" />
+                        <input
+                          style={{ display: "none" }}
+                          onChange={(e) => {
+                            handleUpload(e, "contentBackground").then(
+                              (result) => {
+                                handleChangeContent(
+                                  <img
+                                    alt={"cover"}
+                                    style={
+                                      styleSelectedType?.[
+                                        `${selectedType}_${contentType}_${contentPosition}`
+                                      ]
+                                    }
+                                    src={result?.data?.image?.url}
+                                  />
+                                );
+                              }
+                            );
+                          }}
+                          type="file"
+                        />
                       </Button>
 
                       <TextField
@@ -1277,9 +1423,9 @@ function Home(props) {
                         variant="outlined"
                         onChange={(e) => {
                           handleChangeStyle({
-                            ...(styleSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.style ?? {}),
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}`
+                            ] ?? {}),
                             ...{ width: `${e.target.value}%` },
                           });
                         }}
@@ -1294,9 +1440,9 @@ function Home(props) {
                           variant="outlined"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ marginTop: `${e.target.value}px` },
                             });
                           }}
@@ -1308,9 +1454,9 @@ function Home(props) {
                           variant="outlined"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ marginRight: `${e.target.value}px` },
                             });
                           }}
@@ -1322,9 +1468,9 @@ function Home(props) {
                           variant="outlined"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ marginBottom: `${e.target.value}px` },
                             });
                           }}
@@ -1336,9 +1482,9 @@ function Home(props) {
                           variant="outlined"
                           onChange={(e) => {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ] ?? {}),
                               ...{ marginLeft: `${e.target.value}px` },
                             });
                           }}
@@ -1360,9 +1506,9 @@ function Home(props) {
                           });
 
                           handleChangeStyle({
-                            ...(styleSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.style ?? {}),
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}`
+                            ] ?? {}),
                             ...{ cursor: `pointer` },
                           });
                         }}
@@ -1399,9 +1545,9 @@ function Home(props) {
                           onChange={(e) => {
                             if (e.target.value === true) {
                               handleChangeStyle({
-                                ...(styleSelectedType?.[selectedType]?.[
-                                  contentType
-                                ]?.[contentPosition]?.style ?? {}),
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}`
+                                ] ?? {}),
                                 ...{
                                   display: "block",
                                   visibility: "inherit",
@@ -1409,9 +1555,9 @@ function Home(props) {
                               });
                             } else {
                               handleChangeStyle({
-                                ...(styleSelectedType?.[selectedType]?.[
-                                  contentType
-                                ]?.[contentPosition]?.style ?? {}),
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}`
+                                ] ?? {}),
                                 ...{
                                   display: "none",
                                   visibility: "hidden",
@@ -1458,8 +1604,19 @@ function Home(props) {
                           fullWidth
                           disabled={selectedFormType === 0}
                           onClick={() => {
-                            setIsOnForm(true);
-                            setOnFormType("content");
+                            setOnFormType("options");
+
+                            if (contentPosition === "left") {
+                              setContentType2({
+                                left: "image",
+                                right: contentType2.right,
+                              });
+                            } else {
+                              setContentType2({
+                                right: "image",
+                                left: contentType2.left,
+                              });
+                            }
                           }}
                         >
                           Apply
@@ -1495,9 +1652,9 @@ function Home(props) {
                               ]?.[contentPosition]?.event?.link ?? "/#"
                             }
                             style={
-                              styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}`
+                              ]
                             }
                           >
                             {e.target.value}
@@ -1512,9 +1669,9 @@ function Home(props) {
                         label="Letter Case"
                         onChange={(e) => {
                           handleChangeStyle({
-                            ...(styleSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.style ?? {}),
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}`
+                            ] ?? {}),
                             ...{ textTransform: e.target.value },
                           });
                         }}
@@ -1530,9 +1687,9 @@ function Home(props) {
                         label="Style"
                         onChange={(e) => {
                           handleChangeStyle({
-                            ...(styleSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.style ?? {}),
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}`
+                            ] ?? {}),
                             ...{ textDecoration: e.target.value },
                           });
                         }}
@@ -1640,8 +1797,19 @@ function Home(props) {
                         fullWidth
                         disabled={selectedFormType === 0}
                         onClick={() => {
-                          setIsOnForm(true);
-                          setOnFormType("content");
+                          setOnFormType("options");
+
+                          if (contentPosition === "left") {
+                            setContentType2({
+                              left: "link",
+                              right: contentType2.right,
+                            });
+                          } else {
+                            setContentType2({
+                              right: "link",
+                              left: contentType2.left,
+                            });
+                          }
                         }}
                       >
                         Apply
@@ -1717,7 +1885,7 @@ function Home(props) {
                   }}
                 >
                   {
-                    contentSelectedType?.["1"]?.[contentType]?.[contentPosition]
+                    contentSelectedType?.[`1_${contentType}_${contentPosition}`]
                       ?.content
                   }
                 </Box>
@@ -1747,7 +1915,9 @@ function Home(props) {
                     borderRadius: "10px",
                   }}
                 >
-                  {contentSelectedType?.["2"]?.[contentType]?.["left"]?.content}
+                  {contentSelectedType?.[`2_${contentType}_left`]?.content ??
+                    contentSelectedType?.[`2_${contentType2?.left}_left`]
+                      ?.content}
                 </Box>
                 <Box
                   sx={{
@@ -1757,10 +1927,9 @@ function Home(props) {
                     borderRadius: "10px",
                   }}
                 >
-                  {
-                    contentSelectedType?.["2"]?.[contentType]?.["right"]
-                      ?.content
-                  }
+                  {contentSelectedType?.[`2_${contentType}_right`]?.content ??
+                    contentSelectedType?.[`2_${contentType2?.right}_right`]
+                      ?.content}
                 </Box>
               </Box>
             )}
@@ -1788,7 +1957,7 @@ function Home(props) {
                     borderRadius: "10px",
                   }}
                 >
-                  {contentSelectedType?.["3"]?.[contentType]?.["left"]?.content}
+                  {contentSelectedType?.[`3_${contentType}_left`]?.content}
                 </Box>
                 <Box
                   sx={{
@@ -1798,10 +1967,7 @@ function Home(props) {
                     borderRadius: "10px",
                   }}
                 >
-                  {
-                    contentSelectedType?.["3"]?.[contentType]?.["right"]
-                      ?.content
-                  }
+                  {contentSelectedType?.[`3_${contentType}_right`]?.content}
                 </Box>
               </Box>
             )}
@@ -1829,7 +1995,7 @@ function Home(props) {
                     borderRadius: "10px",
                   }}
                 >
-                  {contentSelectedType?.["4"]?.[contentType]?.["left"]?.content}
+                  {contentSelectedType?.[`4_${contentType}_left`]?.content}
                 </Box>
                 <Box
                   sx={{
@@ -1839,10 +2005,7 @@ function Home(props) {
                     borderRadius: "10px",
                   }}
                 >
-                  {
-                    contentSelectedType?.["4"]?.[contentType]?.["right"]
-                      ?.content
-                  }
+                  {contentSelectedType?.[`4_${contentType}_right`]?.content}
                 </Box>
               </Box>
             )}
