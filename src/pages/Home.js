@@ -31,7 +31,7 @@ function Home(props) {
   const [open, setOpen] = React.useState(false);
   const [selectedFormType, setSelectedFormType] = React.useState(0);
   const [isDouble, setIsDouble] = React.useState(true);
-  const [cardName, setCardName] = React.useState("")
+  const [cardName, setCardName] = React.useState("Default");
 
   // new logic
   const [selectedType, setSelectedType] = React.useState(0);
@@ -47,14 +47,17 @@ function Home(props) {
   const [eventSelectedType, setEventSelectedType] = React.useState({});
   const [leftColumnLength, setLeftColumnLength] = React.useState(1);
   const [rightColumnLength, setRightColumnLength] = React.useState(1);
+  const [leftColumnSelected, setLeftColumnSelected] = React.useState(0);
+  const [rightColumnSelected, setRightColumnSelected] = React.useState(0);
 
   const handleChangeStyle = (value) => {
     // Dapatkan elemen yang ingin Anda ubah gayanya
     const elementToUpdate =
-      contentSelectedType?.[`${selectedType}_${contentType}_${contentPosition}`]
-        ?.content;
+      contentSelectedType?.[
+        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+      ]?.content;
 
-    // Buat elemen baru dengan gaya yang diubah
+    // // Buat elemen baru dengan gaya yang diubah
     const updatedElement = React.cloneElement(elementToUpdate, {
       style: value,
     });
@@ -62,13 +65,14 @@ function Home(props) {
     setStyleSelectedType({
       ...styleSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}`]: value,
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+          value,
       },
     });
 
     // Perbarui elemen dalam state contentSelectedType
     contentSelectedType[
-      `${selectedType}_${contentType}_${contentPosition}`
+      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
     ].content = updatedElement;
   };
 
@@ -76,9 +80,10 @@ function Home(props) {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}`]: {
-          content: value,
-        },
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+          {
+            content: value,
+          },
       },
     });
   };
@@ -86,8 +91,9 @@ function Home(props) {
   const handleChangeEvent = (value) => {
     // Dapatkan elemen yang ingin Anda ubah event-nya
     const elementToUpdate =
-      contentSelectedType?.[`${selectedType}_${contentType}_${contentPosition}`]
-        ?.content;
+      contentSelectedType?.[
+        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+      ]?.content;
 
     // Buat elemen baru dengan event yang diubah
     const updatedElement = React.cloneElement(elementToUpdate, {
@@ -105,13 +111,14 @@ function Home(props) {
     setEventSelectedType({
       ...eventSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}`]: value,
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+          value,
       },
     });
 
     // Perbarui elemen dalam state contentSelectedType
     contentSelectedType[
-      `${selectedType}_${contentType}_${contentPosition}`
+      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
     ].content = updatedElement;
   };
 
@@ -121,7 +128,7 @@ function Home(props) {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [`${layout}_${type}_${position}`]: value,
+        [`${layout}_${type}_${position}_${leftColumnSelected}`]: value,
       },
     });
   };
@@ -149,22 +156,24 @@ function Home(props) {
     // Dapatkan konten teks dari elemen tersebut
     const contentText = contentElement.outerHTML;
 
-    http.post("/ui-build/save-new-card", {
-      type: "card",
-      title: cardName,
-      content: contentText,
-      section: "faq",
-    }).then(() => {
-      Swal.fire({
-        title: "",
-        html: "Success add card.",
-        icon: "success",
-        timer: 2000,
-        showCancelButton: false,
-        showConfirmButton: false,
+    http
+      .post("/ui-build/save-new-card", {
+        type: "card_v2",
+        title: cardName,
+        content: contentText,
+        section: "faq",
+      })
+      .then(() => {
+        Swal.fire({
+          title: "",
+          html: "Success add card.",
+          icon: "success",
+          timer: 2000,
+          showCancelButton: false,
+          showConfirmButton: false,
+        });
       });
-    })
-  }
+  };
 
   return (
     <Box p={2}>
@@ -436,10 +445,23 @@ function Home(props) {
                         type="color"
                         size="small"
                         label="Color"
+                        sx={{ mb: 3 }}
                         onChange={(e) => {
                           setStyleLayout({
                             ...styleLayout,
                             ...{ backgroundColor: e.target.value },
+                          });
+                        }}
+                      />
+                      <TextField
+                        fullWidth
+                        type="range"
+                        size="small"
+                        label="Border Radius"
+                        onChange={(e) => {
+                          setStyleLayout({
+                            ...styleLayout,
+                            ...{ borderRadius: `${e.target.value}px` },
                           });
                         }}
                       />
@@ -508,6 +530,8 @@ function Home(props) {
                       onClick={() => {
                         setOnFormType("element");
                         setContentPosition("left");
+                        setLeftColumnSelected(key);
+                        setRightColumnSelected(null);
                       }}
                     >
                       <Typography color="#fff">
@@ -570,6 +594,8 @@ function Home(props) {
                           onClick={() => {
                             setOnFormType("element");
                             setContentPosition("right");
+                            setLeftColumnSelected(null);
+                            setLeftColumnSelected(key);
                           }}
                         >
                           <Typography color="#fff">
@@ -845,7 +871,7 @@ function Home(props) {
                             <button
                               style={
                                 styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ]
                               }
                             >
@@ -862,7 +888,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ textTransform: e.target.value },
                             });
@@ -883,7 +909,7 @@ function Home(props) {
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
                             ...{
                               backgroundColor: e.target.value,
@@ -902,7 +928,7 @@ function Home(props) {
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
                             ...{
                               color: e.target.value,
@@ -919,7 +945,7 @@ function Home(props) {
                             if (e.target.value === "Outline") {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
                                 ...{
                                   backgroundColor: "transparent",
@@ -929,7 +955,7 @@ function Home(props) {
                             } else if (e.target.value === "Default") {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
                                 ...{
                                   backgroundColor: "white",
@@ -939,7 +965,7 @@ function Home(props) {
                             } else {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
                                 ...{
                                   backgroundColor: "transparent",
@@ -982,7 +1008,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ paddingTop: `${e.target.value}px` },
                             });
@@ -997,7 +1023,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ paddingRight: `${e.target.value}px` },
                             });
@@ -1012,7 +1038,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ paddingBottom: `${e.target.value}px` },
                             });
@@ -1027,7 +1053,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ paddingLeft: `${e.target.value}px` },
                             });
@@ -1045,7 +1071,7 @@ function Home(props) {
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
                             ...{ borderRadius: `${e.target.value}px` },
                           });
@@ -1060,7 +1086,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{
                                 width:
@@ -1082,9 +1108,9 @@ function Home(props) {
                         variant="outlined"
                         onChange={(e) => {
                           handleChangeEvent({
-                            ...(eventSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.event ?? {}),
+                            ...(eventSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ] ?? {}),
                             ...{ link: e.target.value },
                           });
                         }}
@@ -1096,9 +1122,9 @@ function Home(props) {
                           labelId="Target"
                           onChange={(e) => {
                             handleChangeEvent({
-                              ...(eventSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.event ?? {}),
+                              ...(eventSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ] ?? {}),
                               ...{ target: e.target.value },
                             });
                           }}
@@ -1121,9 +1147,9 @@ function Home(props) {
                           onChange={(e) => {
                             if (e.target.value === true) {
                               handleChangeStyle({
-                                ...(styleSelectedType?.[selectedType]?.[
-                                  contentType
-                                ]?.[contentPosition]?.style ?? {}),
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ] ?? {}),
                                 ...{
                                   display: "block",
                                   visibility: "inherit",
@@ -1131,9 +1157,9 @@ function Home(props) {
                               });
                             } else {
                               handleChangeStyle({
-                                ...(styleSelectedType?.[selectedType]?.[
-                                  contentType
-                                ]?.[contentPosition]?.style ?? {}),
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ] ?? {}),
                                 ...{
                                   display: "none",
                                   visibility: "hidden",
@@ -1226,7 +1252,7 @@ function Home(props) {
                           <p
                             style={{
                               ...styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ],
                               margin: 0,
                             }}
@@ -1246,7 +1272,7 @@ function Home(props) {
                       onChange={(e) => {
                         handleChangeStyle({
                           ...(styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                           ] ?? {}),
                           ...{ fontSize: `${e.target.value}px` },
                         });
@@ -1262,7 +1288,7 @@ function Home(props) {
                       onChange={(e) => {
                         handleChangeStyle({
                           ...(styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                           ] ?? {}),
                           ...{ lineHeight: `${e.target.value}px`, margin: 0 },
                         });
@@ -1275,7 +1301,7 @@ function Home(props) {
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
                             ...{ textAlign: e.target.value },
                           });
@@ -1298,7 +1324,7 @@ function Home(props) {
                       onChange={(e) => {
                         handleChangeStyle({
                           ...(styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                           ] ?? {}),
                           ...{ color: e.target.value },
                         });
@@ -1317,7 +1343,7 @@ function Home(props) {
                           if (e.target.value === true) {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{
                                 display: "block",
@@ -1327,7 +1353,7 @@ function Home(props) {
                           } else {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{
                                 display: "none",
@@ -1428,11 +1454,12 @@ function Home(props) {
                                 handleChangeContent(
                                   <img
                                     alt={"cover"}
-                                    style={
-                                      styleSelectedType?.[
-                                        `${selectedType}_${contentType}_${contentPosition}`
-                                      ]
-                                    }
+                                    style={{
+                                      width: "100%",
+                                      ...styleSelectedType?.[
+                                        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                      ],
+                                    }}
                                     src={result?.data?.image?.url}
                                   />
                                 );
@@ -1453,7 +1480,7 @@ function Home(props) {
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
                             ...{ width: `${e.target.value}%` },
                           });
@@ -1470,7 +1497,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ marginTop: `${e.target.value}px` },
                             });
@@ -1484,7 +1511,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ marginRight: `${e.target.value}px` },
                             });
@@ -1498,7 +1525,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ marginBottom: `${e.target.value}px` },
                             });
@@ -1512,7 +1539,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
                               ...{ marginLeft: `${e.target.value}px` },
                             });
@@ -1528,15 +1555,15 @@ function Home(props) {
                         variant="outlined"
                         onChange={(e) => {
                           handleChangeEvent({
-                            ...(eventSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.event ?? {}),
+                            ...(eventSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ] ?? {}),
                             ...{ link: e.target.value },
                           });
 
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
                             ...{ cursor: `pointer` },
                           });
@@ -1549,9 +1576,9 @@ function Home(props) {
                           labelId="Target"
                           onChange={(e) => {
                             handleChangeEvent({
-                              ...(eventSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.event ?? {}),
+                              ...(eventSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ] ?? {}),
                               ...{ target: e.target.value },
                             });
                           }}
@@ -1575,7 +1602,7 @@ function Home(props) {
                             if (e.target.value === true) {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "block",
@@ -1585,7 +1612,7 @@ function Home(props) {
                             } else {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "none",
@@ -1674,20 +1701,15 @@ function Home(props) {
                       margin="dense"
                       onChange={(e) => {
                         handleChangeContent(
-                          <a
-                            href={
-                              eventSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.event?.link ?? "/#"
-                            }
+                          <span
                             style={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ]
                             }
                           >
                             {e.target.value}
-                          </a>
+                          </span>
                         );
                       }}
                     />
@@ -1699,7 +1721,7 @@ function Home(props) {
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
                             ...{ textTransform: e.target.value },
                           });
@@ -1717,7 +1739,7 @@ function Home(props) {
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
                             ...{ textDecoration: e.target.value },
                           });
@@ -1734,9 +1756,9 @@ function Home(props) {
                       margin="dense"
                       onChange={(e) => {
                         handleChangeEvent({
-                          ...(eventSelectedType?.[selectedType]?.[
-                            contentType
-                          ]?.[contentPosition]?.event ?? {}),
+                          ...(eventSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                          ] ?? {}),
                           ...{ link: e.target.value },
                         });
                       }}
@@ -1747,9 +1769,9 @@ function Home(props) {
                         labelId="Target"
                         onChange={(e) => {
                           handleChangeEvent({
-                            ...(eventSelectedType?.[selectedType]?.[
-                              contentType
-                            ]?.[contentPosition]?.event ?? {}),
+                            ...(eventSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ] ?? {}),
                             ...{ target: e.target.value },
                           });
                         }}
@@ -1772,9 +1794,9 @@ function Home(props) {
                         onChange={(e) => {
                           if (e.target.value === true) {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ] ?? {}),
                               ...{
                                 display: "block",
                                 visibility: "inherit",
@@ -1782,9 +1804,9 @@ function Home(props) {
                             });
                           } else {
                             handleChangeStyle({
-                              ...(styleSelectedType?.[selectedType]?.[
-                                contentType
-                              ]?.[contentPosition]?.style ?? {}),
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ] ?? {}),
                               ...{
                                 display: "none",
                                 visibility: "hidden",
@@ -1883,12 +1905,10 @@ function Home(props) {
           <Box
             style={{
               background: "#555555",
-              width: "100%",
               height: "80vh",
               marginTop: "30px",
               padding: "20px",
-              display: "flex",
-              alignItems: "center",
+              overflowY: "auto",
             }}
           >
             {isInsert && selectedType === 1 && (
@@ -1900,30 +1920,57 @@ function Home(props) {
                   borderRadius: "10px",
                 }}
                 style={{
-                  minHeight: "50%",
-                  width: "100%",
+                  minHeight: contentSelectedType?.[
+                    `1_${contentType}_${contentPosition}_${leftColumnSelected}`
+                  ]?.content
+                    ? "0px"
+                    : "50%",
+                  // width: "100%",
                   padding: "20px",
-                  display: "flex",
-                  alignItems: "center",
                   gap: 2,
                   ...styleLayout,
                 }}
               >
-                <Box
-                  sx={{
-                    border: "3px dashed #00a3d3",
-                    borderRadius: "10px",
-                  }}
-                  style={{
-                    width: "100%",
-                    minHeight: "380px",
-                  }}
-                >
-                  {
-                    contentSelectedType?.[`1_${contentType}_${contentPosition}`]
-                      ?.content
-                  }
-                </Box>
+                {[...new Array(leftColumnLength)].map((item, key) => (
+                  <Box
+                    sx={{
+                      border: "3px dashed #00a3d3",
+                      borderRadius: "10px",
+                      marginBottom: "10px",
+                    }}
+                    style={{
+                      width: "100%",
+                      minHeight:
+                        contentSelectedType?.[
+                          `1_button_${contentPosition}_${1 + key}`
+                        ]?.content ??
+                        contentSelectedType?.[
+                          `1_text_${contentPosition}_${1 + key}`
+                        ]?.content ??
+                        contentSelectedType?.[
+                          `1_image_${contentPosition}_${1 + key}`
+                        ]?.content ??
+                        contentSelectedType?.[
+                          `1_link_${contentPosition}_${1 + key}`
+                        ]?.content
+                          ? "0px"
+                          : "380px",
+                    }}
+                  >
+                    {contentSelectedType?.[
+                      `1_button_${contentPosition}_${1 + key}`
+                    ]?.content ??
+                      contentSelectedType?.[
+                        `1_text_${contentPosition}_${1 + key}`
+                      ]?.content ??
+                      contentSelectedType?.[
+                        `1_image_${contentPosition}_${1 + key}`
+                      ]?.content ??
+                      contentSelectedType?.[
+                        `1_link_${contentPosition}_${1 + key}`
+                      ]?.content}
+                  </Box>
+                ))}
               </Box>
             )}
 
@@ -1937,41 +1984,98 @@ function Home(props) {
                 }}
                 style={{
                   minHeight: "50%",
-                  width: "100%",
+                  // width: "100%",
                   padding: "20px",
                   display: "flex",
-                  alignItems: "center",
+                  // alignItems: "center",
                   gap: 2,
                   ...styleLayout,
                 }}
               >
-                <Box
-                  sx={{
-                    border: "3px dashed #00a3d3",
-                    borderRadius: "10px",
-                  }}
-                  style={{
-                    width: "50%",
-                    minHeight: "380px",
-                  }}
-                >
-                  {contentSelectedType?.[`2_${contentType}_left`]?.content ??
-                    contentSelectedType?.[`2_${contentType2?.left}_left`]
-                      ?.content}
+                <Box style={{ width: "50%" }}>
+                  {[...new Array(leftColumnLength)].map((item, key) => {
+                    const next = 1 + key;
+                    return (
+                      <Box
+                        sx={{
+                          border: "3px dashed #00a3d3",
+                          borderRadius: "10px",
+                        }}
+                        style={{
+                          // width: "100%",
+                          minHeight:
+                            contentSelectedType?.[`2_button_left_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[`2_text_left_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[`2_image_left_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[`2_link_left_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[
+                              `2_${contentType2?.left}_left_${next}`
+                            ]?.content
+                              ? "0px"
+                              : "380px",
+                        }}
+                      >
+                        {contentSelectedType?.[`2_button_left_${next}`]
+                          ?.content ??
+                          contentSelectedType?.[`2_text_left_${next}`]
+                            ?.content ??
+                          contentSelectedType?.[`2_image_left_${next}`]
+                            ?.content ??
+                          contentSelectedType?.[`2_link_left_${next}`]
+                            ?.content ??
+                          contentSelectedType?.[
+                            `2_${contentType2?.left}_left_${next}`
+                          ]?.content}
+                      </Box>
+                    );
+                  })}
                 </Box>
-                <Box
-                  sx={{
-                    border: "3px dashed #00a3d3",
-                    borderRadius: "10px",
-                  }}
-                  style={{
-                    width: "50%",
-                    minHeight: "380px",
-                  }}
-                >
-                  {contentSelectedType?.[`2_${contentType}_right`]?.content ??
-                    contentSelectedType?.[`2_${contentType2?.right}_right`]
-                      ?.content}
+                <Box style={{ width: "50%" }}>
+                  {[...new Array(rightColumnLength)].map((item, key) => {
+                    const next = 1 + key;
+
+                    return (
+                      <Box
+                        sx={{
+                          border: "3px dashed #00a3d3",
+                          borderRadius: "10px",
+                        }}
+                        style={{
+                          // width: "50%",
+                          minHeight:
+                            contentSelectedType?.[`2_button_right_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[`2_text_right_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[`2_image_right_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[`2_link_right_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[
+                              `2_${contentType2?.right}_right_${next}`
+                            ]?.content
+                              ? "0px"
+                              : "380px",
+                        }}
+                      >
+                        {contentSelectedType?.[`2_button_right_${next}`]
+                          ?.content ??
+                          contentSelectedType?.[`2_text_right_${next}`]
+                            ?.content ??
+                          contentSelectedType?.[`2_image_right_${next}`]
+                            ?.content ??
+                          contentSelectedType?.[`2_link_right_${next}`]
+                            ?.content ??
+                          contentSelectedType?.[
+                            `2_${contentType2?.right}_right_${next}`
+                          ]?.content}
+                      </Box>
+                    );
+                  })}
                 </Box>
               </Box>
             )}
