@@ -22,8 +22,10 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import http from "utils/http";
+import { useParams } from "react-router-dom";
 
 function Home(props) {
+  const { pageSection } = useParams();
   const [collapseFullscreen, setCollapseFullscreen] = React.useState(false);
   const [isInsert, setIsInsert] = React.useState(false);
   const [isOnForm, setIsOnForm] = React.useState(false);
@@ -41,14 +43,33 @@ function Home(props) {
     left: null,
     right: null,
   });
-  const [styleLayout, setStyleLayout] = React.useState({});
-  const [contentSelectedType, setContentSelectedType] = React.useState({});
-  const [styleSelectedType, setStyleSelectedType] = React.useState({});
-  const [eventSelectedType, setEventSelectedType] = React.useState({});
+  
+  // core dari card
+  const [styleLayout, setStyleLayout] = React.useState({}); // untuk parent
+  const [contentSelectedType, setContentSelectedType] = React.useState({}); // untuk kolom
+  const [styleSelectedType, setStyleSelectedType] = React.useState({}); // style
+  const [eventSelectedType, setEventSelectedType] = React.useState({}); // event handler
+  // core dari card
+  
   const [leftColumnLength, setLeftColumnLength] = React.useState(1);
   const [rightColumnLength, setRightColumnLength] = React.useState(1);
   const [leftColumnSelected, setLeftColumnSelected] = React.useState(0);
   const [rightColumnSelected, setRightColumnSelected] = React.useState(0);
+  const [leftElementList, setLeftElementList] = React.useState(1);
+  const [rightElementList, setRightElementList] = React.useState(1);
+
+  let showSection = pageSection;
+
+  function formatPageSection(showSection) {
+    return showSection
+      .split(/[_-]/)
+      .map((word) =>
+        word.charAt(0).toUpperCase() + word.slice(1)
+      )
+      .join(" ");
+  }
+
+  let formattedPageSection = formatPageSection(showSection);
 
   const handleChangeStyle = (value) => {
     // Dapatkan elemen yang ingin Anda ubah gayanya
@@ -161,7 +182,7 @@ function Home(props) {
         type: "card_v2",
         title: cardName,
         content: contentText,
-        section: "faq",
+        section: pageSection,
       })
       .then(() => {
         Swal.fire({
@@ -181,197 +202,147 @@ function Home(props) {
         {!collapseFullscreen && (
           <Grid item xs={3} position="relative">
             <Typography variant="h4" color="secondary">
-              Event Page
+              {formattedPageSection} page
             </Typography>
-            {!isInsert && (
-              <Button
-                variant="outlined"
-                color="secondary"
-                sx={{ borderRadius: "50px", borderWidth: "2px", mt: "30px" }}
-                onClick={() => setIsInsert(true)}
-              >
-                + Add Layout
-              </Button>
-            )}
+            <div
+              style={{
+                height: "100%",
+                overflowX: "hidden",
+                overflowY: "auto",
+                maxHeight: "calc(100% - 80px)",
+                position: "absolute",
+                width: "100%",
+              }}
+            >
+              {!isInsert && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  sx={{ borderRadius: "50px", borderWidth: "2px", mt: "30px" }}
+                  onClick={() => setIsInsert(true)}
+                >
+                  + Add Layout
+                </Button>
+              )}
 
-            {/* Insert Layout step 1 */}
-            {isInsert && !onFormType && (
-              <>
-                <Typography sx={{ mt: 2 }}>Insert Layout</Typography>
+              {/* Insert Layout step 1 */}
+              {isInsert && !onFormType && (
+                <>
+                  <Typography sx={{ mt: 2 }}>Insert Layout</Typography>
 
-                <Box
-                  sx={{
-                    borderBottom: "2px solid #00a3d3",
-                    mt: 1,
-                    width: "98%",
-                    mb: 2,
-                  }}
-                />
+                  <Box
+                    sx={{
+                      borderBottom: "2px solid #00a3d3",
+                      mt: 1,
+                      width: "98%",
+                      mb: 2,
+                    }}
+                  />
 
-                <Grid container>
-                  <Grid xs={4}>
-                    <Box
-                      border="1px solid #00a3d3"
-                      m={1}
-                      p={1}
-                      pt={0}
-                      mt={0}
-                      ml={0}
-                      sx={{
-                        cursor: "pointer",
-                        ...(selectedType === 1
-                          ? {
-                              border: "2px solid #727CF5",
-                            }
-                          : {}),
-                      }}
-                      onClick={() => {
-                        setSelectedType(1);
-                        setIsOnForm(false);
-                        setIsDouble(false);
-                      }}
-                    >
-                      <img
-                        src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-1-col.svg"
-                        alt="image"
-                        width="100%"
-                        height="80px"
-                      />
-                      <Typography align="center">One Column</Typography>
-                    </Box>
+                  <Grid container>
+                    <Grid xs={4}>
+                      <Box
+                        border="1px solid #00a3d3"
+                        m={1}
+                        p={1}
+                        pt={0}
+                        mt={0}
+                        ml={0}
+                        sx={{
+                          cursor: "pointer",
+                          ...(selectedType === 1
+                            ? {
+                                border: "2px solid #727CF5",
+                              }
+                            : {}),
+                        }}
+                        onClick={() => {
+                          setSelectedType(1);
+                          setIsOnForm(false);
+                          setIsDouble(false);
+                        }}
+                      >
+                        <img
+                          src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-1-col.svg"
+                          alt="image"
+                          width="100%"
+                          height="80px"
+                        />
+                        <Typography align="center">One Column</Typography>
+                      </Box>
+                    </Grid>
+                    <Grid xs={4}>
+                      <Box
+                        border="1px solid #00a3d3"
+                        m={1}
+                        p={1}
+                        pt={0}
+                        mt={0}
+                        sx={{
+                          cursor: "pointer",
+                          ...(selectedType === 2
+                            ? {
+                                border: "2px solid #727CF5",
+                              }
+                            : {}),
+                        }}
+                        onClick={() => {
+                          setSelectedType(2);
+                          setIsOnForm(false);
+                          setIsDouble(true);
+                        }}
+                      >
+                        <img
+                          src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-2-col.svg"
+                          alt="image"
+                          width="100%"
+                          height="80px"
+                        />
+                        <Typography align="center">2 Column</Typography>
+                      </Box>
+                    </Grid>
+                    
                   </Grid>
-                  <Grid xs={4}>
-                    <Box
-                      border="1px solid #00a3d3"
-                      m={1}
-                      p={1}
-                      pt={0}
-                      mt={0}
-                      sx={{
-                        cursor: "pointer",
-                        ...(selectedType === 2
-                          ? {
-                              border: "2px solid #727CF5",
-                            }
-                          : {}),
-                      }}
-                      onClick={() => {
-                        setSelectedType(2);
-                        setIsOnForm(false);
-                        setIsDouble(true);
-                      }}
-                    >
-                      <img
-                        src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-2-col.svg"
-                        alt="image"
-                        width="100%"
-                        height="80px"
-                      />
-                      <Typography align="center">2 Column</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid xs={4}>
-                    <Box
-                      border="1px solid #00a3d3"
-                      m={1}
-                      p={1}
-                      pt={0}
-                      mt={0}
-                      mr={1}
-                      sx={{
-                        cursor: "pointer",
-                        ...(selectedType === 3
-                          ? {
-                              border: "2px solid #727CF5",
-                            }
-                          : {}),
-                      }}
-                      onClick={() => {
-                        setSelectedType(3);
-                        setIsOnForm(false);
-                        setIsDouble(true);
-                      }}
-                    >
-                      <img
-                        src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-image-left.svg"
-                        alt="image"
-                        width="100%"
-                        height="80px"
-                      />
-                      <Typography align="center">Image Left</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid xs={4}>
-                    <Box
-                      border="1px solid #00a3d3"
-                      m={1}
-                      p={1}
-                      pt={0}
-                      ml={0}
-                      sx={{
-                        cursor: "pointer",
-                        ...(selectedType === 4
-                          ? {
-                              border: "2px solid #727CF5",
-                            }
-                          : {}),
-                      }}
-                      onClick={() => {
-                        setSelectedType(4);
-                        setIsOnForm(false);
-                        setIsDouble(true);
-                      }}
-                    >
-                      <img
-                        src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/new-card-row-image-right.svg"
-                        alt="image"
-                        width="100%"
-                        height="80px"
-                      />
-                      <Typography align="center">Image Right</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
 
-                <Box
-                  sx={{
-                    borderTop: "2px solid rgb(56 56 56 / 14%)",
-                    mt: 1,
-                    width: "98%",
-                    mb: 2,
-                  }}
-                />
+                  <Box
+                    sx={{
+                      borderTop: "2px solid rgb(56 56 56 / 14%)",
+                      mt: 1,
+                      width: "98%",
+                      mb: 2,
+                    }}
+                  />
 
-                <Grid container gap={1} justifyContent="space-between" px={1}>
-                  <Grid item md={5.8}>
-                    <Button
-                      sx={{ border: "1px solid #a0a5aa", color: "#555" }}
-                      fullWidth
-                      onClick={() => {
-                        setIsInsert(false);
-                        setSelectedType(0);
-                        setIsDouble(true);
-                      }}
-                    >
-                      Discard
-                    </Button>
+                  <Grid container gap={1} justifyContent="space-between" px={1}>
+                    <Grid item md={5.8}>
+                      <Button
+                        sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                        fullWidth
+                        onClick={() => {
+                          setIsInsert(false);
+                          setSelectedType(0);
+                          setIsDouble(true);
+                        }}
+                      >
+                        Discard
+                      </Button>
+                    </Grid>
+                    <Grid item md={5.8}>
+                      <Button
+                        sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                        fullWidth
+                        disabled={selectedType === 0}
+                        onClick={() => {
+                          setIsOnForm(true);
+                          setOnFormType("options");
+                        }}
+                      >
+                        Apply
+                      </Button>
+                    </Grid>
                   </Grid>
-                  <Grid item md={5.8}>
-                    <Button
-                      sx={{ border: "1px solid #a0a5aa", color: "#555" }}
-                      fullWidth
-                      disabled={selectedType === 0}
-                      onClick={() => {
-                        setIsOnForm(true);
-                        setOnFormType("options");
-                      }}
-                    >
-                      Apply
-                    </Button>
-                  </Grid>
-                </Grid>
-              </>
-            )}
+                </>
+              )}
 
             {/* Options step 2 */}
             {isInsert && isOnForm && onFormType === "options" && (
@@ -532,12 +503,47 @@ function Home(props) {
                         setContentPosition("left");
                         setLeftColumnSelected(key);
                         setRightColumnSelected(null);
+                        // setLeftElementList(key);
+                        // setRightElementList(null);
                       }}
                     >
                       <Typography color="#fff">
                         Column{" "}
                         <span style={{ color: "rgb(193 188 188)" }}>
                           {++key}/{leftColumnLength}
+                        </span>
+                      </Typography>
+
+                    </Box>
+                  ))}
+                </Box>
+
+                <Box
+                  sx={{
+                    ml: "4%",
+                    width: "100%",
+                    mt: 0.5,
+                  }}
+                >
+                  {[...new Array(leftElementList)].map((item, key) => (
+                    <Box
+                      sx={{
+                        backgroundColor: "#2e353b",
+                        width: "85%",
+                        p: 0.5,
+                        px: 2,
+                        mb: 1,
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+
+                      }}
+                    >
+                      <Typography color="#fff">
+                        Element{" "}
+                        <span style={{ color: "rgb(193 188 188)" }}>
+                          {++key}/{leftElementList}
                         </span>
                       </Typography>
                     </Box>
@@ -554,6 +560,8 @@ function Home(props) {
                   onClick={() => {
                     const next = leftColumnLength + 1;
                     setLeftColumnLength(next);
+                    // const next = leftElementList + 1;
+                    // setLeftElementList(next);
                   }}
                   color="secondary"
                 >
@@ -843,6 +851,7 @@ function Home(props) {
                       Apply
                     </Button>
                   </Grid>
+                 
                 </Grid>
               </>
             )}
@@ -1222,6 +1231,19 @@ function Home(props) {
                           }}
                         >
                           Apply
+                        </Button>
+                      </Grid>
+                      <Grid item md={5.8}>
+                        <Button
+                          sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                          fullWidth
+                          disabled={selectedFormType === 0}
+                          onClick={() => {
+                            setIsOnForm(true);
+                            setOnFormType("content");
+                          }}
+                        >
+                          Delete
                         </Button>
                       </Grid>
                     </Grid>
@@ -1869,6 +1891,7 @@ function Home(props) {
                   </Grid>
                 </Box>
               )}
+            </div>
 
             <Box
               position="absolute"
@@ -1876,6 +1899,7 @@ function Home(props) {
               width="95%"
               bottom={0}
               pt="10px"
+              style={{ backgroundColor: '#ffffff' }}
             >
               <Button
                 sx={{ backgroundColor: "#ff0016", color: "#fff", mr: 1, px: 3 }}
@@ -1892,7 +1916,7 @@ function Home(props) {
                   setOnFormType(null);
                 }}
               >
-                Cancel
+                Back
               </Button>
             </Box>
           </Grid>

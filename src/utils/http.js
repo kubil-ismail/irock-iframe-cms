@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 const http = rateLimit(
   axios.create({
     baseURL: "https://dev.cms.abracadabra-starquest.events/api",
+    // baseURL: process.env.NEXT_PUBLIC_BASE_API_URL || 'https://dev.cms.abracadabra-starquest.events/api',
   }),
   {
     maxRequests: 2,
