@@ -3,9 +3,14 @@ import { lazy } from "react";
 const Routes = [
   // DEFAULT PAGES
   {
-    path: "/",
+    path: "/:pageSection",
     component: lazy(() => import("pages/Home")),
     name: "Home",
+  },
+  {
+    path: "/edit/:language/:section/:id",
+    component: lazy(() => import("pages/EditCard")),
+    name: "EditCard",
   },
   /*
    ---------------------------------------------
