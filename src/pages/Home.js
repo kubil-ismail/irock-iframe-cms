@@ -15,6 +15,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Tooltip,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
@@ -23,6 +24,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import http from "utils/http";
 import { useParams } from "react-router-dom";
+import CloseIcon from "@mui/icons-material/Close";
 
 function Home(props) {
   const { pageSection } = useParams();
@@ -56,7 +58,7 @@ function Home(props) {
   const [leftColumnSelected, setLeftColumnSelected] = React.useState(0);
   const [rightColumnSelected, setRightColumnSelected] = React.useState(0);
   const [leftElementList, setLeftElementList] = React.useState({});
-  const [rightElementList, setRightElementList] = React.useState(1);
+  const [leftElementDeleteList, setLeftElementDeleteList] = React.useState([]);
 
   let showSection = pageSection;
 
@@ -194,7 +196,23 @@ function Home(props) {
       });
   };
 
-  console.log(leftElementList);
+  const handleDeleteElement = (position, index) => {
+    let temporaryObject = { ...contentSelectedType };
+    setLeftElementDeleteList([
+      ...leftElementDeleteList,
+      ...[`${position}_${index}`],
+    ]);
+
+    Object.keys(temporaryObject)?.forEach((element) => {
+      if (contentSelectedType[element].position === `${position}_${index}`) {
+        delete temporaryObject[element];
+      }
+    });
+
+    setContentSelectedType(temporaryObject);
+  };
+
+  console.log(contentSelectedType);
 
   return (
     <Box p={2}>
@@ -523,36 +541,67 @@ function Home(props) {
                     {[...new Array(leftColumnLength)].map((item, key) => {
                       const next = 1 + key;
 
-                      return (
-                        <Box
-                          sx={{
-                            backgroundColor: "#2e353b",
-                            width: "80%",
-                            p: 0.5,
-                            px: 2,
-                            mb: 1,
-                            borderRadius: "5px",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            setOnFormType("element");
-                            setContentPosition("left");
-                            setLeftColumnSelected(next);
-                          }}
-                        >
-                          <Typography
-                            color="#fff"
-                            sx={{ textTransform: "capitalize" }}
+                      if (
+                        !leftElementDeleteList.find(
+                          (items) => items === `left_${next}`
+                        )
+                      ) {
+                        return (
+                          <Box
+                            sx={{
+                              backgroundColor: "#2e353b",
+                              width: "80%",
+                              p: 0.5,
+                              px: 2,
+                              mb: 1,
+                              borderRadius: "5px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
                           >
-                            {leftElementList[`left_${next}`]
-                              ? leftElementList[`left_${next}`]
-                              : "Element"}{" "}
-                            <span style={{ color: "rgb(193 188 188)" }}>
-                              {next}/{leftColumnLength}
-                            </span>
-                          </Typography>
-                        </Box>
-                      );
+                            <div
+                              onClick={() => {
+                                setOnFormType("element");
+                                setContentPosition("left");
+                                setLeftColumnSelected(next);
+                              }}
+                              style={{ width: "100%" }}
+                            >
+                              <Typography
+                                color="#fff"
+                                sx={{
+                                  textTransform: "capitalize",
+                                  display: "block",
+                                }}
+                              >
+                                {leftElementList[`left_${next}`]
+                                  ? leftElementList[`left_${next}`]
+                                  : "Element"}{" "}
+                                <span style={{ color: "rgb(193 188 188)" }}>
+                                  {next}/{leftColumnLength}
+                                </span>
+                              </Typography>
+                            </div>
+                            {leftColumnLength > 1 ? (
+                              <div
+                                onClick={() => {
+                                  if (
+                                    window.confirm("Want delete this item ?")
+                                  ) {
+                                    handleDeleteElement("left", next);
+                                  }
+                                }}
+                              >
+                                <Tooltip title="Delete element" arrow>
+                                  <CloseIcon htmlColor="#fff" fontSize="12px" />
+                                </Tooltip>
+                              </div>
+                            ) : null}
+                          </Box>
+                        );
+                      }
                     })}
                   </Box>
 
@@ -566,6 +615,9 @@ function Home(props) {
                     onClick={() => {
                       const next = leftColumnLength + 1;
                       setLeftColumnLength(next);
+                      setContentPosition("left");
+                      setOnFormType("element");
+                      setLeftColumnSelected(next);
                       // const next = leftElementList + 1;
                       // setLeftElementList(next);
                     }}
@@ -622,38 +674,70 @@ function Home(props) {
                       >
                         {[...new Array(rightColumnLength)].map((item, key) => {
                           const next = 1 + key;
-
-                          return (
-                            <Box
-                              sx={{
-                                backgroundColor: "#2e353b",
-                                width: "80%",
-                                p: 0.5,
-                                px: 2,
-                                mb: 1,
-                                borderRadius: "5px",
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                setOnFormType("element");
-                                setContentPosition("right");
-                                // setLeftColumnSelected(null);
-                                setLeftColumnSelected(next);
-                              }}
-                            >
-                              <Typography
-                                color="#fff"
-                                sx={{ textTransform: "capitalize" }}
+                          if (
+                            !leftElementDeleteList.find(
+                              (items) => items === `right_${next}`
+                            )
+                          ) {
+                            return (
+                              <Box
+                                sx={{
+                                  backgroundColor: "#2e353b",
+                                  width: "80%",
+                                  p: 0.5,
+                                  px: 2,
+                                  mb: 1,
+                                  borderRadius: "5px",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                }}
                               >
-                                {leftElementList[`right_${next}`]
-                                  ? leftElementList[`right_${next}`]
-                                  : "Element"}{" "}
-                                <span style={{ color: "rgb(193 188 188)" }}>
-                                  {next}/{leftColumnLength}
-                                </span>
-                              </Typography>
-                            </Box>
-                          );
+                                <div
+                                  onClick={() => {
+                                    setOnFormType("element");
+                                    setContentPosition("right");
+                                    setLeftColumnSelected(next);
+                                  }}
+                                  style={{ width: "100%" }}
+                                >
+                                  <Typography
+                                    color="#fff"
+                                    sx={{ textTransform: "capitalize" }}
+                                  >
+                                    {leftElementList[`right_${next}`]
+                                      ? leftElementList[`right_${next}`]
+                                      : "Element"}{" "}
+                                    <span style={{ color: "rgb(193 188 188)" }}>
+                                      {next}/{leftColumnLength}
+                                    </span>
+                                  </Typography>
+                                </div>
+
+                                {rightColumnLength > 1 ? (
+                                  <div
+                                    onClick={() => {
+                                      if (
+                                        window.confirm(
+                                          "Want delete this item ?"
+                                        )
+                                      ) {
+                                        handleDeleteElement("right", next);
+                                      }
+                                    }}
+                                  >
+                                    <Tooltip title="Delete element" arrow>
+                                      <CloseIcon
+                                        htmlColor="#fff"
+                                        fontSize="12px"
+                                      />
+                                    </Tooltip>
+                                  </div>
+                                ) : null}
+                              </Box>
+                            );
+                          }
                         })}
                       </Box>
 
@@ -668,6 +752,9 @@ function Home(props) {
                         onClick={() => {
                           const next = rightColumnLength + 1;
                           setRightColumnLength(next);
+                          setOnFormType("element");
+                          setContentPosition("right");
+                          setLeftColumnSelected(next);
                         }}
                       >
                         + Add to column
@@ -725,6 +812,7 @@ function Home(props) {
                             position: contentPosition,
                             type: "button",
                             value: {
+                              position: `${contentPosition}_${leftColumnSelected}`,
                               style: {},
                               content: <button>test</button>,
                               event: {},
@@ -772,6 +860,7 @@ function Home(props) {
                             position: contentPosition,
                             type: "text",
                             value: {
+                              position: `${contentPosition}_${leftColumnSelected}`,
                               style: {},
                               content: <p>test</p>,
                               event: {},
@@ -820,6 +909,7 @@ function Home(props) {
                             position: contentPosition,
                             type: "image",
                             value: {
+                              position: `${contentPosition}_${leftColumnSelected}`,
                               style: {},
                               content: (
                                 <img src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png" />
@@ -869,6 +959,7 @@ function Home(props) {
                             position: contentPosition,
                             type: "link",
                             value: {
+                              position: `${contentPosition}_${leftColumnSelected}`,
                               style: {},
                               content: <a href="#">Link</a>,
                               event: {},
@@ -2034,46 +2125,55 @@ function Home(props) {
                   ...styleLayout,
                 }}
               >
-                {[...new Array(leftColumnLength)].map((item, key) => (
-                  <Box
-                    sx={{
-                      border: "3px dashed #00a3d3",
-                      borderRadius: "10px",
-                      marginBottom: "10px",
-                    }}
-                    style={{
-                      width: "100%",
-                      minHeight:
-                        contentSelectedType?.[
-                          `1_button_${contentPosition}_${1 + key}`
+                {[...new Array(leftColumnLength)].map((item, key) => {
+                  const next = 1 + key;
+                  if (
+                    !leftElementDeleteList.find(
+                      (items) => items === `left_${next}`
+                    )
+                  ) {
+                    return (
+                      <Box
+                        sx={{
+                          border: "3px dashed #00a3d3",
+                          borderRadius: "10px",
+                          marginBottom: "10px",
+                        }}
+                        style={{
+                          width: "100%",
+                          minHeight:
+                            contentSelectedType?.[
+                              `1_button_${contentPosition}_${next}`
+                            ]?.content ??
+                            contentSelectedType?.[
+                              `1_text_${contentPosition}_${next}`
+                            ]?.content ??
+                            contentSelectedType?.[
+                              `1_image_${contentPosition}_${next}`
+                            ]?.content ??
+                            contentSelectedType?.[
+                              `1_link_${contentPosition}_${next}`
+                            ]?.content
+                              ? "0px"
+                              : "380px",
+                        }}
+                      >
+                        {contentSelectedType?.[
+                          `1_button_${contentPosition}_${next}`
                         ]?.content ??
-                        contentSelectedType?.[
-                          `1_text_${contentPosition}_${1 + key}`
-                        ]?.content ??
-                        contentSelectedType?.[
-                          `1_image_${contentPosition}_${1 + key}`
-                        ]?.content ??
-                        contentSelectedType?.[
-                          `1_link_${contentPosition}_${1 + key}`
-                        ]?.content
-                          ? "0px"
-                          : "380px",
-                    }}
-                  >
-                    {contentSelectedType?.[
-                      `1_button_${contentPosition}_${1 + key}`
-                    ]?.content ??
-                      contentSelectedType?.[
-                        `1_text_${contentPosition}_${1 + key}`
-                      ]?.content ??
-                      contentSelectedType?.[
-                        `1_image_${contentPosition}_${1 + key}`
-                      ]?.content ??
-                      contentSelectedType?.[
-                        `1_link_${contentPosition}_${1 + key}`
-                      ]?.content}
-                  </Box>
-                ))}
+                          contentSelectedType?.[
+                            `1_text_${contentPosition}_${next}`
+                          ]?.content ??
+                          contentSelectedType?.[
+                            `1_image_${contentPosition}_${next}`
+                          ]?.content ??
+                          contentSelectedType?.[
+                            `1_link_${contentPosition}_${next}`
+                          ]?.content}
+                      </Box>
+                    );
+                  }
+                })}
               </Box>
             )}
 
@@ -2098,17 +2198,38 @@ function Home(props) {
                 <Box style={{ width: "50%" }}>
                   {[...new Array(leftColumnLength)].map((item, key) => {
                     const next = 1 + key;
-                    return (
-                      <Box
-                        sx={{
-                          border: "3px dashed #00a3d3",
-                          borderRadius: "10px",
-                        }}
-                        style={{
-                          // width: "100%",
-                          minHeight:
-                            contentSelectedType?.[`2_button_left_${next}`]
-                              ?.content ??
+
+                    if (
+                      !leftElementDeleteList.find(
+                        (items) => items === `left_${next}`
+                      )
+                    ) {
+                      return (
+                        <Box
+                          sx={{
+                            border: "3px dashed #00a3d3",
+                            borderRadius: "10px",
+                          }}
+                          style={{
+                            // width: "100%",
+                            minHeight:
+                              contentSelectedType?.[`2_button_left_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_text_left_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_image_left_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_link_left_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[
+                                `2_${contentType2?.left}_left_${next}`
+                              ]?.content
+                                ? "0px"
+                                : "380px",
+                          }}
+                        >
+                          {contentSelectedType?.[`2_button_left_${next}`]
+                            ?.content ??
                             contentSelectedType?.[`2_text_left_${next}`]
                               ?.content ??
                             contentSelectedType?.[`2_image_left_${next}`]
@@ -2117,41 +2238,47 @@ function Home(props) {
                               ?.content ??
                             contentSelectedType?.[
                               `2_${contentType2?.left}_left_${next}`
-                            ]?.content
-                              ? "0px"
-                              : "380px",
-                        }}
-                      >
-                        {contentSelectedType?.[`2_button_left_${next}`]
-                          ?.content ??
-                          contentSelectedType?.[`2_text_left_${next}`]
-                            ?.content ??
-                          contentSelectedType?.[`2_image_left_${next}`]
-                            ?.content ??
-                          contentSelectedType?.[`2_link_left_${next}`]
-                            ?.content ??
-                          contentSelectedType?.[
-                            `2_${contentType2?.left}_left_${next}`
-                          ]?.content}
-                      </Box>
-                    );
+                            ]?.content}
+                        </Box>
+                      );
+                    }
                   })}
                 </Box>
                 <Box style={{ width: "50%" }}>
                   {[...new Array(rightColumnLength)].map((item, key) => {
                     const next = 1 + key;
 
-                    return (
-                      <Box
-                        sx={{
-                          border: "3px dashed #00a3d3",
-                          borderRadius: "10px",
-                        }}
-                        style={{
-                          // width: "50%",
-                          minHeight:
-                            contentSelectedType?.[`2_button_right_${next}`]
-                              ?.content ??
+                    if (
+                      !leftElementDeleteList.find(
+                        (items) => items === `right_${next}`
+                      )
+                    ) {
+                      return (
+                        <Box
+                          sx={{
+                            border: "3px dashed #00a3d3",
+                            borderRadius: "10px",
+                          }}
+                          style={{
+                            // width: "50%",
+                            minHeight:
+                              contentSelectedType?.[`2_button_right_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_text_right_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_image_right_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_link_right_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[
+                                `2_${contentType2?.right}_right_${next}`
+                              ]?.content
+                                ? "0px"
+                                : "380px",
+                          }}
+                        >
+                          {contentSelectedType?.[`2_button_right_${next}`]
+                            ?.content ??
                             contentSelectedType?.[`2_text_right_${next}`]
                               ?.content ??
                             contentSelectedType?.[`2_image_right_${next}`]
@@ -2160,115 +2287,11 @@ function Home(props) {
                               ?.content ??
                             contentSelectedType?.[
                               `2_${contentType2?.right}_right_${next}`
-                            ]?.content
-                              ? "0px"
-                              : "380px",
-                        }}
-                      >
-                        {contentSelectedType?.[`2_button_right_${next}`]
-                          ?.content ??
-                          contentSelectedType?.[`2_text_right_${next}`]
-                            ?.content ??
-                          contentSelectedType?.[`2_image_right_${next}`]
-                            ?.content ??
-                          contentSelectedType?.[`2_link_right_${next}`]
-                            ?.content ??
-                          contentSelectedType?.[
-                            `2_${contentType2?.right}_right_${next}`
-                          ]?.content}
-                      </Box>
-                    );
+                            ]?.content}
+                        </Box>
+                      );
+                    }
                   })}
-                </Box>
-              </Box>
-            )}
-
-            {isInsert && selectedType === 3 && (
-              <Box
-                id="content_tipe_3"
-                sx={{
-                  backgroundColor: "rgb(193, 193, 193)",
-                  border: "3px dashed #00a3d3",
-                  borderRadius: "10px",
-                }}
-                style={{
-                  minHeight: "50%",
-                  width: "100%",
-                  padding: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
-                  ...styleLayout,
-                }}
-              >
-                <Box
-                  sx={{
-                    border: "3px dashed #00a3d3",
-                    borderRadius: "10px",
-                  }}
-                  style={{
-                    width: "50%",
-                    minHeight: "380px",
-                  }}
-                >
-                  {contentSelectedType?.[`3_${contentType}_left`]?.content}
-                </Box>
-                <Box
-                  sx={{
-                    border: "3px dashed #00a3d3",
-                    borderRadius: "10px",
-                  }}
-                  style={{
-                    width: "50%",
-                    minHeight: "380px",
-                  }}
-                >
-                  {contentSelectedType?.[`3_${contentType}_right`]?.content}
-                </Box>
-              </Box>
-            )}
-
-            {isInsert && selectedType === 4 && (
-              <Box
-                id="content_tipe_4"
-                sx={{
-                  backgroundColor: "rgb(193, 193, 193)",
-                  border: "3px dashed #00a3d3",
-                  borderRadius: "10px",
-                }}
-                style={{
-                  minHeight: "50%",
-                  width: "100%",
-                  padding: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
-                  ...styleLayout,
-                }}
-              >
-                <Box
-                  sx={{
-                    border: "3px dashed #00a3d3",
-                    borderRadius: "10px",
-                  }}
-                  style={{
-                    width: "50%",
-                    minHeight: "380px",
-                  }}
-                >
-                  {contentSelectedType?.[`4_${contentType}_left`]?.content}
-                </Box>
-                <Box
-                  sx={{
-                    border: "3px dashed #00a3d3",
-                    borderRadius: "10px",
-                  }}
-                  style={{
-                    width: "50%",
-                    minHeight: "380px",
-                  }}
-                >
-                  {contentSelectedType?.[`4_${contentType}_right`]?.content}
                 </Box>
               </Box>
             )}
