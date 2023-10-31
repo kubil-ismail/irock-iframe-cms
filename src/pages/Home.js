@@ -989,7 +989,8 @@ function Home(props) {
                                 >
                                   {contentSelectedType?.[
                                     `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
-                                  ]?.content?.props?.children ?? {}}
+                                  ]?.content?.props?.children ??
+                                    "insert content"}
                                 </button>
                               ),
                               event: {},
@@ -1093,12 +1094,6 @@ function Home(props) {
                                 "image",
                             },
                           });
-
-                          console.log(`${selectedType}_image_${contentPosition}_${leftColumnSelected}`)
-                          console.log( contentSelectedType?.[
-                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
-                                    ])
-
                           HandleContent({
                             layout: selectedType,
                             position: contentPosition,
@@ -1257,6 +1252,11 @@ function Home(props) {
                           margin="dense"
                           multiline
                           rows={4}
+                          defaultValue={
+                            contentSelectedType?.[
+                              `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                            ]?.content?.props?.children ?? ""
+                          }
                           onChange={(e) =>
                             handleChangeContent(
                               <button
@@ -1285,6 +1285,12 @@ function Home(props) {
                               });
                             }}
                             label="Letter Case"
+                            efaultValue={
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.textTransform
+                            }
+                            d
                           >
                             <MenuItem value="uppercase">Uppercase</MenuItem>
                             <MenuItem value="capitalize">Capitalize</MenuItem>
@@ -1297,6 +1303,11 @@ function Home(props) {
                           label="Background Color"
                           margin="dense"
                           type="color"
+                          defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.backgroundColor
+                          }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
@@ -1316,6 +1327,11 @@ function Home(props) {
                           label="Text Color"
                           margin="dense"
                           type="color"
+                          defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.color
+                          }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
@@ -1332,6 +1348,11 @@ function Home(props) {
                           <InputLabel id="Style">Style</InputLabel>
                           <Select
                             labelId="Style"
+                            defaultValue={
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.styleButton
+                            }
                             onChange={(e) => {
                               if (e.target.value === "Outline") {
                                 handleChangeStyle({
@@ -1339,6 +1360,7 @@ function Home(props) {
                                     `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                   ] ?? {}),
                                   ...{
+                                    styleButton: "Outline",
                                     backgroundColor: "transparent",
                                     border: "1px solid",
                                   },
@@ -1349,6 +1371,7 @@ function Home(props) {
                                     `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                   ] ?? {}),
                                   ...{
+                                    styleButton: "Default",
                                     backgroundColor: "white",
                                     border: "none",
                                   },
@@ -1359,6 +1382,7 @@ function Home(props) {
                                     `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                   ] ?? {}),
                                   ...{
+                                    styleButton: "Simple",
                                     backgroundColor: "transparent",
                                     border: "none",
                                   },
