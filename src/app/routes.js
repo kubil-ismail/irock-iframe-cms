@@ -7,6 +7,11 @@ const Routes = [
     component: lazy(() => import("pages/Home")),
     name: "Home",
   },
+  // {
+  //   path: "/edit2/:language/:pageSection/:id",
+  //   component: lazy(() => import("pages/Edit")),
+  //   name: "Edit",
+  // },
   {
     path: "/edit/:language/:section/:id",
     component: lazy(() => import("pages/EditCard")),
