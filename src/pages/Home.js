@@ -194,7 +194,10 @@ function Home(props) {
           showConfirmButton: false,
         });
 
-        window.parent.postMessage({ type: 'saveComplete', section: pageSection }, '*');;
+        window.parent.postMessage(
+          { type: "saveComplete", section: pageSection },
+          "*"
+        );
       });
   };
 
@@ -851,8 +854,7 @@ function Home(props) {
                     </Grid>
                   </Grid>
                 </>
-                )
-              }
+              )}
 
               {/* Column Option Right */}
               {isInsert && isOnForm && onFormType === "column_option_right" && (
@@ -925,8 +927,7 @@ function Home(props) {
                     </Grid>
                   </Grid>
                 </>
-                )
-              }
+              )}
 
               {/* Element step 3 */}
               {isInsert && isOnForm && onFormType === "element" && (
@@ -978,7 +979,19 @@ function Home(props) {
                             value: {
                               position: `${contentPosition}_${leftColumnSelected}`,
                               style: {},
-                              content: <button>test</button>,
+                              content: (
+                                <button
+                                  style={
+                                    contentSelectedType?.[
+                                      `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                                    ]?.content?.props?.style ?? {}
+                                  }
+                                >
+                                  {contentSelectedType?.[
+                                    `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                                  ]?.content?.props?.children ?? {}}
+                                </button>
+                              ),
                               event: {},
                             },
                           });
@@ -1027,7 +1040,19 @@ function Home(props) {
                             value: {
                               position: `${contentPosition}_${leftColumnSelected}`,
                               style: {},
-                              content: <p>test</p>,
+                              content: (
+                                <p
+                                  style={
+                                    contentSelectedType?.[
+                                      `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                                    ]?.content?.props?.style ?? {}
+                                  }
+                                >
+                                  {contentSelectedType?.[
+                                    `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                                  ]?.content?.props?.children ?? "Test"}
+                                </p>
+                              ),
                               event: {},
                             },
                           });
@@ -1069,6 +1094,11 @@ function Home(props) {
                             },
                           });
 
+                          console.log(`${selectedType}_image_${contentPosition}_${leftColumnSelected}`)
+                          console.log( contentSelectedType?.[
+                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                                    ])
+
                           HandleContent({
                             layout: selectedType,
                             position: contentPosition,
@@ -1077,7 +1107,20 @@ function Home(props) {
                               position: `${contentPosition}_${leftColumnSelected}`,
                               style: {},
                               content: (
-                                <img src="https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png" />
+                                <img
+                                  style={
+                                    contentSelectedType?.[
+                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                                    ]?.content?.props?.style ?? {}
+                                  }
+                                  alt="image"
+                                  src={
+                                    contentSelectedType?.[
+                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                                    ]?.content?.props?.src ??
+                                    "https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png"
+                                  }
+                                />
                               ),
                               event: {},
                             },
@@ -1127,7 +1170,20 @@ function Home(props) {
                             value: {
                               position: `${contentPosition}_${leftColumnSelected}`,
                               style: {},
-                              content: <a href="#">Link</a>,
+                              content: (
+                                <a
+                                  style={
+                                    contentSelectedType?.[
+                                      `${selectedType}_link_${contentPosition}_${leftColumnSelected}`
+                                    ]?.content?.props?.style ?? {}
+                                  }
+                                  href="#"
+                                >
+                                  {contentSelectedType?.[
+                                    `${selectedType}_link_${contentPosition}_${leftColumnSelected}`
+                                  ]?.content?.props?.children ?? "Link"}
+                                </a>
+                              ),
                               event: {},
                             },
                           });
@@ -1183,138 +1239,141 @@ function Home(props) {
               )}
 
               {/* Button */}
-              {isInsert && isOnForm && onFormType === "content" && selectedFormType === 1 && (
-                <>
-                  <Box pr={2}>
-                    <Typography variant="h6" sx={{ mt: 2 }}>
-                      Button
-                    </Typography>
+              {isInsert &&
+                isOnForm &&
+                onFormType === "content" &&
+                selectedFormType === 1 && (
+                  <>
+                    <Box pr={2}>
+                      <Typography variant="h6" sx={{ mt: 2 }}>
+                        Button
+                      </Typography>
 
-                    <Box mt={1} mb={2}>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Text"
-                        margin="dense"
-                        multiline
-                        rows={4}
-                        onChange={(e) =>
-                          handleChangeContent(
-                            <button
-                              style={
-                                styleSelectedType?.[
+                      <Box mt={1} mb={2}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Text"
+                          margin="dense"
+                          multiline
+                          rows={4}
+                          onChange={(e) =>
+                            handleChangeContent(
+                              <button
+                                style={
+                                  styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ]
+                                }
+                              >
+                                {e.target.value}
+                              </button>
+                            )
+                          }
+                        />
+
+                        <FormControl size="small" margin="dense" fullWidth>
+                          <InputLabel id="Letter_case">Letter Case</InputLabel>
+                          <Select
+                            labelId="Letter_case"
+                            onChange={(e) => {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
                                   `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                ]
-                              }
-                            >
-                              {e.target.value}
-                            </button>
-                          )
-                        }
-                      />
+                                ] ?? {}),
+                                ...{ textTransform: e.target.value },
+                              });
+                            }}
+                            label="Letter Case"
+                          >
+                            <MenuItem value="uppercase">Uppercase</MenuItem>
+                            <MenuItem value="capitalize">Capitalize</MenuItem>
+                          </Select>
+                        </FormControl>
 
-                      <FormControl size="small" margin="dense" fullWidth>
-                        <InputLabel id="Letter_case">Letter Case</InputLabel>
-                        <Select
-                          labelId="Letter_case"
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Background Color"
+                          margin="dense"
+                          type="color"
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
                                 `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
-                              ...{ textTransform: e.target.value },
+                              ...{
+                                backgroundColor: e.target.value,
+                                borderColor: e.target.value,
+                              },
                             });
                           }}
-                          label="Letter Case"
-                        >
-                          <MenuItem value="uppercase">Uppercase</MenuItem>
-                          <MenuItem value="capitalize">Capitalize</MenuItem>
-                        </Select>
-                      </FormControl>
+                        />
 
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Background Color"
-                        margin="dense"
-                        type="color"
-                        onChange={(e) => {
-                          handleChangeStyle({
-                            ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                            ] ?? {}),
-                            ...{
-                              backgroundColor: e.target.value,
-                              borderColor: e.target.value,
-                            },
-                          });
-                        }}
-                      />
-
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Text Color"
-                        margin="dense"
-                        type="color"
-                        onChange={(e) => {
-                          handleChangeStyle({
-                            ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                            ] ?? {}),
-                            ...{
-                              color: e.target.value,
-                            },
-                          });
-                        }}
-                      />
-
-                      <FormControl size="small" margin="dense" fullWidth>
-                        <InputLabel id="Style">Style</InputLabel>
-                        <Select
-                          labelId="Style"
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Text Color"
+                          margin="dense"
+                          type="color"
                           onChange={(e) => {
-                            if (e.target.value === "Outline") {
-                              handleChangeStyle({
-                                ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                ] ?? {}),
-                                ...{
-                                  backgroundColor: "transparent",
-                                  border: "1px solid",
-                                },
-                              });
-                            } else if (e.target.value === "Default") {
-                              handleChangeStyle({
-                                ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                ] ?? {}),
-                                ...{
-                                  backgroundColor: "white",
-                                  border: "none",
-                                },
-                              });
-                            } else {
-                              handleChangeStyle({
-                                ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                ] ?? {}),
-                                ...{
-                                  backgroundColor: "transparent",
-                                  border: "none",
-                                },
-                              });
-                            }
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ] ?? {}),
+                              ...{
+                                color: e.target.value,
+                              },
+                            });
                           }}
-                          label="Style"
-                        >
-                          <MenuItem value="Default">Default</MenuItem>
-                          <MenuItem value="Outline">Outline</MenuItem>
-                          <MenuItem value="Simple">Simple</MenuItem>
-                        </Select>
-                      </FormControl>
+                        />
 
-                      {/* <FormControl size="small" margin="dense" fullWidth>
+                        <FormControl size="small" margin="dense" fullWidth>
+                          <InputLabel id="Style">Style</InputLabel>
+                          <Select
+                            labelId="Style"
+                            onChange={(e) => {
+                              if (e.target.value === "Outline") {
+                                handleChangeStyle({
+                                  ...(styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{
+                                    backgroundColor: "transparent",
+                                    border: "1px solid",
+                                  },
+                                });
+                              } else if (e.target.value === "Default") {
+                                handleChangeStyle({
+                                  ...(styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{
+                                    backgroundColor: "white",
+                                    border: "none",
+                                  },
+                                });
+                              } else {
+                                handleChangeStyle({
+                                  ...(styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                  },
+                                });
+                              }
+                            }}
+                            label="Style"
+                          >
+                            <MenuItem value="Default">Default</MenuItem>
+                            <MenuItem value="Outline">Outline</MenuItem>
+                            <MenuItem value="Simple">Simple</MenuItem>
+                          </Select>
+                        </FormControl>
+
+                        {/* <FormControl size="small" margin="dense" fullWidth>
                       <InputLabel id="Size">Size</InputLabel>
                       <Select labelId="Size" label="Size">
                         <MenuItem value={true}>XX-Small</MenuItem>
@@ -1329,74 +1388,288 @@ function Home(props) {
                       </Select>
                     </FormControl> */}
 
-                      <Typography sx={{ mt: 1 }}>Padding</Typography>
-                      <Box display="flex" gap={1}>
+                        <Typography sx={{ mt: 1 }}>Padding</Typography>
+                        <Box display="flex" gap={1}>
+                          <TextField
+                            size="small"
+                            label="Top"
+                            margin="dense"
+                            variant="outlined"
+                            type="number"
+                            onChange={(e) => {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ] ?? {}),
+                                ...{ paddingTop: `${e.target.value}px` },
+                              });
+                            }}
+                          />
+                          <TextField
+                            size="small"
+                            label="Right"
+                            margin="dense"
+                            variant="outlined"
+                            type="number"
+                            onChange={(e) => {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ] ?? {}),
+                                ...{ paddingRight: `${e.target.value}px` },
+                              });
+                            }}
+                          />
+                          <TextField
+                            size="small"
+                            label="Bottom"
+                            margin="dense"
+                            variant="outlined"
+                            type="number"
+                            onChange={(e) => {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ] ?? {}),
+                                ...{ paddingBottom: `${e.target.value}px` },
+                              });
+                            }}
+                          />
+                          <TextField
+                            size="small"
+                            label="Left"
+                            margin="dense"
+                            variant="outlined"
+                            type="number"
+                            onChange={(e) => {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ] ?? {}),
+                                ...{ paddingLeft: `${e.target.value}px` },
+                              });
+                            }}
+                          />
+                        </Box>
+
                         <TextField
+                          fullWidth
                           size="small"
-                          label="Top"
+                          label="Radius"
                           margin="dense"
+                          type="range"
                           variant="outlined"
-                          type="number"
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
                                 `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
-                              ...{ paddingTop: `${e.target.value}px` },
+                              ...{ borderRadius: `${e.target.value}px` },
                             });
                           }}
                         />
+
+                        <FormControl size="small" margin="dense" fullWidth>
+                          <InputLabel id="Expand">Expand</InputLabel>
+                          <Select
+                            labelId="Expand"
+                            label="Expand"
+                            onChange={(e) => {
+                              handleChangeStyle({
+                                ...(styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ] ?? {}),
+                                ...{
+                                  width:
+                                    e.target.value === true ? "100%" : "unset",
+                                },
+                              });
+                            }}
+                          >
+                            <MenuItem value={true}>True</MenuItem>
+                            <MenuItem value={false}>False</MenuItem>
+                          </Select>
+                        </FormControl>
+
                         <TextField
+                          fullWidth
                           size="small"
-                          label="Right"
+                          label="Link"
                           margin="dense"
                           variant="outlined"
-                          type="number"
                           onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
+                            handleChangeEvent({
+                              ...(eventSelectedType?.[
                                 `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
-                              ...{ paddingRight: `${e.target.value}px` },
+                              ...{ link: e.target.value },
                             });
                           }}
                         />
-                        <TextField
-                          size="small"
-                          label="Bottom"
-                          margin="dense"
-                          variant="outlined"
-                          type="number"
-                          onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ paddingBottom: `${e.target.value}px` },
-                            });
-                          }}
-                        />
-                        <TextField
-                          size="small"
-                          label="Left"
-                          margin="dense"
-                          variant="outlined"
-                          type="number"
-                          onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ paddingLeft: `${e.target.value}px` },
-                            });
-                          }}
-                        />
+
+                        <FormControl size="small" margin="dense" fullWidth>
+                          <InputLabel id="Target">Target</InputLabel>
+                          <Select
+                            labelId="Target"
+                            onChange={(e) => {
+                              handleChangeEvent({
+                                ...(eventSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ] ?? {}),
+                                ...{ target: e.target.value },
+                              });
+                            }}
+                            label="Target"
+                          >
+                            <MenuItem value="_self">Same window</MenuItem>
+                            <MenuItem value="_blank">New window</MenuItem>
+                          </Select>
+                        </FormControl>
                       </Box>
 
+                      <Typography variant="h6">Options</Typography>
+
+                      <Box my={1}>
+                        <FormControl size="small" fullWidth>
+                          <InputLabel id="visibility">Visibility</InputLabel>
+                          <Select
+                            labelId="visibility"
+                            label="Visibility"
+                            onChange={(e) => {
+                              if (e.target.value === true) {
+                                handleChangeStyle({
+                                  ...(styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{
+                                    display: "block",
+                                    visibility: "inherit",
+                                  },
+                                });
+                              } else {
+                                handleChangeStyle({
+                                  ...(styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{
+                                    display: "none",
+                                    visibility: "hidden",
+                                  },
+                                });
+                              }
+                            }}
+                          >
+                            <MenuItem value={true}>Visible</MenuItem>
+                            <MenuItem value={false}>Hidden</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          borderTop: "2px solid rgb(56 56 56 / 14%)",
+                          mt: 3,
+                          width: "98%",
+                          mb: 2,
+                        }}
+                      />
+
+                      <Grid
+                        container
+                        gap={1}
+                        justifyContent="space-between"
+                        px={1}
+                      >
+                        <Grid item md={5}>
+                          <Button
+                            sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                            fullWidth
+                            onClick={() => {
+                              setOnFormType("element");
+                            }}
+                          >
+                            Discard
+                          </Button>
+                        </Grid>
+                        <Grid item md={5}>
+                          <Button
+                            sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                            fullWidth
+                            disabled={selectedFormType === 0}
+                            onClick={() => {
+                              setOnFormType("options");
+
+                              if (contentPosition === "left") {
+                                setContentType2({
+                                  left: "button",
+                                  right: contentType2.right,
+                                });
+                              } else {
+                                setContentType2({
+                                  right: "button",
+                                  left: contentType2.left,
+                                });
+                              }
+                            }}
+                          >
+                            Apply
+                          </Button>
+                        </Grid>
+                        <Grid item md={5}>
+                          <Button
+                            sx={{ border: "1px solid #a0a5aa", color: "#555" }}
+                            fullWidth
+                            disabled={selectedFormType === 0}
+                            onClick={() => {
+                              setIsOnForm(true);
+                              setOnFormType("content");
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  </>
+                )}
+
+              {/* Typhography */}
+              {isInsert &&
+                isOnForm &&
+                onFormType === "content" &&
+                selectedFormType === 2 && (
+                  <Box pr={2}>
+                    <Typography variant="h6" sx={{ mt: 2 }}>
+                      Text
+                    </Typography>
+
+                    <Box mt={1} mb={2}>
                       <TextField
                         fullWidth
                         size="small"
-                        label="Radius"
+                        label="Content"
+                        margin="dense"
+                        multiline
+                        rows={4}
+                        onChange={(e) => {
+                          handleChangeContent(
+                            <p
+                              style={{
+                                ...styleSelectedType?.[
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                ],
+                                margin: 0,
+                              }}
+                            >
+                              {e.target.value}
+                            </p>
+                          );
+                        }}
+                      />
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Font Size"
                         margin="dense"
                         type="range"
                         variant="outlined"
@@ -1405,67 +1678,62 @@ function Home(props) {
                             ...(styleSelectedType?.[
                               `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
-                            ...{ borderRadius: `${e.target.value}px` },
+                            ...{ fontSize: `${e.target.value}px` },
                           });
                         }}
                       />
-
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Line Height"
+                        margin="dense"
+                        type="range"
+                        variant="outlined"
+                        onChange={(e) => {
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ] ?? {}),
+                            ...{ lineHeight: `${e.target.value}px`, margin: 0 },
+                          });
+                        }}
+                      />
                       <FormControl size="small" margin="dense" fullWidth>
-                        <InputLabel id="Expand">Expand</InputLabel>
+                        <InputLabel id="text_align">Text Align</InputLabel>
                         <Select
-                          labelId="Expand"
-                          label="Expand"
+                          labelId="text_align"
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
                                 `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ] ?? {}),
-                              ...{
-                                width:
-                                  e.target.value === true ? "100%" : "unset",
-                              },
+                              ...{ textAlign: e.target.value },
                             });
                           }}
+                          label="Text Align"
                         >
-                          <MenuItem value={true}>True</MenuItem>
-                          <MenuItem value={false}>False</MenuItem>
+                          <MenuItem value="unset">None</MenuItem>
+                          <MenuItem value="left">Left</MenuItem>
+                          <MenuItem value="center">Center</MenuItem>
+                          <MenuItem value="right">Right</MenuItem>
                         </Select>
                       </FormControl>
-
                       <TextField
                         fullWidth
                         size="small"
-                        label="Link"
+                        label="Text Color"
                         margin="dense"
+                        type="color"
                         variant="outlined"
                         onChange={(e) => {
-                          handleChangeEvent({
-                            ...(eventSelectedType?.[
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[
                               `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                             ] ?? {}),
-                            ...{ link: e.target.value },
+                            ...{ color: e.target.value },
                           });
                         }}
                       />
-
-                      <FormControl size="small" margin="dense" fullWidth>
-                        <InputLabel id="Target">Target</InputLabel>
-                        <Select
-                          labelId="Target"
-                          onChange={(e) => {
-                            handleChangeEvent({
-                              ...(eventSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ target: e.target.value },
-                            });
-                          }}
-                          label="Target"
-                        >
-                          <MenuItem value="_self">Same window</MenuItem>
-                          <MenuItem value="_blank">New window</MenuItem>
-                        </Select>
-                      </FormControl>
                     </Box>
 
                     <Typography variant="h6">Options</Typography>
@@ -1475,7 +1743,6 @@ function Home(props) {
                         <InputLabel id="visibility">Visibility</InputLabel>
                         <Select
                           labelId="visibility"
-                          label="Visibility"
                           onChange={(e) => {
                             if (e.target.value === true) {
                               handleChangeStyle({
@@ -1499,6 +1766,7 @@ function Home(props) {
                               });
                             }
                           }}
+                          label="Visibility"
                         >
                           <MenuItem value={true}>Visible</MenuItem>
                           <MenuItem value={false}>Hidden</MenuItem>
@@ -1542,12 +1810,12 @@ function Home(props) {
 
                             if (contentPosition === "left") {
                               setContentType2({
-                                left: "button",
+                                left: "text",
                                 right: contentType2.right,
                               });
                             } else {
                               setContentType2({
-                                right: "button",
+                                right: "text",
                                 left: contentType2.left,
                               });
                             }
@@ -1556,218 +1824,14 @@ function Home(props) {
                           Apply
                         </Button>
                       </Grid>
-                      <Grid item md={5}>
-                        <Button
-                          sx={{ border: "1px solid #a0a5aa", color: "#555" }}
-                          fullWidth
-                          disabled={selectedFormType === 0}
-                          onClick={() => {
-                            setIsOnForm(true);
-                            setOnFormType("content");
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </Grid>
                     </Grid>
                   </Box>
-                </>
-              )}
-
-              {/* Typhography */}
-              {isInsert && isOnForm && onFormType === "content" && selectedFormType === 2 && (
-                <Box pr={2}>
-                  <Typography variant="h6" sx={{ mt: 2 }}>
-                    Text
-                  </Typography>
-
-                  <Box mt={1} mb={2}>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Content"
-                      margin="dense"
-                      multiline
-                      rows={4}
-                      onChange={(e) => {
-                        handleChangeContent(
-                          <p
-                            style={{
-                              ...styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ],
-                              margin: 0,
-                            }}
-                          >
-                            {e.target.value}
-                          </p>
-                        );
-                      }}
-                    />
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Font Size"
-                      margin="dense"
-                      type="range"
-                      variant="outlined"
-                      onChange={(e) => {
-                        handleChangeStyle({
-                          ...(styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                          ] ?? {}),
-                          ...{ fontSize: `${e.target.value}px` },
-                        });
-                      }}
-                    />
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Line Height"
-                      margin="dense"
-                      type="range"
-                      variant="outlined"
-                      onChange={(e) => {
-                        handleChangeStyle({
-                          ...(styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                          ] ?? {}),
-                          ...{ lineHeight: `${e.target.value}px`, margin: 0 },
-                        });
-                      }}
-                    />
-                    <FormControl size="small" margin="dense" fullWidth>
-                      <InputLabel id="text_align">Text Align</InputLabel>
-                      <Select
-                        labelId="text_align"
-                        onChange={(e) => {
-                          handleChangeStyle({
-                            ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                            ] ?? {}),
-                            ...{ textAlign: e.target.value },
-                          });
-                        }}
-                        label="Text Align"
-                      >
-                        <MenuItem value="unset">None</MenuItem>
-                        <MenuItem value="left">Left</MenuItem>
-                        <MenuItem value="center">Center</MenuItem>
-                        <MenuItem value="right">Right</MenuItem>
-                      </Select>
-                    </FormControl>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      label="Text Color"
-                      margin="dense"
-                      type="color"
-                      variant="outlined"
-                      onChange={(e) => {
-                        handleChangeStyle({
-                          ...(styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                          ] ?? {}),
-                          ...{ color: e.target.value },
-                        });
-                      }}
-                    />
-                  </Box>
-
-                  <Typography variant="h6">Options</Typography>
-
-                  <Box my={1}>
-                    <FormControl size="small" fullWidth>
-                      <InputLabel id="visibility">Visibility</InputLabel>
-                      <Select
-                        labelId="visibility"
-                        onChange={(e) => {
-                          if (e.target.value === true) {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{
-                                display: "block",
-                                visibility: "inherit",
-                              },
-                            });
-                          } else {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{
-                                display: "none",
-                                visibility: "hidden",
-                              },
-                            });
-                          }
-                        }}
-                        label="Visibility"
-                      >
-                        <MenuItem value={true}>Visible</MenuItem>
-                        <MenuItem value={false}>Hidden</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Box>
-
-                  <Box
-                    sx={{
-                      borderTop: "2px solid rgb(56 56 56 / 14%)",
-                      mt: 3,
-                      width: "98%",
-                      mb: 2,
-                    }}
-                  />
-
-                  <Grid
-                    container
-                    gap={1}
-                    justifyContent="space-between"
-                    px={1}
-                  >
-                    <Grid item md={5}>
-                      <Button
-                        sx={{ border: "1px solid #a0a5aa", color: "#555" }}
-                        fullWidth
-                        onClick={() => {
-                          setOnFormType("element");
-                        }}
-                      >
-                        Discard
-                      </Button>
-                    </Grid>
-                    <Grid item md={5}>
-                      <Button
-                        sx={{ border: "1px solid #a0a5aa", color: "#555" }}
-                        fullWidth
-                        disabled={selectedFormType === 0}
-                        onClick={() => {
-                          setOnFormType("options");
-
-                          if (contentPosition === "left") {
-                            setContentType2({
-                              left: "text",
-                              right: contentType2.right,
-                            });
-                          } else {
-                            setContentType2({
-                              right: "text",
-                              left: contentType2.left,
-                            });
-                          }
-                        }}
-                      >
-                        Apply
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Box>
-              )}
+                )}
 
               {/* Media */}
-              {isInsert && isOnForm && onFormType === "content" &&
+              {isInsert &&
+                isOnForm &&
+                onFormType === "content" &&
                 selectedFormType === 3 && (
                   <>
                     <Box pr={2}>
@@ -2029,7 +2093,9 @@ function Home(props) {
                 )}
 
               {/* Link */}
-              {isInsert && isOnForm && onFormType === "content" &&
+              {isInsert &&
+                isOnForm &&
+                onFormType === "content" &&
                 selectedFormType === 4 && (
                   <Box pr={2}>
                     <Typography variant="h6" sx={{ mt: 2 }}>
@@ -2350,7 +2416,7 @@ function Home(props) {
                 //   gap: 2,
                 //   ...styleLayout,
                 // }}
-                style={{ 
+                style={{
                   width: "100%",
                   overflow: "hidden",
                   display: "flex",
@@ -2361,7 +2427,14 @@ function Home(props) {
                   ...styleLayout,
                 }}
               >
-                <Box style={{ width: "100%", maxWidth: "480px", padding: "0px 20px 20px" }}>
+                <Box
+                  id="leftKolom"
+                  style={{
+                    width: "100%",
+                    maxWidth: "480px",
+                    padding: "0px 20px 20px",
+                  }}
+                >
                   {[...new Array(leftColumnLength)].map((item, key) => {
                     const next = 1 + key;
 
@@ -2372,7 +2445,6 @@ function Home(props) {
                     ) {
                       return (
                         <Box
-                          id="leftKolom"
                           sx={{
                             border: "3px dashed #00a3d3",
                             borderRadius: "10px",
@@ -2380,24 +2452,46 @@ function Home(props) {
                           style={{
                             // width: "100%",
                             minHeight:
-                              contentSelectedType?.[`2_button_left_${next}`] ?.content ??
-                              contentSelectedType?.[`2_text_left_${next}`] ?.content ??
-                              contentSelectedType?.[`2_image_left_${next}`] ?.content ??
-                              contentSelectedType?.[`2_link_left_${next}`] ?.content ??
-                              contentSelectedType?.[`2_${contentType2?.left}_left_${next}`]?.content ? "0px" : "380px",
+                              contentSelectedType?.[`2_button_left_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_text_left_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_image_left_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[`2_link_left_${next}`]
+                                ?.content ??
+                              contentSelectedType?.[
+                                `2_${contentType2?.left}_left_${next}`
+                              ]?.content
+                                ? "0px"
+                                : "380px",
                           }}
                         >
-                          {contentSelectedType?.[`2_button_left_${next}`] ?.content ??
-                            contentSelectedType?.[`2_text_left_${next}`] ?.content ??
-                            contentSelectedType?.[`2_image_left_${next}`] ?.content ??
-                            contentSelectedType?.[`2_link_left_${next}`] ?.content ??
-                            contentSelectedType?.[`2_${contentType2?.left}_left_${next}`]?.content}
+                          {contentSelectedType?.[`2_button_left_${next}`]
+                            ?.content ??
+                            contentSelectedType?.[`2_text_left_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[`2_image_left_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[`2_link_left_${next}`]
+                              ?.content ??
+                            contentSelectedType?.[
+                              `2_${contentType2?.left}_left_${next}`
+                            ]?.content}
                         </Box>
                       );
                     }
                   })}
                 </Box>
-                <Box style={{ width: "100%", maxWidth: "480px", marginBottom: "20px", padding: "0px 20px", }}>
+                <Box
+                  style={{
+                    width: "100%",
+                    maxWidth: "480px",
+                    marginBottom: "20px",
+                    padding: "0px 20px",
+                  }}
+                  id="rightKolom"
+                >
                   {[...new Array(rightColumnLength)].map((item, key) => {
                     const next = 1 + key;
 
@@ -2408,7 +2502,6 @@ function Home(props) {
                     ) {
                       return (
                         <Box
-                          id="rightKolom"
                           sx={{
                             border: "3px dashed #00a3d3",
                             borderRadius: "10px",
