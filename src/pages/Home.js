@@ -2,21 +2,7 @@
 import React, { memo } from "react";
 import { connect } from "react-redux";
 import Box from "@mui/material/Box";
-import {
-  Button,
-  Grid,
-  ListItemButton,
-  List,
-  Typography,
-  TextField,
-  ListItemText,
-  Collapse,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Tooltip,
-} from "@mui/material";
+import { Switch, Button, Grid, ListItemButton, List, Typography, TextField, ListItemText, Collapse, FormControl, InputLabel, Select, MenuItem, Tooltip, FormGroup, FormControlLabel } from "@mui/material";
 import Swal from "sweetalert2";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
@@ -169,7 +155,7 @@ function Home(props) {
     } catch (error) {}
   };
 
-  const handleSave = async () => {
+  const handleSave2 = async () => {
     // Dapatkan elemen yang sesuai
     const contentElement = document.querySelector(
       `#content_tipe_${selectedType}`
@@ -178,8 +164,86 @@ function Home(props) {
     // Dapatkan konten teks dari elemen tersebut
     const contentText = contentElement.outerHTML;
 
-    http
-      .post("/ui-build/save-new-card", {
+    http.post("/ui-build/save-new-card", {
+      type: "card_v2",
+      title: cardName,
+      content: contentText,
+      section: pageSection,
+    })
+    .then(() => {
+      Swal.fire({
+        title: "",
+        html: "Success add card.",
+        icon: "success",
+        timer: 2000,
+        showCancelButton: false,
+        showConfirmButton: false,
+      });
+
+      window.parent.postMessage(
+        { type: "saveComplete", section: pageSection },
+        "*"
+      );
+    });
+  };
+
+  const handleSave = async () => {
+    if (showInFAQ) {
+      // jika show in FAQ ON
+      const divElement = document.createElement('div');
+      divElement.id = scrollId;
+      divElement.style.width = '100%';
+      divElement.style.height = '50px';
+      divElement.style.marginTop = '-50px';
+      divElement.innerHTML = '<div></div>';
+      const contentHTML = divElement.outerHTML;
+
+      const contentElement = document.querySelector(
+        `#content_tipe_${selectedType}`
+      );
+
+      const contentText = contentElement.outerHTML;
+
+      const newId = await http.post("/ui-build/save-new-card", {
+        type: "card_v2",
+        title: `#${scrollId}`,
+        content: contentHTML,
+        section: pageSection,
+        parameter: 'show_in_faq',
+        sharetext: cardName
+      });
+
+      http.post("/ui-build/save-new-card", {
+        type: "card_v2",
+        title: cardName,
+        content: contentText,
+        section: pageSection,
+      })
+        .then(() => {
+          Swal.fire({
+            title: "",
+            html: "Success add card.",
+            icon: "success",
+            timer: 2000,
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
+
+          window.parent.postMessage(
+            { type: "saveComplete", section: pageSection },
+            "*"
+          );
+        });
+
+    } else {
+      // jika show in FAQ off
+      const contentElement = document.querySelector(
+        `#content_tipe_${selectedType}`
+      );
+
+      const contentText = contentElement.outerHTML;
+
+      http.post("/ui-build/save-new-card", {
         type: "card_v2",
         title: cardName,
         content: contentText,
@@ -200,6 +264,7 @@ function Home(props) {
           "*"
         );
       });
+    }
   };
 
   const handleDeleteElement = (position, index) => {
@@ -404,6 +469,9 @@ function Home(props) {
     }));
   };
 
+  const [showInFAQ, setShowInFAQ] = React.useState(false);
+  const [scrollId, setScrollId] = React.useState('');
+
   console.log(contentSelectedType);
 
   return (
@@ -572,6 +640,35 @@ function Home(props) {
                       unmountOnExit
                       sx={{ p: 2 }}
                     >
+                      <Box mt={1} mb={2}>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={showInFAQ}
+                              onChange={(e) => setShowInFAQ(e.target.checked)}
+                              name="showInFAQ"
+                            />
+                          }
+                          label="Show in FAQ menu"
+                        />
+
+                        {showInFAQ && (
+                          <TextField
+                            fullWidth
+                            size="small"
+                            label="Scroll Id"
+                            value={scrollId}
+                            onChange={(e) => {
+                              const newValue = e.target.value
+                                .toLowerCase()
+                                .replace(/\s+/g, '-')
+                                .replace(/[^a-z0-9-]/g, '');
+                              setScrollId(newValue);
+                            }}
+                          />
+                        )}
+                      </Box>
+
                       <Typography variant="h6">Card Settings</Typography>
 
                       <Box mt={1} mb={2}>
@@ -2539,7 +2636,6 @@ function Home(props) {
                           <MenuItem value="underline">Underline</MenuItem>
                         </Select>
                       </FormControl>
-
                       <TextField
                         fullWidth
                         size="small"
@@ -2726,6 +2822,7 @@ function Home(props) {
                   ) {
                     return (
                       <Box
+                        // id="leftKolom"
                         sx={{
                           border: "3px dashed #00a3d3",
                           borderRadius: "10px",
