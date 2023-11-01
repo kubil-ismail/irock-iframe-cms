@@ -2,7 +2,24 @@
 import React, { memo } from "react";
 import { connect } from "react-redux";
 import Box from "@mui/material/Box";
-import { Switch, Button, Grid, ListItemButton, List, Typography, TextField, ListItemText, Collapse, FormControl, InputLabel, Select, MenuItem, Tooltip, FormGroup, FormControlLabel } from "@mui/material";
+import {
+  Switch,
+  Button,
+  Grid,
+  ListItemButton,
+  List,
+  Typography,
+  TextField,
+  ListItemText,
+  Collapse,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Tooltip,
+  FormGroup,
+  FormControlLabel,
+} from "@mui/material";
 import Swal from "sweetalert2";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
@@ -164,86 +181,8 @@ function Home(props) {
     // Dapatkan konten teks dari elemen tersebut
     const contentText = contentElement.outerHTML;
 
-    http.post("/ui-build/save-new-card", {
-      type: "card_v2",
-      title: cardName,
-      content: contentText,
-      section: pageSection,
-    })
-    .then(() => {
-      Swal.fire({
-        title: "",
-        html: "Success add card.",
-        icon: "success",
-        timer: 2000,
-        showCancelButton: false,
-        showConfirmButton: false,
-      });
-
-      window.parent.postMessage(
-        { type: "saveComplete", section: pageSection },
-        "*"
-      );
-    });
-  };
-
-  const handleSave = async () => {
-    if (showInFAQ) {
-      // jika show in FAQ ON
-      const divElement = document.createElement('div');
-      divElement.id = scrollId;
-      divElement.style.width = '100%';
-      divElement.style.height = '50px';
-      divElement.style.marginTop = '-50px';
-      divElement.innerHTML = '<div></div>';
-      const contentHTML = divElement.outerHTML;
-
-      const contentElement = document.querySelector(
-        `#content_tipe_${selectedType}`
-      );
-
-      const contentText = contentElement.outerHTML;
-
-      const newId = await http.post("/ui-build/save-new-card", {
-        type: "card_v2",
-        title: `#${scrollId}`,
-        content: contentHTML,
-        section: pageSection,
-        parameter: 'show_in_faq',
-        sharetext: cardName
-      });
-
-      http.post("/ui-build/save-new-card", {
-        type: "card_v2",
-        title: cardName,
-        content: contentText,
-        section: pageSection,
-      })
-        .then(() => {
-          Swal.fire({
-            title: "",
-            html: "Success add card.",
-            icon: "success",
-            timer: 2000,
-            showCancelButton: false,
-            showConfirmButton: false,
-          });
-
-          window.parent.postMessage(
-            { type: "saveComplete", section: pageSection },
-            "*"
-          );
-        });
-
-    } else {
-      // jika show in FAQ off
-      const contentElement = document.querySelector(
-        `#content_tipe_${selectedType}`
-      );
-
-      const contentText = contentElement.outerHTML;
-
-      http.post("/ui-build/save-new-card", {
+    http
+      .post("/ui-build/save-new-card", {
         type: "card_v2",
         title: cardName,
         content: contentText,
@@ -264,6 +203,86 @@ function Home(props) {
           "*"
         );
       });
+  };
+
+  const handleSave = async () => {
+    if (showInFAQ) {
+      // jika show in FAQ ON
+      const divElement = document.createElement("div");
+      divElement.id = scrollId;
+      divElement.style.width = "100%";
+      divElement.style.height = "50px";
+      divElement.style.marginTop = "-50px";
+      divElement.innerHTML = "<div></div>";
+      const contentHTML = divElement.outerHTML;
+
+      const contentElement = document.querySelector(
+        `#content_tipe_${selectedType}`
+      );
+
+      const contentText = contentElement.outerHTML;
+
+      const newId = await http.post("/ui-build/save-new-card", {
+        type: "card_v2",
+        title: `#${scrollId}`,
+        content: contentHTML,
+        section: pageSection,
+        parameter: "show_in_faq",
+        sharetext: cardName,
+      });
+
+      http
+        .post("/ui-build/save-new-card", {
+          type: "card_v2",
+          title: cardName,
+          content: contentText,
+          section: pageSection,
+        })
+        .then(() => {
+          Swal.fire({
+            title: "",
+            html: "Success add card.",
+            icon: "success",
+            timer: 2000,
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
+
+          window.parent.postMessage(
+            { type: "saveComplete", section: pageSection },
+            "*"
+          );
+        });
+    } else {
+      // jika show in FAQ off
+      const contentElement = document.querySelector(
+        `#content_tipe_${selectedType}`
+      );
+
+      const contentText = contentElement.outerHTML;
+
+      http
+        .post("/ui-build/save-new-card", {
+          type: "card_v2",
+          title: cardName,
+          content: contentText,
+          section: pageSection,
+        })
+        .then(() => {
+          Swal.fire({
+            title: "",
+            html: "Success add card.",
+            icon: "success",
+            timer: 2000,
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
+
+          window.parent.postMessage(
+            { type: "saveComplete", section: pageSection },
+            "*"
+          );
+        });
     }
   };
 
@@ -470,7 +489,7 @@ function Home(props) {
   };
 
   const [showInFAQ, setShowInFAQ] = React.useState(false);
-  const [scrollId, setScrollId] = React.useState('');
+  const [scrollId, setScrollId] = React.useState("");
 
   console.log(contentSelectedType);
 
@@ -661,8 +680,8 @@ function Home(props) {
                             onChange={(e) => {
                               const newValue = e.target.value
                                 .toLowerCase()
-                                .replace(/\s+/g, '-')
-                                .replace(/[^a-z0-9-]/g, '');
+                                .replace(/\s+/g, "-")
+                                .replace(/[^a-z0-9-]/g, "");
                               setScrollId(newValue);
                             }}
                           />
@@ -2054,11 +2073,11 @@ function Home(props) {
                         margin="dense"
                         type="range"
                         variant="outlined"
-                        defaultValue={
-                              parseInt(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ]?.fontSize?.replace("px", "") ?? 0)
-                            }
+                        defaultValue={parseInt(
+                          styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                          ]?.fontSize?.replace("px", "") ?? 0
+                        )}
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
@@ -2098,11 +2117,11 @@ function Home(props) {
                         margin="dense"
                         type="range"
                         variant="outlined"
-                        defaultValue={
-                            parseInt(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                            ]?.lineHeight?.replace("px", "") ?? 0)
-                          }
+                        defaultValue={parseInt(
+                          styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                          ]?.lineHeight?.replace("px", "") ?? 0
+                        )}
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
@@ -2145,10 +2164,10 @@ function Home(props) {
                         type="color"
                         variant="outlined"
                         defaultValue={
-                            styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                            ]?.color ?? ""
-                          }
+                          styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                          ]?.color ?? ""
+                        }
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
@@ -2310,9 +2329,11 @@ function Home(props) {
                           size="small"
                           label="Image from URL"
                           margin="dense"
-                          defaultValue={contentSelectedType?.[
-                            `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
-                          ]?.content?.props?.src ?? ""}
+                          defaultValue={
+                            contentSelectedType?.[
+                              `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                            ]?.content?.props?.src ?? ""
+                          }
                           variant="outlined"
                           onChange={(e) => {
                             handleChangeContent(
@@ -2339,6 +2360,11 @@ function Home(props) {
                           margin="dense"
                           type="range"
                           variant="outlined"
+                          defaultValue={parseInt(
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.width?.replace("%", "") ?? 0
+                          )}
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
