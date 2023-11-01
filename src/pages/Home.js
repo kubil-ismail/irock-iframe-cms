@@ -637,34 +637,36 @@ function Home(props) {
                       unmountOnExit
                       sx={{ p: 2 }}
                     >
-                      <Box mt={1} mb={2}>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              checked={showInFAQ}
-                              onChange={(e) => setShowInFAQ(e.target.checked)}
-                              name="showInFAQ"
-                            />
-                          }
-                          label="Show in FAQ menu"
-                        />
-
-                        {showInFAQ && (
-                          <TextField
-                            fullWidth
-                            size="small"
-                            label="Scroll Id"
-                            value={scrollId}
-                            onChange={(e) => {
-                              const newValue = e.target.value
-                                .toLowerCase()
-                                .replace(/\s+/g, '-')
-                                .replace(/[^a-z0-9-]/g, '');
-                              setScrollId(newValue);
-                            }}
+                      {pageSection === 'faq' && (
+                        <Box mt={1} mb={2}>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={showInFAQ}
+                                onChange={(e) => setShowInFAQ(e.target.checked)}
+                                name="showInFAQ"
+                              />
+                            }
+                            label="Show in FAQ menu"
                           />
-                        )}
-                      </Box>
+
+                          {showInFAQ && (
+                            <TextField
+                              fullWidth
+                              size="small"
+                              label="Scroll Id"
+                              value={scrollId}
+                              onChange={(e) => {
+                                const newValue = e.target.value
+                                  .toLowerCase()
+                                  .replace(/\s+/g, '-')
+                                  .replace(/[^a-z0-9-]/g, '');
+                                setScrollId(newValue);
+                              }}
+                            />
+                          )}
+                        </Box>
+                      )}
 
                       <Typography variant="h6">Card Settings</Typography>
 
