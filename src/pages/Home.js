@@ -2,7 +2,7 @@
 import React, { memo } from "react";
 import { connect } from "react-redux";
 import Box from "@mui/material/Box";
-import { Button, Grid, ListItemButton, List, Typography, TextField, ListItemText, Collapse, FormControl, InputLabel, Select, MenuItem, Tooltip } from "@mui/material";
+import { Switch, Button, Grid, ListItemButton, List, Typography, TextField, ListItemText, Collapse, FormControl, InputLabel, Select, MenuItem, Tooltip, FormGroup, FormControlLabel } from "@mui/material";
 import Swal from "sweetalert2";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
@@ -154,7 +154,7 @@ function Home(props) {
     } catch (error) {}
   };
 
-  const handleSave = async () => {
+  const handleSave2 = async () => {
     // Dapatkan elemen yang sesuai
     const contentElement = document.querySelector(
       `#content_tipe_${selectedType}`
@@ -163,8 +163,86 @@ function Home(props) {
     // Dapatkan konten teks dari elemen tersebut
     const contentText = contentElement.outerHTML;
 
-    http
-      .post("/ui-build/save-new-card", {
+    http.post("/ui-build/save-new-card", {
+      type: "card_v2",
+      title: cardName,
+      content: contentText,
+      section: pageSection,
+    })
+    .then(() => {
+      Swal.fire({
+        title: "",
+        html: "Success add card.",
+        icon: "success",
+        timer: 2000,
+        showCancelButton: false,
+        showConfirmButton: false,
+      });
+
+      window.parent.postMessage(
+        { type: "saveComplete", section: pageSection },
+        "*"
+      );
+    });
+  };
+
+  const handleSave = async () => {
+    if (showInFAQ) {
+      // jika show in FAQ ON
+      const divElement = document.createElement('div');
+      divElement.id = scrollId;
+      divElement.style.width = '100%';
+      divElement.style.height = '50px';
+      divElement.style.marginTop = '-50px';
+      divElement.innerHTML = '<div></div>';
+      const contentHTML = divElement.outerHTML;
+
+      const contentElement = document.querySelector(
+        `#content_tipe_${selectedType}`
+      );
+
+      const contentText = contentElement.outerHTML;
+
+      const newId = await http.post("/ui-build/save-new-card", {
+        type: "card_v2",
+        title: `#${scrollId}`,
+        content: contentHTML,
+        section: pageSection,
+        parameter: 'show_in_faq',
+        sharetext: cardName
+      });
+
+      http.post("/ui-build/save-new-card", {
+        type: "card_v2",
+        title: cardName,
+        content: contentText,
+        section: pageSection,
+      })
+        .then(() => {
+          Swal.fire({
+            title: "",
+            html: "Success add card.",
+            icon: "success",
+            timer: 2000,
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
+
+          window.parent.postMessage(
+            { type: "saveComplete", section: pageSection },
+            "*"
+          );
+        });
+
+    } else {
+      // jika show in FAQ off
+      const contentElement = document.querySelector(
+        `#content_tipe_${selectedType}`
+      );
+
+      const contentText = contentElement.outerHTML;
+
+      http.post("/ui-build/save-new-card", {
         type: "card_v2",
         title: cardName,
         content: contentText,
@@ -185,6 +263,7 @@ function Home(props) {
           "*"
         );
       });
+    }
   };
 
   const handleDeleteElement = (position, index) => {
@@ -387,6 +466,9 @@ function Home(props) {
     }));
   };
 
+  const [showInFAQ, setShowInFAQ] = React.useState(false);
+  const [scrollId, setScrollId] = React.useState('');
+
   console.log(contentSelectedType);
 
   return (
@@ -555,6 +637,35 @@ function Home(props) {
                       unmountOnExit
                       sx={{ p: 2 }}
                     >
+                      <Box mt={1} mb={2}>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={showInFAQ}
+                              onChange={(e) => setShowInFAQ(e.target.checked)}
+                              name="showInFAQ"
+                            />
+                          }
+                          label="Show in FAQ menu"
+                        />
+
+                        {showInFAQ && (
+                          <TextField
+                            fullWidth
+                            size="small"
+                            label="Scroll Id"
+                            value={scrollId}
+                            onChange={(e) => {
+                              const newValue = e.target.value
+                                .toLowerCase()
+                                .replace(/\s+/g, '-')
+                                .replace(/[^a-z0-9-]/g, '');
+                              setScrollId(newValue);
+                            }}
+                          />
+                        )}
+                      </Box>
+
                       <Typography variant="h6">Card Settings</Typography>
 
                       <Box mt={1} mb={2}>
@@ -2368,10 +2479,10 @@ function Home(props) {
 
               {/* Link */}
               {isInsert && isOnForm && onFormType === "content" && selectedFormType === 4 && (
-                  <Box pr={2}>
-                    <Typography variant="h6" sx={{ mt: 2 }}>Link</Typography>
+                <Box pr={2}>
+                  <Typography variant="h6" sx={{ mt: 2 }}>Link</Typography>
 
-                      <Box mt={1} mb={2}>
+                    <Box mt={1} mb={2}>
                         {/* <TextField
                           fullWidth
                           size="small"
@@ -2395,242 +2506,239 @@ function Home(props) {
                             );
                           }}
                         /> */}
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Text"
-                          margin="dense"
-                          value={textContent}
-                          onChange={(e) => handleChangeTextContent(e.target.value)}
-                        />
-                        {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Font Size"
-                          margin="dense"
-                          type="range"
-                          variant="outlined"
-                          onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ fontSize: `${e.target.value}px` },
-                            });
-                          }}
-                        /> */}
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Font Size"
-                          margin="dense"
-                          type="range"
-                          variant="outlined"
-                          onChange={(e) => handleChangeFontSize(e.target.value)}
-                        />
-
-                        {/* <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="text_align">Font Weight</InputLabel>
-                          <Select
-                            labelId="font_weight"
+                          {/* <TextField
+                            fullWidth
+                            size="small"
+                            label="Font Size"
+                            margin="dense"
+                            type="range"
+                            variant="outlined"
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
                                   `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
-                                ...{ fontWeight: e.target.value },
+                                ...{ fontSize: `${e.target.value}px` },
                               });
                             }}
-                            label="Font Weight"
-                          >
-                            <MenuItem value="normal">Normal</MenuItem>
-                            <MenuItem value="bold">Bold</MenuItem>
-                          </Select>
-                        </FormControl> */}
-
-                        <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="font_weight">Font Weight</InputLabel>
-                          <Select
-                            labelId="font_weight"
-                            value={fontWeightValue}
-                            onChange={(e) => handleChangeFontWeight(e.target.value)}
-                            label="Font Weight"
-                          >
-                            <MenuItem value="normal">Normal</MenuItem>
-                            <MenuItem value="bold">Bold</MenuItem>
-                          </Select>
-                        </FormControl>
-
-                        {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Line Height"
-                          margin="dense"
-                          type="range"
-                          variant="outlined"
-                          onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ lineHeight: `${e.target.value}px`, margin: 0 },
-                            });
-                          }}
-                        /> */}
-
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Line Height"
-                          margin="dense"
-                          type="range"
-                          variant="outlined"
-                          onChange={(e) => handleChangeLineHeight(e.target.value)}
-                        />
-                        
-                        {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Text Color"
-                          margin="dense"
-                          type="color"
-                          variant="outlined"
-                          onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ color: e.target.value },
-                            });
-                          }}
-                        /> */}
-
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Text Color"
-                          margin="dense"
-                          type="color"
-                          variant="outlined"
-                          onChange={(e) => handleChangeTextColor(e.target.value)}
-                        />
-
-                        {/* <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Letter_case">Letter Case</InputLabel>
-                          <Select
-                            labelId="Letter_case"
-                            label="Letter Case"
+                          /> */}
+                          {/* <FormControl size="small" margin="dense" fullWidth>
+                            <InputLabel id="text_align">Font Weight</InputLabel>
+                            <Select
+                              labelId="font_weight"
+                              onChange={(e) => {
+                                handleChangeStyle({
+                                  ...(styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{ fontWeight: e.target.value },
+                                });
+                              }}
+                              label="Font Weight"
+                            >
+                              <MenuItem value="normal">Normal</MenuItem>
+                              <MenuItem value="bold">Bold</MenuItem>
+                            </Select>
+                          </FormControl> */}
+                          {/* <TextField
+                            fullWidth
+                            size="small"
+                            label="Line Height"
+                            margin="dense"
+                            type="range"
+                            variant="outlined"
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
                                   `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
-                                ...{ textTransform: e.target.value },
+                                ...{ lineHeight: `${e.target.value}px`, margin: 0 },
                               });
                             }}
-                          >
-                            <MenuItem value="uppercase">Uppercase</MenuItem>
-                            <MenuItem value="capitalize">Capitalize</MenuItem>
-                          </Select>
-                        </FormControl> */}
-                        <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Letter_case">Letter Case</InputLabel>
-                          <Select
-                            labelId="Letter_case"
-                            value={letterCaseValue}
-                            label="Letter Case"
-                            onChange={(e) => handleChangeLetterCase(e.target.value)}
-                          >
-                            <MenuItem value="uppercase">Uppercase</MenuItem>
-                            <MenuItem value="capitalize">Capitalize</MenuItem>
-                          </Select>
-                        </FormControl>
-
-                        {/* <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Style">Style</InputLabel>
-                          <Select
-                            labelId="Style"
-                            label="Style"
+                          /> */}
+                          {/* <TextField
+                            fullWidth
+                            size="small"
+                            label="Text Color"
+                            margin="dense"
+                            type="color"
+                            variant="outlined"
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
                                   `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
-                                ...{ textDecoration: e.target.value },
+                                ...{ color: e.target.value },
                               });
                             }}
-                          >
-                            <MenuItem value="none">Default</MenuItem>
-                            <MenuItem value="underline">Underline</MenuItem>
-                          </Select>
-                        </FormControl> */}
-
-                        <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Style">Style</InputLabel>
-                          <Select
-                            labelId="Style"
-                            value={styleValue}
-                            label="Style"
-                            onChange={(e) => handleChangeStyleLink(e.target.value)}
-                          >
-                            <MenuItem value="none">Default</MenuItem>
-                            <MenuItem value="underline">Underline</MenuItem>
-                          </Select>
-                        </FormControl>
-                        
-                        {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Link"
-                          margin="dense"
-                          onChange={(e) => {
-                            handleChangeEvent({
-                              ...(eventSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ href: e.target.value },
-                            });
-                          }}
-                        /> */}
-                        <TextField
-                          fullWidth
-                          size="small"
-                          label="Link"
-                          margin="dense"
-                          value={linkValue}
-                          onChange={(e) => handleChangeLink(e.target.value)}
-                        />
-                        {/* <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Target">Target</InputLabel>
-                          <Select
-                            labelId="Target"
+                          /> */}
+                          {/* <FormControl size="small" margin="dense" fullWidth>
+                            <InputLabel id="Letter_case">Letter Case</InputLabel>
+                            <Select
+                              labelId="Letter_case"
+                              label="Letter Case"
+                              onChange={(e) => {
+                                handleChangeStyle({
+                                  ...(styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{ textTransform: e.target.value },
+                                });
+                              }}
+                            >
+                              <MenuItem value="uppercase">Uppercase</MenuItem>
+                              <MenuItem value="capitalize">Capitalize</MenuItem>
+                            </Select>
+                          </FormControl> */}
+                          {/* <FormControl size="small" margin="dense" fullWidth>
+                            <InputLabel id="Style">Style</InputLabel>
+                            <Select
+                              labelId="Style"
+                              label="Style"
+                              onChange={(e) => {
+                                handleChangeStyle({
+                                  ...(styleSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{ textDecoration: e.target.value },
+                                });
+                              }}
+                            >
+                              <MenuItem value="none">Default</MenuItem>
+                              <MenuItem value="underline">Underline</MenuItem>
+                            </Select>
+                          </FormControl> */}
+                          {/* <TextField
+                            fullWidth
+                            size="small"
+                            label="Link"
+                            margin="dense"
                             onChange={(e) => {
                               handleChangeEvent({
                                 ...(eventSelectedType?.[
                                   `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
-                                ...{ target: e.target.value },
+                                ...{ href: e.target.value },
                               });
                             }}
-                            label="Target"
-                          >
-                            <MenuItem value="_self">Same window</MenuItem>
-                            <MenuItem value="_blank">New window</MenuItem>
-                          </Select>
-                        </FormControl> */}
-                        <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Target">Target</InputLabel>
-                          <Select
-                            labelId="Target"
-                            value={targetValue}
-                            onChange={(e) => handleChangeTarget(e.target.value)}
-                            label="Target"
-                          >
-                            <MenuItem value="_self">Same window</MenuItem>
-                            <MenuItem value="_blank">New window</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box>
+                          /> */}
+                          {/* <FormControl size="small" margin="dense" fullWidth>
+                            <InputLabel id="Target">Target</InputLabel>
+                            <Select
+                              labelId="Target"
+                              onChange={(e) => {
+                                handleChangeEvent({
+                                  ...(eventSelectedType?.[
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  ] ?? {}),
+                                  ...{ target: e.target.value },
+                                });
+                              }}
+                              label="Target"
+                            >
+                              <MenuItem value="_self">Same window</MenuItem>
+                              <MenuItem value="_blank">New window</MenuItem>
+                            </Select>
+                          </FormControl> */}
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Text"
+                        margin="dense"
+                        value={textContent}
+                        onChange={(e) => handleChangeTextContent(e.target.value)}
+                      />
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Font Size"
+                        margin="dense"
+                        type="range"
+                        variant="outlined"
+                        onChange={(e) => handleChangeFontSize(e.target.value)}
+                      />
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="font_weight">Font Weight</InputLabel>
+                        <Select
+                          labelId="font_weight"
+                          value={fontWeightValue}
+                          onChange={(e) => handleChangeFontWeight(e.target.value)}
+                          label="Font Weight"
+                        >
+                          <MenuItem value="normal">Normal</MenuItem>
+                          <MenuItem value="bold">Bold</MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Line Height"
+                        margin="dense"
+                        type="range"
+                        variant="outlined"
+                        onChange={(e) => handleChangeLineHeight(e.target.value)}
+                      />
+
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Text Color"
+                        margin="dense"
+                        type="color"
+                        variant="outlined"
+                        onChange={(e) => handleChangeTextColor(e.target.value)}
+                      />
+                      
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Letter_case">Letter Case</InputLabel>
+                        <Select
+                          labelId="Letter_case"
+                          value={letterCaseValue}
+                          label="Letter Case"
+                          onChange={(e) => handleChangeLetterCase(e.target.value)}
+                        >
+                          <MenuItem value="uppercase">Uppercase</MenuItem>
+                          <MenuItem value="capitalize">Capitalize</MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Style">Style</InputLabel>
+                        <Select
+                          labelId="Style"
+                          value={styleValue}
+                          label="Style"
+                          onChange={(e) => handleChangeStyleLink(e.target.value)}
+                        >
+                          <MenuItem value="none">Default</MenuItem>
+                          <MenuItem value="underline">Underline</MenuItem>
+                        </Select>
+                      </FormControl>
+                      
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Link"
+                        margin="dense"
+                        value={linkValue}
+                        onChange={(e) => handleChangeLink(e.target.value)}
+                      />
+                      
+                      <FormControl size="small" margin="dense" fullWidth>
+                        <InputLabel id="Target">Target</InputLabel>
+                        <Select
+                          labelId="Target"
+                          value={targetValue}
+                          onChange={(e) => handleChangeTarget(e.target.value)}
+                          label="Target"
+                        >
+                          <MenuItem value="_self">Same window</MenuItem>
+                          <MenuItem value="_blank">New window</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
 
                     <Typography variant="h6">Options</Typography>
 
@@ -2796,6 +2904,7 @@ function Home(props) {
                   ) {
                     return (
                       <Box
+                        // id="leftKolom"
                         sx={{
                           border: "3px dashed #00a3d3",
                           borderRadius: "10px",
