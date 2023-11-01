@@ -56,9 +56,10 @@ function Home(props) {
   const [leftColumnLength, setLeftColumnLength] = React.useState(1);
   const [rightColumnLength, setRightColumnLength] = React.useState(1);
   const [leftColumnSelected, setLeftColumnSelected] = React.useState(0);
-  const [rightColumnSelected, setRightColumnSelected] = React.useState(0);
   const [leftElementList, setLeftElementList] = React.useState({});
   const [leftElementDeleteList, setLeftElementDeleteList] = React.useState([]);
+
+  console.log(styleSelectedType);
 
   let showSection = pageSection;
 
@@ -1534,12 +1535,11 @@ function Home(props) {
                               });
                             }}
                             label="Letter Case"
-                            efaultValue={
+                            defaultValue={
                               styleSelectedType?.[
                                 `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                               ]?.textTransform
                             }
-                            d
                           >
                             <MenuItem value="uppercase">Uppercase</MenuItem>
                             <MenuItem value="capitalize">Capitalize</MenuItem>
@@ -1646,21 +1646,6 @@ function Home(props) {
                           </Select>
                         </FormControl>
 
-                        {/* <FormControl size="small" margin="dense" fullWidth>
-                      <InputLabel id="Size">Size</InputLabel>
-                      <Select labelId="Size" label="Size">
-                        <MenuItem value={true}>XX-Small</MenuItem>
-                        <MenuItem value={false}>X-Small</MenuItem>
-                        <MenuItem value={false}>Smaller</MenuItem>
-                        <MenuItem value={false}>Small</MenuItem>
-                        <MenuItem value={false}>Normal</MenuItem>
-                        <MenuItem value={false}>Large</MenuItem>
-                        <MenuItem value={false}>Larger</MenuItem>
-                        <MenuItem value={false}>X-Larger</MenuItem>
-                        <MenuItem value={false}>XX-Larger</MenuItem>
-                      </Select>
-                    </FormControl> */}
-
                         <Typography sx={{ mt: 1 }}>Padding</Typography>
                         <Box display="flex" gap={1}>
                           <TextField
@@ -1668,7 +1653,11 @@ function Home(props) {
                             label="Top"
                             margin="dense"
                             variant="outlined"
-                            type="number"
+                            defaultValue={
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.paddingTop?.replace("px", "") ?? ""
+                            }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
@@ -1683,7 +1672,11 @@ function Home(props) {
                             label="Right"
                             margin="dense"
                             variant="outlined"
-                            type="number"
+                            defaultValue={
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.paddingRight?.replace("px", "") ?? ""
+                            }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
@@ -1698,7 +1691,11 @@ function Home(props) {
                             label="Bottom"
                             margin="dense"
                             variant="outlined"
-                            type="number"
+                            defaultValue={
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.paddingBottom?.replace("px", "") ?? ""
+                            }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
@@ -1713,7 +1710,11 @@ function Home(props) {
                             label="Left"
                             margin="dense"
                             variant="outlined"
-                            type="number"
+                            defaultValue={
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.paddingLeft?.replace("px", "") ?? ""
+                            }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
@@ -1732,6 +1733,11 @@ function Home(props) {
                           margin="dense"
                           type="range"
                           variant="outlined"
+                          defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.borderRadius?.replace("px", "") ?? ""
+                          }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
@@ -1747,12 +1753,18 @@ function Home(props) {
                           <Select
                             labelId="Expand"
                             label="Expand"
+                            defaultValue={
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.widthExpand ?? ""
+                            }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
                                   `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                 ] ?? {}),
                                 ...{
+                                  widthExpand: true,
                                   width:
                                     e.target.value === true ? "100%" : "unset",
                                 },
@@ -1808,6 +1820,11 @@ function Home(props) {
                           <Select
                             labelId="visibility"
                             label="Visibility"
+                            defaultValue={
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.visibilityStatus ?? ""
+                            }
                             onChange={(e) => {
                               if (e.target.value === true) {
                                 handleChangeStyle({
@@ -1815,6 +1832,7 @@ function Home(props) {
                                     `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                   ] ?? {}),
                                   ...{
+                                    visibilityStatus: true,
                                     display: "block",
                                     visibility: "inherit",
                                   },
@@ -1825,6 +1843,7 @@ function Home(props) {
                                     `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
                                   ] ?? {}),
                                   ...{
+                                    visibilityStatus: false,
                                     display: "none",
                                     visibility: "hidden",
                                   },
@@ -1911,6 +1930,11 @@ function Home(props) {
                         margin="dense"
                         multiline
                         rows={4}
+                        defaultValue={
+                          contentSelectedType?.[
+                            `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                          ]?.content?.props?.children ?? ""
+                        }
                         onChange={(e) => {
                           handleChangeContent(
                             <p
@@ -1933,6 +1957,11 @@ function Home(props) {
                         margin="dense"
                         type="range"
                         variant="outlined"
+                        defaultValue={
+                              parseInt(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.fontSize?.replace("px", "") ?? 0)
+                            }
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
@@ -1946,6 +1975,11 @@ function Home(props) {
                         <InputLabel id="font_weight">Font Weight</InputLabel>
                         <Select
                           labelId="font_weight"
+                          defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.fontWeight ?? ""
+                          }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
@@ -1967,6 +2001,11 @@ function Home(props) {
                         margin="dense"
                         type="range"
                         variant="outlined"
+                        defaultValue={
+                            parseInt(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.lineHeight?.replace("px", "") ?? 0)
+                          }
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
@@ -1980,6 +2019,11 @@ function Home(props) {
                         <InputLabel id="text_align">Text Align</InputLabel>
                         <Select
                           labelId="text_align"
+                          defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.textAlign ?? ""
+                          }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
@@ -2003,6 +2047,11 @@ function Home(props) {
                         margin="dense"
                         type="color"
                         variant="outlined"
+                        defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.color ?? ""
+                          }
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
@@ -2164,6 +2213,9 @@ function Home(props) {
                           size="small"
                           label="Image from URL"
                           margin="dense"
+                          defaultValue={contentSelectedType?.[
+                            `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                          ]?.content?.props?.src ?? ""}
                           variant="outlined"
                           onChange={(e) => {
                             handleChangeContent(
@@ -2407,29 +2459,6 @@ function Home(props) {
                     </Typography>
 
                     <Box mt={1} mb={2}>
-                      {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Text"
-                          margin="dense"
-                          onChange={(e) => {
-                            handleChangeContent(
-                              <span>
-                                <a
-                                  style={{
-                                    ...styleSelectedType?.[
-                                      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                    ],
-                                    color: "inherit",
-                                    textDecoration: "inherit",
-                                  }}
-                                  >
-                                  {e.target.value}
-                                </a>
-                              </span>
-                            );
-                          }}
-                        /> */}
                       <TextField
                         fullWidth
                         size="small"
@@ -2440,22 +2469,6 @@ function Home(props) {
                           handleChangeTextContent(e.target.value)
                         }
                       />
-                      {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Font Size"
-                          margin="dense"
-                          type="range"
-                          variant="outlined"
-                          onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ fontSize: `${e.target.value}px` },
-                            });
-                          }}
-                        /> */}
                       <TextField
                         fullWidth
                         size="small"
@@ -2465,26 +2478,6 @@ function Home(props) {
                         variant="outlined"
                         onChange={(e) => handleChangeFontSize(e.target.value)}
                       />
-
-                      {/* <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="text_align">Font Weight</InputLabel>
-                          <Select
-                            labelId="font_weight"
-                            onChange={(e) => {
-                              handleChangeStyle({
-                                ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                ] ?? {}),
-                                ...{ fontWeight: e.target.value },
-                              });
-                            }}
-                            label="Font Weight"
-                          >
-                            <MenuItem value="normal">Normal</MenuItem>
-                            <MenuItem value="bold">Bold</MenuItem>
-                          </Select>
-                        </FormControl> */}
-
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="font_weight">Font Weight</InputLabel>
                         <Select
@@ -2499,24 +2492,6 @@ function Home(props) {
                           <MenuItem value="bold">Bold</MenuItem>
                         </Select>
                       </FormControl>
-
-                      {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Line Height"
-                          margin="dense"
-                          type="range"
-                          variant="outlined"
-                          onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ lineHeight: `${e.target.value}px`, margin: 0 },
-                            });
-                          }}
-                        /> */}
-
                       <TextField
                         fullWidth
                         size="small"
@@ -2526,24 +2501,6 @@ function Home(props) {
                         variant="outlined"
                         onChange={(e) => handleChangeLineHeight(e.target.value)}
                       />
-
-                      {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Text Color"
-                          margin="dense"
-                          type="color"
-                          variant="outlined"
-                          onChange={(e) => {
-                            handleChangeStyle({
-                              ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ color: e.target.value },
-                            });
-                          }}
-                        /> */}
-
                       <TextField
                         fullWidth
                         size="small"
@@ -2553,25 +2510,6 @@ function Home(props) {
                         variant="outlined"
                         onChange={(e) => handleChangeTextColor(e.target.value)}
                       />
-
-                      {/* <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Letter_case">Letter Case</InputLabel>
-                          <Select
-                            labelId="Letter_case"
-                            label="Letter Case"
-                            onChange={(e) => {
-                              handleChangeStyle({
-                                ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                ] ?? {}),
-                                ...{ textTransform: e.target.value },
-                              });
-                            }}
-                          >
-                            <MenuItem value="uppercase">Uppercase</MenuItem>
-                            <MenuItem value="capitalize">Capitalize</MenuItem>
-                          </Select>
-                        </FormControl> */}
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Letter_case">Letter Case</InputLabel>
                         <Select
@@ -2586,25 +2524,6 @@ function Home(props) {
                           <MenuItem value="capitalize">Capitalize</MenuItem>
                         </Select>
                       </FormControl>
-
-                      {/* <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Style">Style</InputLabel>
-                          <Select
-                            labelId="Style"
-                            label="Style"
-                            onChange={(e) => {
-                              handleChangeStyle({
-                                ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                ] ?? {}),
-                                ...{ textDecoration: e.target.value },
-                              });
-                            }}
-                          >
-                            <MenuItem value="none">Default</MenuItem>
-                            <MenuItem value="underline">Underline</MenuItem>
-                          </Select>
-                        </FormControl> */}
 
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Style">Style</InputLabel>
@@ -2621,20 +2540,6 @@ function Home(props) {
                         </Select>
                       </FormControl>
 
-                      {/* <TextField
-                          fullWidth
-                          size="small"
-                          label="Link"
-                          margin="dense"
-                          onChange={(e) => {
-                            handleChangeEvent({
-                              ...(eventSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                              ] ?? {}),
-                              ...{ href: e.target.value },
-                            });
-                          }}
-                        /> */}
                       <TextField
                         fullWidth
                         size="small"
@@ -2643,24 +2548,6 @@ function Home(props) {
                         value={linkValue}
                         onChange={(e) => handleChangeLink(e.target.value)}
                       />
-                      {/* <FormControl size="small" margin="dense" fullWidth>
-                          <InputLabel id="Target">Target</InputLabel>
-                          <Select
-                            labelId="Target"
-                            onChange={(e) => {
-                              handleChangeEvent({
-                                ...(eventSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
-                                ] ?? {}),
-                                ...{ target: e.target.value },
-                              });
-                            }}
-                            label="Target"
-                          >
-                            <MenuItem value="_self">Same window</MenuItem>
-                            <MenuItem value="_blank">New window</MenuItem>
-                          </Select>
-                        </FormControl> */}
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Target">Target</InputLabel>
                         <Select
