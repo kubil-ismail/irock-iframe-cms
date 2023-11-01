@@ -217,8 +217,6 @@ function Home(props) {
     setContentSelectedType(temporaryObject);
   };
 
-  console.log(contentSelectedType);
-
   return (
     <Box p={2}>
       <Grid container justifyContent="center">
@@ -575,9 +573,34 @@ function Home(props) {
                           >
                             <div
                               onClick={() => {
-                                setOnFormType("element");
                                 setContentPosition("left");
                                 setLeftColumnSelected(next);
+
+                                if (leftElementList[`left_${next}`]) {
+                                  setContentType(
+                                    leftElementList[`left_${next}`]
+                                  );
+                                  if (
+                                    leftElementList[`left_${next}`] === "button"
+                                  ) {
+                                    setSelectedFormType(1);
+                                  } else if (
+                                    leftElementList[`left_${next}`] === "text"
+                                  ) {
+                                    setSelectedFormType(2);
+                                  } else if (
+                                    leftElementList[`left_${next}`] === "image"
+                                  ) {
+                                    setSelectedFormType(3);
+                                  } else if (
+                                    leftElementList[`left_${next}`] === "link"
+                                  ) {
+                                    setSelectedFormType(4);
+                                  }
+                                  setOnFormType("content");
+                                } else {
+                                  setOnFormType("element");
+                                }
                               }}
                               style={{ width: "100%" }}
                             >
@@ -718,6 +741,9 @@ function Home(props) {
                                     setOnFormType("element");
                                     setContentPosition("right");
                                     setLeftColumnSelected(next);
+
+                                    // setContentType("text");
+                                    // setSelectedFormType(2);
                                   }}
                                   style={{ width: "100%" }}
                                 >
@@ -1637,19 +1663,6 @@ function Home(props) {
                             }}
                           >
                             Apply
-                          </Button>
-                        </Grid>
-                        <Grid item md={5}>
-                          <Button
-                            sx={{ border: "1px solid #a0a5aa", color: "#555" }}
-                            fullWidth
-                            disabled={selectedFormType === 0}
-                            onClick={() => {
-                              setIsOnForm(true);
-                              setOnFormType("content");
-                            }}
-                          >
-                            Delete
                           </Button>
                         </Grid>
                       </Grid>
