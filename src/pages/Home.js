@@ -39,6 +39,7 @@ function Home(props) {
   const [selectedFormType, setSelectedFormType] = React.useState(0);
   const [isDouble, setIsDouble] = React.useState(true);
   const [cardName, setCardName] = React.useState("Default");
+  const [langCard, setLangCard] = React.useState("id");
 
   // new logic
   const [selectedType, setSelectedType] = React.useState(0);
@@ -170,39 +171,6 @@ function Home(props) {
     } catch (error) {}
   };
 
-  const handleSave2 = async () => {
-    // Dapatkan elemen yang sesuai
-    const contentElement = document.querySelector(
-      `#content_tipe_${selectedType}`
-    );
-
-    // Dapatkan konten teks dari elemen tersebut
-    const contentText = contentElement.outerHTML;
-
-    http
-      .post("/ui-build/save-new-card", {
-        type: "card_v2",
-        title: cardName,
-        content: contentText,
-        section: pageSection,
-      })
-      .then(() => {
-        Swal.fire({
-          title: "",
-          html: "Success add card.",
-          icon: "success",
-          timer: 2000,
-          showCancelButton: false,
-          showConfirmButton: false,
-        });
-
-        window.parent.postMessage(
-          { type: "saveComplete", section: pageSection },
-          "*"
-        );
-      });
-  };
-
   const handleSave = async () => {
     if (showInFAQ) {
       // jika show in FAQ ON
@@ -219,22 +187,23 @@ function Home(props) {
       );
 
       const contentText = contentElement.outerHTML;
-
-      const newId = await http.post("/ui-build/save-new-card", {
-        type: "card_v2",
-        title: `#${scrollId}`,
-        content: contentHTML,
-        section: pageSection,
-        parameter: "show_in_faq",
-        sharetext: cardName,
-      });
-
       http
         .post("/ui-build/save-new-card", {
           type: "card_v2",
           title: cardName,
           content: contentText,
           section: pageSection,
+          left_content: JSON.stringify({
+            selectedType,
+            isDouble,
+            leftElementList,
+            leftColumnLength,
+            rightColumnLength,
+            contentPosition
+          }), // susunan row & column
+          right_content: JSON.stringify(contentSelectedType), // main content valuenya
+          style_selected: JSON.stringify(styleSelectedType), // style tiap dari element,
+          style_layout: JSON.stringify({}) // style parent cardnya
         })
         .then(() => {
           Swal.fire({
@@ -244,6 +213,7 @@ function Home(props) {
             timer: 2000,
             showCancelButton: false,
             showConfirmButton: false,
+            language: langCard
           });
 
           window.parent.postMessage(
@@ -264,7 +234,17 @@ function Home(props) {
           type: "card_v2",
           title: cardName,
           content: contentText,
-          section: pageSection,
+          section: pageSection,left_content: JSON.stringify({
+            selectedType,
+            isDouble,
+            leftElementList,
+            leftColumnLength,
+            rightColumnLength,
+            contentPosition
+          }), // susunan row & column
+          right_content: JSON.stringify(contentSelectedType), // main content valuenya
+          style_selected: JSON.stringify(styleSelectedType), // style tiap dari element,
+          style_layout: JSON.stringify({}) // style parent cardnya
         })
         .then(() => {
           Swal.fire({
@@ -691,6 +671,7 @@ function Home(props) {
                           fullWidth
                           size="small"
                           label="Card label name"
+                          value={cardName}
                           onChange={(e) => setCardName(e.target.value)}
                         />
                       </Box>
@@ -762,6 +743,21 @@ function Home(props) {
                       <Typography variant="h6">Options</Typography>
 
                       <Box my={1}>
+                        <FormControl size="small" sx={{mb: 2}} fullWidth>
+                          <InputLabel id="language">Language</InputLabel>
+                          <Select
+                            labelId="language"
+                            onChange={(e) => {
+                             setLangCard(e.target.value)
+                            }}
+                            value={langCard}
+                            label="Visibility"
+                          >
+                            <MenuItem value="id">ID</MenuItem>
+                            <MenuItem value="en">EN</MenuItem>
+                          </Select>
+                        </FormControl>
+
                         <FormControl size="small" fullWidth>
                           <InputLabel id="visibility">Visibility</InputLabel>
                           <Select
