@@ -62,8 +62,6 @@ function Home(props) {
   const [leftElementList, setLeftElementList] = React.useState({});
   const [leftElementDeleteList, setLeftElementDeleteList] = React.useState([]);
 
-  console.log(styleSelectedType);
-
   let showSection = pageSection;
 
   function formatPageSection(showSection) {
@@ -490,8 +488,6 @@ function Home(props) {
 
   const [showInFAQ, setShowInFAQ] = React.useState(false);
   const [scrollId, setScrollId] = React.useState("");
-
-  console.log(contentSelectedType);
 
   return (
     <Box p={2}>
@@ -1047,6 +1043,36 @@ function Home(props) {
                                     setOnFormType("element");
                                     setContentPosition("right");
                                     setLeftColumnSelected(next);
+
+                                    if (leftElementList[`right_${next}`]) {
+                                      setContentType(
+                                        leftElementList[`right_${next}`]
+                                      );
+                                      if (
+                                        leftElementList[`right_${next}`] ===
+                                        "button"
+                                      ) {
+                                        setSelectedFormType(1);
+                                      } else if (
+                                        leftElementList[`right_${next}`] ===
+                                        "text"
+                                      ) {
+                                        setSelectedFormType(2);
+                                      } else if (
+                                        leftElementList[`right_${next}`] ===
+                                        "image"
+                                      ) {
+                                        setSelectedFormType(3);
+                                      } else if (
+                                        leftElementList[`right_${next}`] ===
+                                        "link"
+                                      ) {
+                                        setSelectedFormType(4);
+                                      }
+                                      setOnFormType("content");
+                                    } else {
+                                      setOnFormType("element");
+                                    }
 
                                     // setContentType("text");
                                     // setSelectedFormType(2);
@@ -2382,6 +2408,11 @@ function Home(props) {
                             label="Top"
                             margin="dense"
                             variant="outlined"
+                            defaultValue={parseInt(
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.marginTop?.replace("px", "") ?? 0
+                            )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
@@ -2396,6 +2427,11 @@ function Home(props) {
                             label="Right"
                             margin="dense"
                             variant="outlined"
+                            defaultValue={parseInt(
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.marginRight?.replace("px", "") ?? 0
+                            )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
@@ -2410,6 +2446,11 @@ function Home(props) {
                             label="Bottom"
                             margin="dense"
                             variant="outlined"
+                            defaultValue={parseInt(
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.marginBottom?.replace("px", "") ?? 0
+                            )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
@@ -2424,6 +2465,11 @@ function Home(props) {
                             label="Left"
                             margin="dense"
                             variant="outlined"
+                            defaultValue={parseInt(
+                              styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ]?.marginLeft?.replace("px", "") ?? 0
+                            )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
@@ -2599,16 +2645,41 @@ function Home(props) {
                         margin="dense"
                         type="range"
                         variant="outlined"
-                        onChange={(e) => handleChangeFontSize(e.target.value)}
+                        defaultValue={
+                          styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                          ]?.fontSize ?? 0
+                        }
+                        onChange={(e) => {
+                          handleChangeFontSize(e.target.value);
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ] ?? {}),
+                            ...{ fontSize: e.target.value },
+                          });
+                        }}
                       />
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="font_weight">Font Weight</InputLabel>
                         <Select
                           labelId="font_weight"
                           value={fontWeightValue}
-                          onChange={(e) =>
-                            handleChangeFontWeight(e.target.value)
+                          defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.fontWeight ?? ""
                           }
+                          onChange={(e) => {
+                            handleChangeFontWeight(e.target.value);
+
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ] ?? {}),
+                              ...{ fontWeight: e.target.value },
+                            });
+                          }}
                           label="Font Weight"
                         >
                           <MenuItem value="normal">Normal</MenuItem>
@@ -2622,7 +2693,20 @@ function Home(props) {
                         margin="dense"
                         type="range"
                         variant="outlined"
-                        onChange={(e) => handleChangeLineHeight(e.target.value)}
+                        defaultValue={
+                          styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                          ]?.lineHeight ?? 0
+                        }
+                        onChange={(e) => {
+                          handleChangeLineHeight(e.target.value);
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ] ?? {}),
+                            ...{ lineHeight: e.target.value },
+                          });
+                        }}
                       />
                       <TextField
                         fullWidth
@@ -2631,7 +2715,20 @@ function Home(props) {
                         margin="dense"
                         type="color"
                         variant="outlined"
-                        onChange={(e) => handleChangeTextColor(e.target.value)}
+                        defaultValue={
+                          styleSelectedType?.[
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                          ]?.color ?? ""
+                        }
+                        onChange={(e) => {
+                          handleChangeTextColor(e.target.value);
+                          handleChangeStyle({
+                            ...(styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ] ?? {}),
+                            ...{ color: e.target.value },
+                          });
+                        }}
                       />
                       <FormControl size="small" margin="dense" fullWidth>
                         <InputLabel id="Letter_case">Letter Case</InputLabel>
@@ -2639,9 +2736,20 @@ function Home(props) {
                           labelId="Letter_case"
                           value={letterCaseValue}
                           label="Letter Case"
-                          onChange={(e) =>
-                            handleChangeLetterCase(e.target.value)
+                          defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.textTransform ?? ""
                           }
+                          onChange={(e) => {
+                            handleChangeLetterCase(e.target.value);
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ] ?? {}),
+                              ...{ textTransform: e.target.value },
+                            });
+                          }}
                         >
                           <MenuItem value="uppercase">Uppercase</MenuItem>
                           <MenuItem value="capitalize">Capitalize</MenuItem>
@@ -2654,9 +2762,20 @@ function Home(props) {
                           labelId="Style"
                           value={styleValue}
                           label="Style"
-                          onChange={(e) =>
-                            handleChangeStyleLink(e.target.value)
+                          defaultValue={
+                            styleSelectedType?.[
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.textDecoration ?? ""
                           }
+                          onChange={(e) => {
+                            handleChangeStyleLink(e.target.value);
+                            handleChangeStyle({
+                              ...(styleSelectedType?.[
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              ] ?? {}),
+                              ...{ textDecoration: e.target.value },
+                            });
+                          }}
                         >
                           <MenuItem value="none">Default</MenuItem>
                           <MenuItem value="underline">Underline</MenuItem>
@@ -2731,13 +2850,8 @@ function Home(props) {
                       }}
                     />
 
-                    <Grid
-                      container
-                      gap={1}
-                      justifyContent="space-between"
-                      px={1}
-                    >
-                      <Grid item md={6}>
+                    <Grid container justifyContent="space-between" px={1}>
+                      <Grid item md={5.8}>
                         <Button
                           sx={{ border: "1px solid #a0a5aa", color: "#555" }}
                           fullWidth
@@ -2748,7 +2862,7 @@ function Home(props) {
                           Discard
                         </Button>
                       </Grid>
-                      <Grid item md={6}>
+                      <Grid item md={5.8}>
                         <Button
                           sx={{ border: "1px solid #a0a5aa", color: "#555" }}
                           fullWidth
