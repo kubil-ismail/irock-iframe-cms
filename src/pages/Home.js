@@ -185,8 +185,12 @@ function Home(props) {
       const contentHTML = divElement.outerHTML;
       {/* ini jangan dibuang untuk show in faq */ }
 
+      // const contentElement = document.querySelector(
+      //   `#content_tipe_${selectedType}`
+      // );
+
       const contentElement = document.querySelector(
-        `#content_tipe_${selectedType}`
+        `#content_main`
       );
 
       const contentText = contentElement.outerHTML;
@@ -256,8 +260,12 @@ function Home(props) {
       const contentHTML = divElement.outerHTML;
       // ini jangan dibuang untuk show in faq
 
+      // const contentElement = document.querySelector(
+      //   `#content_tipe_${selectedType}`
+      // );
+
       const contentElement = document.querySelector(
-        `#content_tipe_${selectedType}`
+        `#content_main`
       );
 
       const contentText = contentElement.outerHTML;
@@ -3060,53 +3068,71 @@ function Home(props) {
               overflowY: "auto",
             }}
           >
-            {selectedTypeList?.map((_items) => {
-              const currentType = parseInt(_items?.split("_")[1]);
-              if(currentType) {
-                return (
-                  <>
-                    {currentType === 1 && (
-                      <Box
-                        id="content_tipe_1"
-                        sx={{
-                          backgroundColor: "rgb(193, 193, 193)",
-                          border: "3px dashed #00a3d3",
-                          borderRadius: "10px",
-                        }}
-                        style={{
-                          minHeight: contentSelectedType?.[
-                            `1_${contentType}_${contentPosition}_${leftColumnSelected}`
-                          ]?.content
-                            ? "0px"
-                            : "50%",
-                          // width: "100%",
-                          padding: "20px",
-                          gap: 2,
-                          marginBottom: "20px",
-                          ...styleLayout,
-                        }}
-                      >
-                        {[...new Array(leftColumnLength)].map((item, key) => {
-                          const next = 1 + key;
-                          if (
-                            !leftElementDeleteList.find(
-                              (items) => items === `left_${next}`
-                            )
-                          ) {
-                            return (
-                              <Box
-                                // id="leftKolom"
-                                sx={{
-                                  border: "3px dashed #00a3d3",
-                                  borderRadius: "10px",
-                                  marginBottom: "10px",
-                                }}
-                                style={{
-                                  width: "100%",
-                                  minHeight:
-                                    contentSelectedType?.[
-                                      `1_button_${contentPosition}_${next}`
-                                    ]?.content ??
+            <Box id="content_main">
+              {selectedTypeList?.map((_items) => {
+                const currentType = parseInt(_items?.split("_")[1]);
+                const currentIndex = parseInt(_items?.split("_")[0]);
+                if(currentType) {
+                  return (
+                    <>
+                      {currentType === 1 && (
+                        <Box
+                          id={`content_tipe_1_${currentIndex}`}
+                          sx={{
+                            backgroundColor: "rgb(193, 193, 193)",
+                            border: "3px dashed #00a3d3",
+                            borderRadius: "10px",
+                          }}
+                          style={{
+                            minHeight: contentSelectedType?.[
+                              `1_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            ]?.content
+                              ? "0px"
+                              : "50%",
+                            // width: "100%",
+                            padding: "20px",
+                            gap: 2,
+                            marginBottom: "20px",
+                            ...styleLayout,
+                          }}
+                        >
+                          {[...new Array(leftColumnLength)].map((item, key) => {
+                            const next = 1 + key;
+                            if (
+                              !leftElementDeleteList.find(
+                                (items) => items === `left_${next}`
+                              )
+                            ) {
+                              return (
+                                <Box
+                                  // id="leftKolom"
+                                  sx={{
+                                    border: "3px dashed #00a3d3",
+                                    borderRadius: "10px",
+                                    marginBottom: "10px",
+                                  }}
+                                  style={{
+                                    width: "100%",
+                                    minHeight:
+                                      contentSelectedType?.[
+                                        `1_button_${contentPosition}_${next}`
+                                      ]?.content ??
+                                      contentSelectedType?.[
+                                        `1_text_${contentPosition}_${next}`
+                                      ]?.content ??
+                                      contentSelectedType?.[
+                                        `1_image_${contentPosition}_${next}`
+                                      ]?.content ??
+                                      contentSelectedType?.[
+                                        `1_link_${contentPosition}_${next}`
+                                      ]?.content
+                                        ? "0px"
+                                        : "380px",
+                                  }}
+                                >
+                                  {contentSelectedType?.[
+                                    `1_button_${contentPosition}_${next}`
+                                  ]?.content ??
                                     contentSelectedType?.[
                                       `1_text_${contentPosition}_${next}`
                                     ]?.content ??
@@ -3115,89 +3141,88 @@ function Home(props) {
                                     ]?.content ??
                                     contentSelectedType?.[
                                       `1_link_${contentPosition}_${next}`
-                                    ]?.content
-                                      ? "0px"
-                                      : "380px",
-                                }}
-                              >
-                                {contentSelectedType?.[
-                                  `1_button_${contentPosition}_${next}`
-                                ]?.content ??
-                                  contentSelectedType?.[
-                                    `1_text_${contentPosition}_${next}`
-                                  ]?.content ??
-                                  contentSelectedType?.[
-                                    `1_image_${contentPosition}_${next}`
-                                  ]?.content ??
-                                  contentSelectedType?.[
-                                    `1_link_${contentPosition}_${next}`
-                                  ]?.content}
-                              </Box>
-                            );
-                          }
-                        })}
-                      </Box>
-                    )}
+                                    ]?.content}
+                                </Box>
+                              );
+                            }
+                          })}
+                        </Box>
+                      )}
 
-                    {currentType === 2 && (
-                      <Box
-                        id="content_tipe_2"
-                        sx={{
-                          backgroundColor: "rgb(193, 193, 193)",
-                          border: "3px dashed #00a3d3",
-                          borderRadius: "10px",
-                        }}
-                        // style={{
-                        //   minHeight: "50%",
-                        //   // width: "100%",
-                        //   padding: "20px",
-                        //   display: "flex",
-                        //   // alignItems: "center",
-                        //   gap: 2,
-                        //   ...styleLayout,
-                        // }}
-                        style={{
-                          width: "100%",
-                          overflow: "hidden",
-                          display: "flex",
-                          flexWrap: "wrap",
-                          justifyContent: "center",
-                          paddingTop: "1.25rem",
-                          paddingBottom: "1.25rem",
-                          gap: "20px",
-                          marginBottom: "20px",
-                          ...styleLayout,
-                        }}
-                      >
-                        {/* Column Left */}
+                      {currentType === 2 && (
                         <Box
-                          id="leftKolom"
+                          id={`content_tipe_2_${currentIndex}`}
+                          sx={{
+                            backgroundColor: "rgb(193, 193, 193)",
+                            border: "3px dashed #00a3d3",
+                            borderRadius: "10px",
+                          }}
+                          // style={{
+                          //   minHeight: "50%",
+                          //   // width: "100%",
+                          //   padding: "20px",
+                          //   display: "flex",
+                          //   // alignItems: "center",
+                          //   gap: 2,
+                          //   ...styleLayout,
+                          // }}
                           style={{
                             width: "100%",
-                            maxWidth: "480px",
-                            padding: "20px 20px",
                             overflow: "hidden",
+                            display: "flex",
+                            flexWrap: "wrap",
+                            justifyContent: "center",
+                            paddingTop: "1.25rem",
+                            paddingBottom: "1.25rem",
+                            gap: "20px",
+                            marginBottom: "20px",
+                            ...styleLayout,
                           }}
                         >
-                          {[...new Array(leftColumnLength)].map((item, key) => {
-                            const next = 1 + key;
+                          {/* Column Left */}
+                          <Box
+                            id={`leftKolom-${currentIndex}`}
+                            style={{
+                              width: "100%",
+                              maxWidth: "480px",
+                              padding: "20px 20px",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {[...new Array(leftColumnLength)].map((item, key) => {
+                              const next = 1 + key;
 
-                            if (
-                              !leftElementDeleteList.find(
-                                (items) => items === `left_${next}`
-                              )
-                            ) {
-                              return (
-                                <Box
-                                  sx={{
-                                    border: "3px dashed #00a3d3",
-                                    borderRadius: "10px",
-                                  }}
-                                  style={{
-                                    // width: "100%",
-                                    minHeight:
-                                      contentSelectedType?.[`2_button_left_${next}`]
-                                        ?.content ??
+                              if (
+                                !leftElementDeleteList.find(
+                                  (items) => items === `left_${next}`
+                                )
+                              ) {
+                                return (
+                                  <Box
+                                    sx={{
+                                      border: "3px dashed #00a3d3",
+                                      borderRadius: "10px",
+                                    }}
+                                    style={{
+                                      // width: "100%",
+                                      minHeight:
+                                        contentSelectedType?.[`2_button_left_${next}`]
+                                          ?.content ??
+                                        contentSelectedType?.[`2_text_left_${next}`]
+                                          ?.content ??
+                                        contentSelectedType?.[`2_image_left_${next}`]
+                                          ?.content ??
+                                        contentSelectedType?.[`2_link_left_${next}`]
+                                          ?.content ??
+                                        contentSelectedType?.[
+                                          `2_${contentType2?.left}_left_${next}`
+                                        ]?.content
+                                          ? "0px"
+                                          : "380px",
+                                    }}
+                                  >
+                                    {contentSelectedType?.[`2_button_left_${next}`]
+                                      ?.content ??
                                       contentSelectedType?.[`2_text_left_${next}`]
                                         ?.content ??
                                       contentSelectedType?.[`2_image_left_${next}`]
@@ -3206,57 +3231,57 @@ function Home(props) {
                                         ?.content ??
                                       contentSelectedType?.[
                                         `2_${contentType2?.left}_left_${next}`
-                                      ]?.content
-                                        ? "0px"
-                                        : "380px",
-                                  }}
-                                >
-                                  {contentSelectedType?.[`2_button_left_${next}`]
-                                    ?.content ??
-                                    contentSelectedType?.[`2_text_left_${next}`]
-                                      ?.content ??
-                                    contentSelectedType?.[`2_image_left_${next}`]
-                                      ?.content ??
-                                    contentSelectedType?.[`2_link_left_${next}`]
-                                      ?.content ??
-                                    contentSelectedType?.[
-                                      `2_${contentType2?.left}_left_${next}`
-                                    ]?.content}
-                                </Box>
-                              );
-                            }
-                          })}
-                        </Box>
-                        {/* Column Right */}
-                        <Box
-                          style={{
-                            width: "100%",
-                            maxWidth: "480px",
-                            marginBottom: "20px",
-                            padding: "20px 20px",
-                            overflow: "hidden",
-                          }}
-                          id="rightKolom"
-                        >
-                          {[...new Array(rightColumnLength)].map((item, key) => {
-                            const next = 1 + key;
+                                      ]?.content}
+                                  </Box>
+                                );
+                              }
+                            })}
+                          </Box>
+                          {/* Column Right */}
+                          <Box
+                            style={{
+                              width: "100%",
+                              maxWidth: "480px",
+                              marginBottom: "20px",
+                              padding: "20px 20px",
+                              overflow: "hidden",
+                            }}
+                            id={`rightKolom-${currentIndex}`}
+                          >
+                            {[...new Array(rightColumnLength)].map((item, key) => {
+                              const next = 1 + key;
 
-                            if (
-                              !leftElementDeleteList.find(
-                                (items) => items === `right_${next}`
-                              )
-                            ) {
-                              return (
-                                <Box
-                                  sx={{
-                                    border: "3px dashed #00a3d3",
-                                    borderRadius: "10px",
-                                  }}
-                                  style={{
-                                    // width: "50%",
-                                    minHeight:
-                                      contentSelectedType?.[`2_button_right_${next}`]
-                                        ?.content ??
+                              if (
+                                !leftElementDeleteList.find(
+                                  (items) => items === `right_${next}`
+                                )
+                              ) {
+                                return (
+                                  <Box
+                                    sx={{
+                                      border: "3px dashed #00a3d3",
+                                      borderRadius: "10px",
+                                    }}
+                                    style={{
+                                      // width: "50%",
+                                      minHeight:
+                                        contentSelectedType?.[`2_button_right_${next}`]
+                                          ?.content ??
+                                        contentSelectedType?.[`2_text_right_${next}`]
+                                          ?.content ??
+                                        contentSelectedType?.[`2_image_right_${next}`]
+                                          ?.content ??
+                                        contentSelectedType?.[`2_link_right_${next}`]
+                                          ?.content ??
+                                        contentSelectedType?.[
+                                          `2_${contentType2?.right}_right_${next}`
+                                        ]?.content
+                                          ? "0px"
+                                          : "380px",
+                                    }}
+                                  >
+                                    {contentSelectedType?.[`2_button_right_${next}`]
+                                      ?.content ??
                                       contentSelectedType?.[`2_text_right_${next}`]
                                         ?.content ??
                                       contentSelectedType?.[`2_image_right_${next}`]
@@ -3265,35 +3290,19 @@ function Home(props) {
                                         ?.content ??
                                       contentSelectedType?.[
                                         `2_${contentType2?.right}_right_${next}`
-                                      ]?.content
-                                        ? "0px"
-                                        : "380px",
-                                  }}
-                                >
-                                  {contentSelectedType?.[`2_button_right_${next}`]
-                                    ?.content ??
-                                    contentSelectedType?.[`2_text_right_${next}`]
-                                      ?.content ??
-                                    contentSelectedType?.[`2_image_right_${next}`]
-                                      ?.content ??
-                                    contentSelectedType?.[`2_link_right_${next}`]
-                                      ?.content ??
-                                    contentSelectedType?.[
-                                      `2_${contentType2?.right}_right_${next}`
-                                    ]?.content}
-                                </Box>
-                              );
-                            }
-                          })}
+                                      ]?.content}
+                                  </Box>
+                                );
+                              }
+                            })}
+                          </Box>
                         </Box>
-                      </Box>
-                    )}
-                  </>
-                )
-              }
-            })}
-
-            
+                      )}
+                    </>
+                  )
+                }
+              })}
+            </Box>
           </Box>
           <Box
             sx={{
