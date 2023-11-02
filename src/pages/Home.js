@@ -36,6 +36,7 @@ function Home(props) {
   const [isOnForm, setIsOnForm] = React.useState(false);
   const [onFormType, setOnFormType] = React.useState(null);
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
   const [selectedFormType, setSelectedFormType] = React.useState(0);
   const [isDouble, setIsDouble] = React.useState(true);
   const [cardName, setCardName] = React.useState("Default");
@@ -540,7 +541,7 @@ function Home(props) {
 
   console.log("leftColumnLength", leftColumnLength);
   console.log("rightColumnLength", rightColumnLength);
-  console.log("leftElementList", leftElementList)
+  console.log("leftElementList", leftElementList);
 
   return (
     <Box p={2}>
@@ -584,19 +585,74 @@ function Home(props) {
             >
               {/* Layout configuration */}
               {!isInsert && (
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  sx={{ borderRadius: "50px", borderWidth: "2px", my: "30px" }}
-                  onClick={() => {
-                    const increment = 1 + layoutLength;
-                    setIsInsert(true);
-                    setLayoutLength(increment);
-                    setLayoutSelected(increment);
-                  }}
-                >
-                  + Add Layout
-                </Button>
+                <>
+                 <List sx={{ width: "95%" }}>
+                    <ListItemButton
+                      sx={{ borderBottom: "2px solid #C1C1C1" }}
+                      onClick={() => {
+                        setOpen2(!open2);
+                      }}
+                    >
+                      <ListItemText primary="Options" />
+                      {open2 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse
+                      in={open2}
+                      timeout="auto"
+                      unmountOnExit
+                      sx={{ p: 2 }}
+                    >
+                      <Typography variant="h6">Background</Typography>
+
+                      <Box mt={1} mb={2}>
+                        <TextField
+                          fullWidth
+                          type="color"
+                          size="small"
+                          label="Border Radius"
+                          sx={{mb: '20px'}}
+                          onChange={(e) => {
+                            const leftKolom = document.getElementById("content_main");
+
+                            if (leftKolom) {
+                              leftKolom.style.backgroundColor = e.target.value;
+                            }
+                    
+                          }}
+                        />
+
+                        <TextField
+                          fullWidth
+                          type="range"
+                          size="small"
+                          label="Border Radius"
+                          onChange={(e) => {
+                            const leftKolom = document.getElementById("content_main");
+
+                            if (leftKolom) {
+                              leftKolom.style.borderRadius = `${e.target.value}px`;
+                            }
+                    
+                          }}
+                        />
+                      </Box>
+                    </Collapse>
+                  </List>
+
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    sx={{ borderRadius: "50px", borderWidth: "2px", mb: "30px" }}
+                    onClick={() => {
+                      const increment = 1 + layoutLength;
+                      setIsInsert(true);
+                      setLayoutLength(increment);
+                      setLayoutSelected(increment);
+                    }}
+                  >
+                    + Add Layout
+                  </Button>
+                </>
               )}
 
               {!isInsert && (
@@ -1033,26 +1089,38 @@ function Home(props) {
                                   setContentPosition("left");
                                   setLeftColumnSelected(next);
 
-                                  if (leftElementList[`left_${next}_${layoutSelected}`]) {
+                                  if (
+                                    leftElementList[
+                                      `left_${next}_${layoutSelected}`
+                                    ]
+                                  ) {
                                     setContentType(
-                                      leftElementList[`left_${next}_${layoutSelected}`]
+                                      leftElementList[
+                                        `left_${next}_${layoutSelected}`
+                                      ]
                                     );
                                     if (
-                                      leftElementList[`left_${next}_${layoutSelected}`] ===
-                                      "button"
+                                      leftElementList[
+                                        `left_${next}_${layoutSelected}`
+                                      ] === "button"
                                     ) {
                                       setSelectedFormType(1);
                                     } else if (
-                                      leftElementList[`left_${next}_${layoutSelected}`] === "text"
+                                      leftElementList[
+                                        `left_${next}_${layoutSelected}`
+                                      ] === "text"
                                     ) {
                                       setSelectedFormType(2);
                                     } else if (
-                                      leftElementList[`left_${next}_${layoutSelected}`] ===
-                                      "image"
+                                      leftElementList[
+                                        `left_${next}_${layoutSelected}`
+                                      ] === "image"
                                     ) {
                                       setSelectedFormType(3);
                                     } else if (
-                                      leftElementList[`left_${next}_${layoutSelected}`] === "link"
+                                      leftElementList[
+                                        `left_${next}_${layoutSelected}`
+                                      ] === "link"
                                     ) {
                                       setSelectedFormType(4);
                                     }
@@ -1070,8 +1138,12 @@ function Home(props) {
                                     display: "block",
                                   }}
                                 >
-                                  {leftElementList[`left_${next}_${layoutSelected}`]
-                                    ? leftElementList[`left_${next}_${layoutSelected}`]
+                                  {leftElementList[
+                                    `left_${next}_${layoutSelected}`
+                                  ]
+                                    ? leftElementList[
+                                        `left_${next}_${layoutSelected}`
+                                      ]
                                     : "Element"}{" "}
                                   <span style={{ color: "rgb(193 188 188)" }}>
                                     {next}/{leftColumnLength[layoutSelected]}
@@ -1215,28 +1287,38 @@ function Home(props) {
                                       setContentPosition("right");
                                       setLeftColumnSelected(next);
 
-                                      if (leftElementList[`right_${next}_${layoutSelected}`]) {
+                                      if (
+                                        leftElementList[
+                                          `right_${next}_${layoutSelected}`
+                                        ]
+                                      ) {
                                         setContentType(
-                                          leftElementList[`right_${next}_${layoutSelected}`]
+                                          leftElementList[
+                                            `right_${next}_${layoutSelected}`
+                                          ]
                                         );
                                         if (
-                                          leftElementList[`right_${next}_${layoutSelected}`] ===
-                                          "button"
+                                          leftElementList[
+                                            `right_${next}_${layoutSelected}`
+                                          ] === "button"
                                         ) {
                                           setSelectedFormType(1);
                                         } else if (
-                                          leftElementList[`right_${next}_${layoutSelected}`] ===
-                                          "text"
+                                          leftElementList[
+                                            `right_${next}_${layoutSelected}`
+                                          ] === "text"
                                         ) {
                                           setSelectedFormType(2);
                                         } else if (
-                                          leftElementList[`right_${next}_${layoutSelected}`] ===
-                                          "image"
+                                          leftElementList[
+                                            `right_${next}_${layoutSelected}`
+                                          ] === "image"
                                         ) {
                                           setSelectedFormType(3);
                                         } else if (
-                                          leftElementList[`right_${next}_${layoutSelected}`] ===
-                                          "link"
+                                          leftElementList[
+                                            `right_${next}_${layoutSelected}`
+                                          ] === "link"
                                         ) {
                                           setSelectedFormType(4);
                                         }
@@ -1251,8 +1333,12 @@ function Home(props) {
                                       color="#fff"
                                       sx={{ textTransform: "capitalize" }}
                                     >
-                                      {leftElementList[`right_${next}_${layoutSelected}`]
-                                        ? leftElementList[`right_${next}_${layoutSelected}`]
+                                      {leftElementList[
+                                        `right_${next}_${layoutSelected}`
+                                      ]
+                                        ? leftElementList[
+                                            `right_${next}_${layoutSelected}`
+                                          ]
                                         : "Element"}{" "}
                                       <span
                                         style={{ color: "rgb(193 188 188)" }}
@@ -1303,7 +1389,8 @@ function Home(props) {
                         }}
                         color="secondary"
                         onClick={() => {
-                          const next = rightColumnLength?.[layoutSelected]??1 + 1;
+                          const next =
+                            rightColumnLength?.[layoutSelected] ?? 1 + 1;
                           setRightColumnLength({
                             ...rightColumnLength,
                             ...{ [layoutSelected]: next },
@@ -3112,23 +3199,27 @@ function Home(props) {
               overflowY: "auto",
             }}
           >
-            <Box id="content_main">
+            <Box
+              id="content_main"
+              sx={{
+                backgroundColor: "rgb(193, 193, 193)",
+                border: "3px dashed #00a3d3",
+                borderRadius: "10px",
+              }}
+            >
               {selectedTypeList?.map((_items) => {
                 const currentType = parseInt(_items?.split("_")[1]);
                 const currentIndex = parseInt(_items?.split("_")[0]);
 
-
-                if (currentType && !layoutDeletedList.find((_item) => _item == currentIndex)) {
+                if (
+                  currentType &&
+                  !layoutDeletedList.find((_item) => _item == currentIndex)
+                ) {
                   return (
                     <>
                       {currentType === 1 && (
                         <Box
                           id={`content_tipe_1_${currentIndex}`}
-                          sx={{
-                            backgroundColor: "rgb(193, 193, 193)",
-                            border: "3px dashed #00a3d3",
-                            borderRadius: "10px",
-                          }}
                           style={{
                             minHeight: contentSelectedType?.[
                               `1_${contentType}_${contentPosition}_${leftColumnSelected}_${currentIndex}`
@@ -3138,7 +3229,7 @@ function Home(props) {
                             // width: "100%",
                             padding: "20px",
                             gap: 2,
-                            marginBottom: "20px",
+                            paddingBottom: "20px",
                             ...styleLayout,
                           }}
                         >
@@ -3201,11 +3292,6 @@ function Home(props) {
                       {currentType === 2 && (
                         <Box
                           id={`content_tipe_2_${currentIndex}`}
-                          sx={{
-                            backgroundColor: "rgb(193, 193, 193)",
-                            border: "3px dashed #00a3d3",
-                            borderRadius: "10px",
-                          }}
                           // style={{
                           //   minHeight: "50%",
                           //   // width: "100%",
@@ -3224,7 +3310,6 @@ function Home(props) {
                             paddingTop: "1.25rem",
                             paddingBottom: "1.25rem",
                             gap: "20px",
-                            marginBottom: "20px",
                             ...styleLayout,
                           }}
                         >
