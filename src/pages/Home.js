@@ -57,8 +57,8 @@ function Home(props) {
   const [eventSelectedType, setEventSelectedType] = React.useState({}); // event handler
   // core dari card
 
-  const [leftColumnLength, setLeftColumnLength] = React.useState(1);
-  const [rightColumnLength, setRightColumnLength] = React.useState(1);
+  const [leftColumnLength, setLeftColumnLength] = React.useState({"1": 1});
+  const [rightColumnLength, setRightColumnLength] = React.useState({"1": 1});
   const [leftColumnSelected, setLeftColumnSelected] = React.useState(0);
   const [leftElementList, setLeftElementList] = React.useState({});
   const [leftElementDeleteList, setLeftElementDeleteList] = React.useState([]);
@@ -78,7 +78,7 @@ function Home(props) {
     // Dapatkan elemen yang ingin Anda ubah gayanya
     const elementToUpdate =
       contentSelectedType?.[
-        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
       ]?.content;
 
     // // Buat elemen baru dengan gaya yang diubah
@@ -89,14 +89,14 @@ function Home(props) {
     setStyleSelectedType({
       ...styleSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
           value,
       },
     });
 
     // Perbarui elemen dalam state contentSelectedType
     contentSelectedType[
-      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
     ].content = updatedElement;
   };
 
@@ -104,7 +104,7 @@ function Home(props) {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
           {
             content: value,
           },
@@ -116,7 +116,7 @@ function Home(props) {
     // Dapatkan elemen yang ingin Anda ubah event-nya
     const elementToUpdate =
       contentSelectedType?.[
-        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
       ]?.content;
 
     // Buat elemen baru dengan event yang diubah
@@ -135,14 +135,14 @@ function Home(props) {
     setEventSelectedType({
       ...eventSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
           value,
       },
     });
 
     // Perbarui elemen dalam state contentSelectedType
     contentSelectedType[
-      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
     ].content = updatedElement;
   };
 
@@ -492,7 +492,7 @@ function Home(props) {
           target={target}
           style={{
             ...styleSelectedType?.[
-              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
             ],
             color: "inherit",
             textDecoration: "inherit",
@@ -506,7 +506,7 @@ function Home(props) {
 
     setContentSelectedType((prevContentSelectedType) => ({
       ...prevContentSelectedType,
-      [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+      [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
         {
           content: updatedElement,
         },
@@ -514,7 +514,7 @@ function Home(props) {
 
     setEventSelectedType((prevEventSelectedType) => ({
       ...prevEventSelectedType,
-      [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+      [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
         {
           link,
           target,
@@ -984,7 +984,7 @@ function Home(props) {
                       width: "100%",
                     }}
                   >
-                    {[...new Array(leftColumnLength)].map((item, key) => {
+                    {[...new Array(leftColumnLength[layoutSelected])].map((item, key) => {
                       const next = 1 + key;
 
                       if (
@@ -1051,11 +1051,11 @@ function Home(props) {
                                   ? leftElementList[`left_${next}`]
                                   : "Element"}{" "}
                                 <span style={{ color: "rgb(193 188 188)" }}>
-                                  {next}/{leftColumnLength}
+                                  {next}/{leftColumnLength[layoutSelected]}
                                 </span>
                               </Typography>
                             </div>
-                            {leftColumnLength > 1 ? (
+                            {leftColumnLength[layoutSelected] > 1 ? (
                               <div
                                 onClick={() => {
                                   if (
@@ -1084,7 +1084,7 @@ function Home(props) {
                       mt: 1,
                     }}
                     onClick={() => {
-                      const next = leftColumnLength + 1;
+                      const next = leftColumnLength[layoutSelected] + 1;
                       setLeftColumnLength(next);
                       setContentPosition("left");
                       setOnFormType("element");
@@ -1151,7 +1151,7 @@ function Home(props) {
                           width: "100%",
                         }}
                       >
-                        {[...new Array(rightColumnLength)].map((item, key) => {
+                        {[...new Array(rightColumnLength[layoutSelected])].map((item, key) => {
                           const next = 1 + key;
                           if (
                             !leftElementDeleteList.find(
@@ -1222,12 +1222,12 @@ function Home(props) {
                                       ? leftElementList[`right_${next}`]
                                       : "Element"}{" "}
                                     <span style={{ color: "rgb(193 188 188)" }}>
-                                      {next}/{leftColumnLength}
+                                      {next}/{leftColumnLength[layoutSelected]}
                                     </span>
                                   </Typography>
                                 </div>
 
-                                {rightColumnLength > 1 ? (
+                                {rightColumnLength[layoutSelected] > 1 ? (
                                   <div
                                     onClick={() => {
                                       if (
@@ -1262,7 +1262,7 @@ function Home(props) {
                         }}
                         color="secondary"
                         onClick={() => {
-                          const next = rightColumnLength + 1;
+                          const next = rightColumnLength[layoutSelected] + 1;
                           setRightColumnLength(next);
                           setOnFormType("element");
                           setContentPosition("right");
@@ -1510,12 +1510,12 @@ function Home(props) {
                                 <button
                                   style={
                                     contentSelectedType?.[
-                                      `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_button_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.style ?? {}
                                   }
                                 >
                                   {contentSelectedType?.[
-                                    `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_button_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ]?.content?.props?.children ??
                                     "insert content"}
                                 </button>
@@ -1572,12 +1572,12 @@ function Home(props) {
                                 <p
                                   style={
                                     contentSelectedType?.[
-                                      `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_text_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.style ?? {}
                                   }
                                 >
                                   {contentSelectedType?.[
-                                    `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_text_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ]?.content?.props?.children ?? "Test"}
                                 </p>
                               ),
@@ -1632,13 +1632,13 @@ function Home(props) {
                                 <img
                                   style={
                                     contentSelectedType?.[
-                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.style ?? {}
                                   }
                                   alt="image"
                                   src={
                                     contentSelectedType?.[
-                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.src ??
                                     "https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png"
                                   }
@@ -1696,13 +1696,13 @@ function Home(props) {
                                 <a
                                   style={
                                     contentSelectedType?.[
-                                      `${selectedType}_link_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_link_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.style ?? {}
                                   }
                                   href="#"
                                 >
                                   {contentSelectedType?.[
-                                    `${selectedType}_link_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_link_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ]?.content?.props?.children ?? "Link"}
                                 </a>
                               ),
@@ -1781,7 +1781,7 @@ function Home(props) {
                           rows={4}
                           defaultValue={
                             contentSelectedType?.[
-                              `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_button_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.content?.props?.children ?? ""
                           }
                           onChange={(e) =>
@@ -1789,7 +1789,7 @@ function Home(props) {
                               <button
                                 style={
                                   styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ]
                                 }
                               >
@@ -1806,7 +1806,7 @@ function Home(props) {
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ textTransform: e.target.value },
                               });
@@ -1814,7 +1814,7 @@ function Home(props) {
                             label="Letter Case"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.textTransform
                             }
                           >
@@ -1831,13 +1831,13 @@ function Home(props) {
                           type="color"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.backgroundColor
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{
                                 backgroundColor: e.target.value,
@@ -1855,13 +1855,13 @@ function Home(props) {
                           type="color"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.color
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{
                                 color: e.target.value,
@@ -1876,14 +1876,14 @@ function Home(props) {
                             labelId="Style"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.styleButton
                             }
                             onChange={(e) => {
                               if (e.target.value === "Outline") {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     styleButton: "Outline",
@@ -1894,7 +1894,7 @@ function Home(props) {
                               } else if (e.target.value === "Default") {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     styleButton: "Default",
@@ -1905,7 +1905,7 @@ function Home(props) {
                               } else {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     styleButton: "Simple",
@@ -1932,13 +1932,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.paddingTop?.replace("px", "") ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ paddingTop: `${e.target.value}px` },
                               });
@@ -1951,13 +1951,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.paddingRight?.replace("px", "") ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ paddingRight: `${e.target.value}px` },
                               });
@@ -1970,13 +1970,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.paddingBottom?.replace("px", "") ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ paddingBottom: `${e.target.value}px` },
                               });
@@ -1989,13 +1989,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.paddingLeft?.replace("px", "") ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ paddingLeft: `${e.target.value}px` },
                               });
@@ -2012,13 +2012,13 @@ function Home(props) {
                           variant="outlined"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.borderRadius?.replace("px", "") ?? ""
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ borderRadius: `${e.target.value}px` },
                             });
@@ -2032,13 +2032,13 @@ function Home(props) {
                             label="Expand"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.widthExpand ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   widthExpand: true,
@@ -2062,7 +2062,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeEvent({
                               ...(eventSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ link: e.target.value },
                             });
@@ -2076,7 +2076,7 @@ function Home(props) {
                             onChange={(e) => {
                               handleChangeEvent({
                                 ...(eventSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ target: e.target.value },
                               });
@@ -2099,14 +2099,14 @@ function Home(props) {
                             label="Visibility"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.visibilityStatus ?? ""
                             }
                             onChange={(e) => {
                               if (e.target.value === true) {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     visibilityStatus: true,
@@ -2117,7 +2117,7 @@ function Home(props) {
                               } else {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     visibilityStatus: false,
@@ -2209,7 +2209,7 @@ function Home(props) {
                         rows={4}
                         defaultValue={
                           contentSelectedType?.[
-                            `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_text_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.content?.props?.children ?? ""
                         }
                         onChange={(e) => {
@@ -2217,7 +2217,7 @@ function Home(props) {
                             <p
                               style={{
                                 ...styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ],
                                 margin: 0,
                               }}
@@ -2236,13 +2236,13 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={parseInt(
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.fontSize?.replace("px", "") ?? 0
                         )}
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ fontSize: `${e.target.value}px` },
                           });
@@ -2254,13 +2254,13 @@ function Home(props) {
                           labelId="font_weight"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.fontWeight ?? ""
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ fontWeight: e.target.value },
                             });
@@ -2280,13 +2280,13 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={parseInt(
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.lineHeight?.replace("px", "") ?? 0
                         )}
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ lineHeight: `${e.target.value}px`, margin: 0 },
                           });
@@ -2298,13 +2298,13 @@ function Home(props) {
                           labelId="text_align"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.textAlign ?? ""
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ textAlign: e.target.value },
                             });
@@ -2326,13 +2326,13 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.color ?? ""
                         }
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ color: e.target.value },
                           });
@@ -2351,7 +2351,7 @@ function Home(props) {
                             if (e.target.value === true) {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "block",
@@ -2361,7 +2361,7 @@ function Home(props) {
                             } else {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "none",
@@ -2472,7 +2472,7 @@ function Home(props) {
                                         display: "inline",
                                         borderRadius: "inherit",
                                         ...styleSelectedType?.[
-                                          `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                          `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                         ],
                                       }}
                                       src={result?.data?.image?.url}
@@ -2492,7 +2492,7 @@ function Home(props) {
                           margin="dense"
                           defaultValue={
                             contentSelectedType?.[
-                              `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_image_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.content?.props?.src ?? ""
                           }
                           variant="outlined"
@@ -2505,7 +2505,7 @@ function Home(props) {
                                   display: "inline",
                                   borderRadius: "inherit",
                                   ...styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ],
                                 }}
                                 src={e.target.value}
@@ -2523,13 +2523,13 @@ function Home(props) {
                           variant="outlined"
                           defaultValue={parseInt(
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.width?.replace("%", "") ?? 0
                           )}
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ width: `${e.target.value}%` },
                             });
@@ -2545,13 +2545,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={parseInt(
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.marginTop?.replace("px", "") ?? 0
                             )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ marginTop: `${e.target.value}px` },
                               });
@@ -2564,13 +2564,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={parseInt(
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.marginRight?.replace("px", "") ?? 0
                             )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ marginRight: `${e.target.value}px` },
                               });
@@ -2583,13 +2583,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={parseInt(
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.marginBottom?.replace("px", "") ?? 0
                             )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ marginBottom: `${e.target.value}px` },
                               });
@@ -2602,13 +2602,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={parseInt(
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.marginLeft?.replace("px", "") ?? 0
                             )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ marginLeft: `${e.target.value}px` },
                               });
@@ -2625,14 +2625,14 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeEvent({
                               ...(eventSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ link: e.target.value },
                             });
 
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ cursor: `pointer` },
                             });
@@ -2646,7 +2646,7 @@ function Home(props) {
                             onChange={(e) => {
                               handleChangeEvent({
                                 ...(eventSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ target: e.target.value },
                               });
@@ -2671,7 +2671,7 @@ function Home(props) {
                               if (e.target.value === true) {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     display: "block",
@@ -2681,7 +2681,7 @@ function Home(props) {
                               } else {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     display: "none",
@@ -2782,14 +2782,14 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.fontSize ?? 0
                         }
                         onChange={(e) => {
                           handleChangeFontSize(e.target.value);
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ fontSize: e.target.value },
                           });
@@ -2802,7 +2802,7 @@ function Home(props) {
                           value={fontWeightValue}
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.fontWeight ?? ""
                           }
                           onChange={(e) => {
@@ -2810,7 +2810,7 @@ function Home(props) {
 
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ fontWeight: e.target.value },
                             });
@@ -2830,14 +2830,14 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.lineHeight ?? 0
                         }
                         onChange={(e) => {
                           handleChangeLineHeight(e.target.value);
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ lineHeight: e.target.value },
                           });
@@ -2852,14 +2852,14 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.color ?? ""
                         }
                         onChange={(e) => {
                           handleChangeTextColor(e.target.value);
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ color: e.target.value },
                           });
@@ -2873,14 +2873,14 @@ function Home(props) {
                           label="Letter Case"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.textTransform ?? ""
                           }
                           onChange={(e) => {
                             handleChangeLetterCase(e.target.value);
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ textTransform: e.target.value },
                             });
@@ -2899,14 +2899,14 @@ function Home(props) {
                           label="Style"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.textDecoration ?? ""
                           }
                           onChange={(e) => {
                             handleChangeStyleLink(e.target.value);
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ textDecoration: e.target.value },
                             });
@@ -2950,7 +2950,7 @@ function Home(props) {
                             if (e.target.value === true) {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "block",
@@ -2960,7 +2960,7 @@ function Home(props) {
                             } else {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "none",
@@ -3085,7 +3085,7 @@ function Home(props) {
                           }}
                           style={{
                             minHeight: contentSelectedType?.[
-                              `1_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `1_${contentType}_${contentPosition}_${leftColumnSelected}_${currentIndex}`
                             ]?.content
                               ? "0px"
                               : "50%",
@@ -3096,7 +3096,7 @@ function Home(props) {
                             ...styleLayout,
                           }}
                         >
-                          {[...new Array(leftColumnLength)].map((item, key) => {
+                          {[...new Array(leftColumnLength[currentIndex])].map((item, key) => {
                             const next = 1 + key;
                             if (
                               !leftElementDeleteList.find(
@@ -3115,32 +3115,32 @@ function Home(props) {
                                     width: "100%",
                                     minHeight:
                                       contentSelectedType?.[
-                                        `1_button_${contentPosition}_${next}`
+                                        `1_button_${contentPosition}_${next}_${currentIndex}`
                                       ]?.content ??
                                       contentSelectedType?.[
-                                        `1_text_${contentPosition}_${next}`
+                                        `1_text_${contentPosition}_${next}_${currentIndex}`
                                       ]?.content ??
                                       contentSelectedType?.[
-                                        `1_image_${contentPosition}_${next}`
+                                        `1_image_${contentPosition}_${next}_${currentIndex}`
                                       ]?.content ??
                                       contentSelectedType?.[
-                                        `1_link_${contentPosition}_${next}`
+                                        `1_link_${contentPosition}_${next}_${currentIndex}`
                                       ]?.content
                                         ? "0px"
                                         : "380px",
                                   }}
                                 >
                                   {contentSelectedType?.[
-                                    `1_button_${contentPosition}_${next}`
+                                    `1_button_${contentPosition}_${next}_${currentIndex}`
                                   ]?.content ??
                                     contentSelectedType?.[
-                                      `1_text_${contentPosition}_${next}`
+                                      `1_text_${contentPosition}_${next}_${currentIndex}`
                                     ]?.content ??
                                     contentSelectedType?.[
-                                      `1_image_${contentPosition}_${next}`
+                                      `1_image_${contentPosition}_${next}_${currentIndex}`
                                     ]?.content ??
                                     contentSelectedType?.[
-                                      `1_link_${contentPosition}_${next}`
+                                      `1_link_${contentPosition}_${next}_${currentIndex}`
                                     ]?.content}
                                 </Box>
                               );
@@ -3189,7 +3189,7 @@ function Home(props) {
                               overflow: "hidden",
                             }}
                           >
-                            {[...new Array(leftColumnLength)].map((item, key) => {
+                            {[...new Array(leftColumnLength[currentIndex])].map((item, key) => {
                               const next = 1 + key;
 
                               if (
@@ -3206,31 +3206,31 @@ function Home(props) {
                                     style={{
                                       // width: "100%",
                                       minHeight:
-                                        contentSelectedType?.[`2_button_left_${next}`]
+                                        contentSelectedType?.[`2_button_left_${next}_${currentIndex}`]
                                           ?.content ??
-                                        contentSelectedType?.[`2_text_left_${next}`]
+                                        contentSelectedType?.[`2_text_left_${next}_${currentIndex}`]
                                           ?.content ??
-                                        contentSelectedType?.[`2_image_left_${next}`]
+                                        contentSelectedType?.[`2_image_left_${next}_${currentIndex}`]
                                           ?.content ??
-                                        contentSelectedType?.[`2_link_left_${next}`]
+                                        contentSelectedType?.[`2_link_left_${next}_${currentIndex}`]
                                           ?.content ??
                                         contentSelectedType?.[
-                                          `2_${contentType2?.left}_left_${next}`
+                                          `2_${contentType2?.left}_left_${next}_${currentIndex}`
                                         ]?.content
                                           ? "0px"
                                           : "380px",
                                     }}
                                   >
-                                    {contentSelectedType?.[`2_button_left_${next}`]
+                                    {contentSelectedType?.[`2_button_left_${next}_${currentIndex}`]
                                       ?.content ??
-                                      contentSelectedType?.[`2_text_left_${next}`]
+                                      contentSelectedType?.[`2_text_left_${next}_${currentIndex}`]
                                         ?.content ??
-                                      contentSelectedType?.[`2_image_left_${next}`]
+                                      contentSelectedType?.[`2_image_left_${next}_${currentIndex}`]
                                         ?.content ??
-                                      contentSelectedType?.[`2_link_left_${next}`]
+                                      contentSelectedType?.[`2_link_left_${next}_${currentIndex}`]
                                         ?.content ??
                                       contentSelectedType?.[
-                                        `2_${contentType2?.left}_left_${next}`
+                                        `2_${contentType2?.left}_left_${next}_${currentIndex}`
                                       ]?.content}
                                   </Box>
                                 );
@@ -3248,7 +3248,7 @@ function Home(props) {
                             }}
                             id={`rightKolom-${currentIndex}`}
                           >
-                            {[...new Array(rightColumnLength)].map((item, key) => {
+                            {[...new Array(rightColumnLength[currentIndex])].map((item, key) => {
                               const next = 1 + key;
 
                               if (
@@ -3265,31 +3265,39 @@ function Home(props) {
                                     style={{
                                       // width: "50%",
                                       minHeight:
-                                        contentSelectedType?.[`2_button_right_${next}`]
-                                          ?.content ??
-                                        contentSelectedType?.[`2_text_right_${next}`]
-                                          ?.content ??
-                                        contentSelectedType?.[`2_image_right_${next}`]
-                                          ?.content ??
-                                        contentSelectedType?.[`2_link_right_${next}`]
-                                          ?.content ??
                                         contentSelectedType?.[
-                                          `2_${contentType2?.right}_right_${next}`
+                                          `2_button_right_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `2_text_right_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `2_image_right_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `2_link_right_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `2_${contentType2?.right}_right_${next}_${currentIndex}`
                                         ]?.content
                                           ? "0px"
                                           : "380px",
                                     }}
                                   >
-                                    {contentSelectedType?.[`2_button_right_${next}`]
-                                      ?.content ??
-                                      contentSelectedType?.[`2_text_right_${next}`]
-                                        ?.content ??
-                                      contentSelectedType?.[`2_image_right_${next}`]
-                                        ?.content ??
-                                      contentSelectedType?.[`2_link_right_${next}`]
-                                        ?.content ??
+                                    {contentSelectedType?.[
+                                      `2_button_right_${next}_${currentIndex}`
+                                    ]?.content ??
                                       contentSelectedType?.[
-                                        `2_${contentType2?.right}_right_${next}`
+                                        `2_text_right_${next}_${currentIndex}`
+                                      ]?.content ??
+                                      contentSelectedType?.[
+                                        `2_image_right_${next}_${currentIndex}`
+                                      ]?.content ??
+                                      contentSelectedType?.[
+                                        `2_link_right_${next}_${currentIndex}`
+                                      ]?.content ??
+                                      contentSelectedType?.[
+                                        `2_${contentType2?.right}_right_${next}_${currentIndex}`
                                       ]?.content}
                                   </Box>
                                 );
