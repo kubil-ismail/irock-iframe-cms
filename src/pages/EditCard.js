@@ -37,7 +37,7 @@ function Home(props) {
   const [open, setOpen] = React.useState(false);
   const [selectedFormType, setSelectedFormType] = React.useState(0);
   const [isDouble, setIsDouble] = React.useState(true);
-  const [cardName, setCardName] = React.useState("Default");
+  const [cardName, setCardName] = React.useState("");
   const [langCard, setLangCard] = React.useState("id");
 
   // new logic
@@ -169,16 +169,21 @@ function Home(props) {
       });
     } catch (error) {}
   };
+  
+  const idScroll = id - 1;
 
   const handleSave = async () => {
     if (showInFAQ) {
       // jika show in FAQ ON
+      // ini jangan dibuang untuk show in faq
       const divElement = document.createElement("div");
       divElement.id = scrollId;
       divElement.style.width = "100%";
       divElement.style.height = "50px";
       divElement.style.marginTop = "-50px";
       divElement.innerHTML = "<div></div>";
+      const contentHTML = divElement.outerHTML;
+      // ini jangan dibuang untuk show in faq
 
       const contentElement = document.querySelector(
         `#content_tipe_${selectedType}`
@@ -186,10 +191,37 @@ function Home(props) {
 
       const contentText = contentElement.outerHTML;
 
-      http
-        .post(`/ui-build/save-edited-card/${id}`, {
+      // ini jangan dibuang untuk show in faq
+      http.post(`/ui-build/save-edited-card/${idScroll}`, {
+        type: "card_v2",
+        title: `#${scrollId}`,
+        content: contentHTML,
+        section: pageSection,
+        parameter: 'show_in_faq',
+        language: 'en',
+        enable: 1,
+        sharetext: cardName
+      });
+      http.post(`/ui-build/save-edited-card/${idScroll}`, {
+        type: "card_v2",
+        title: `#${scrollId}`,
+        content: contentHTML,
+        section: pageSection,
+        parameter: 'show_in_faq',
+        language: 'id',
+        enable: 1,
+        sharetext: cardName
+      });
+      // ini jangan dibuang untuk show in faq
+
+      http.post(`/ui-build/save-edited-card/${id}`, {
           type: "card_v2",
           title: cardName,
+
+          // ini jangan dibuang untuk deteksi bahasa card yang di edit
+          language: language,
+          // ini jangan dibuang untuk deteksi bahasa card yang di edit
+
           content: contentText,
           section: pageSection,
            left_content: JSON.stringify({
@@ -202,7 +234,11 @@ function Home(props) {
           }), // susunan row & column
           right_content: JSON.stringify(contentSelectedType), // main content valuenya
           style_selected: JSON.stringify(styleSelectedType), // style tiap dari element,
-          style_layout: JSON.stringify({}) // style parent cardnya
+          style_layout: JSON.stringify({}), // style parent cardnya
+
+          // ini jangan dibuang untuk show in faq
+          parameter: 'parent_to_show_in_faq'
+          // ini jangan dibuang untuk show in faq
         })
         .then(() => {
           Swal.fire({
@@ -212,7 +248,10 @@ function Home(props) {
             timer: 2000,
             showCancelButton: false,
             showConfirmButton: false,
-            language: langCard,
+
+            // ini gak dipake karena bahasa udah didetek otomatis dari param language
+            // language: langCard,
+            // ini gak dipake karena bahasa udah didetek otomatis dari param language
           });
 
           window.parent.postMessage(
@@ -222,16 +261,49 @@ function Home(props) {
         });
     } else {
       // jika show in FAQ off
+      // ini jangan dibuang untuk show in faq
+      const divElement = document.createElement("div");
+      divElement.id = scrollId;
+      divElement.style.width = "100%";
+      divElement.style.height = "50px";
+      divElement.style.marginTop = "-50px";
+      divElement.innerHTML = "<div></div>";
+      const contentHTML = divElement.outerHTML;
+      // ini jangan dibuang untuk show in faq
+
       const contentElement = document.querySelector(
         `#content_tipe_${selectedType}`
       );
 
       const contentText = contentElement.outerHTML;
 
-      http
-        .post(`/ui-build/save-edited-card/${id}`, {
+      // ini jangan dibuang untuk show in faq
+      http.post(`/ui-build/save-edited-card/${idScroll}`, {
+        type: "card_v2",
+        title: `#${scrollId}`,
+        content: contentHTML,
+        section: pageSection,
+        parameter: 'show_in_faq',
+        language: 'en',
+        enable: 0,
+        sharetext: cardName
+      });
+      http.post(`/ui-build/save-edited-card/${idScroll}`, {
+        type: "card_v2",
+        title: `#${scrollId}`,
+        content: contentHTML,
+        section: pageSection,
+        parameter: 'show_in_faq',
+        language: 'id',
+        enable: 0,
+        sharetext: cardName
+      });
+      // ini jangan dibuang untuk show in faq
+
+      http.post(`/ui-build/save-edited-card/${id}`, {
           type: "card_v2",
           title: cardName,
+          language: language,
           content: contentText,
           section: pageSection,
           left_content: JSON.stringify({
@@ -244,7 +316,11 @@ function Home(props) {
           }), // susunan row & column
           right_content: JSON.stringify(contentSelectedType), // main content valuenya
           style_selected: JSON.stringify(styleSelectedType), // style tiap dari element,
-          style_layout: JSON.stringify({}) // style parent cardnya
+          style_layout: JSON.stringify({}), // style parent cardnya
+
+          // ini jangan dibuang untuk show in faq
+          parameter: 'parent_to_show_in_faq'
+          // ini jangan dibuang untuk show in faq
         })
         .then(() => {
           Swal.fire({
@@ -405,18 +481,50 @@ function Home(props) {
     }));
   };
 
+  // ini jangan dibuang untuk show in faq
   const [showInFAQ, setShowInFAQ] = React.useState(false);
   const [scrollId, setScrollId] = React.useState("");
+  // ini jangan dibuang untuk show in faq
+
+  // ini jangan dibuang untuk show in faq
+  // detek id show in faq children nya
+  React.useEffect(() => {
+    http
+      .get(`/ui-build/get-data-by-id/${language}/${pageSection}/${idScroll}`)
+      .then((result) => {
+        if (result.data?.length) {
+          const datas2 = result.data[0];
+
+          setShowInFAQ(datas2.enable === 1);
+          setScrollId(datas2.title.replace(/^#/, ""));
+
+        } else {
+          Swal.fire({
+            title: "",
+            html: "Cannot find the card selected",
+            icon: "error",
+            timer: 2000,
+            showCancelButton: false,
+            showConfirmButton: false,
+          });
+        }
+      });
+  }, []);
+  // ini jangan dibuang untuk show in faq
 
   React.useEffect(() => {
     http
-      .get(`/ui-build/get-data-by-id/${language}/${section}/${id}`)
+      .get(`/ui-build/get-data-by-id/${language}/${pageSection}/${id}`)
       .then((result) => {
         if (result.data?.length) {
           const datas = result.data[0];
           const left_content = JSON.parse(datas?.left_content);
           const right_content = JSON.parse(datas?.right_content);
           const style_selected = JSON.parse(datas?.style_selected)
+
+          // ini jangan dibuang untuk show in faq
+          setCardName(datas.title);
+          // ini jangan dibuang untuk show in faq
 
           setStyleSelectedType(style_selected);
           setIsInsert(true);
@@ -608,34 +716,6 @@ function Home(props) {
                       unmountOnExit
                       sx={{ p: 2 }}
                     >
-                      <Box mt={1} mb={2}>
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              checked={showInFAQ}
-                              onChange={(e) => setShowInFAQ(e.target.checked)}
-                              name="showInFAQ"
-                            />
-                          }
-                          label="Show in FAQ menu"
-                        />
-
-                        {showInFAQ && (
-                          <TextField
-                            fullWidth
-                            size="small"
-                            label="Scroll Id"
-                            value={scrollId}
-                            onChange={(e) => {
-                              const newValue = e.target.value
-                                .toLowerCase()
-                                .replace(/\s+/g, "-")
-                                .replace(/[^a-z0-9-]/g, "");
-                              setScrollId(newValue);
-                            }}
-                          />
-                        )}
-                      </Box>
 
                       <Typography variant="h6">Card Settings</Typography>
 
@@ -644,9 +724,45 @@ function Home(props) {
                           fullWidth
                           size="small"
                           label="Card label name"
+                          // ini jangan dibuang untuk show in faq
+                          value={cardName}
+                          // ini jangan dibuang untuk show in faq
                           onChange={(e) => setCardName(e.target.value)}
                         />
                       </Box>
+
+                      {/* ini jangan dibuang untuk show in faq */}
+                      {pageSection === 'faq' && (
+                        <Box mt={1} mb={2}>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={showInFAQ}
+                                onChange={(e) => setShowInFAQ(e.target.checked)}
+                                name="showInFAQ"
+                              />
+                            }
+                            label="Show in FAQ menu"
+                          />
+
+                          {showInFAQ && (
+                            <TextField
+                              fullWidth
+                              size="small"
+                              label="Scroll Id"
+                              value={scrollId}
+                              onChange={(e) => {
+                                const newValue = e.target.value
+                                  .toLowerCase()
+                                  .replace(/\s+/g, '-')
+                                  .replace(/[^a-z0-9-]/g, '');
+                                setScrollId(newValue);
+                              }}
+                            />
+                          )}
+                        </Box>
+                      )}
+                      {/* ini jangan dibuang untuk show in faq */}
 
                       <Typography variant="h6">Background</Typography>
 
@@ -715,7 +831,7 @@ function Home(props) {
                       <Typography variant="h6">Options</Typography>
 
                       <Box my={1}>
-                        <FormControl size="small" fullWidth>
+                        {/* <FormControl size="small" fullWidth>
                           <InputLabel id="language">Language</InputLabel>
                           <Select
                             labelId="language"
@@ -728,7 +844,7 @@ function Home(props) {
                             <MenuItem value="id">ID</MenuItem>
                             <MenuItem value="en">EN</MenuItem>
                           </Select>
-                        </FormControl>
+                        </FormControl> */}
 
                         <FormControl size="small" fullWidth>
                           <InputLabel id="visibility">Visibility</InputLabel>

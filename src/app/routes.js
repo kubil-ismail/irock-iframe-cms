@@ -13,7 +13,7 @@ const Routes = [
   //   name: "Edit",
   // },
   {
-    path: "/edit/:language/:section/:id",
+    path: "/edit/:language/:pageSection/:id",
     component: lazy(() => import("pages/EditCard")),
     name: "EditCard",
   },
