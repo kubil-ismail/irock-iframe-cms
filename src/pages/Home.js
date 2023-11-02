@@ -517,15 +517,41 @@ function Home(props) {
 
   const [showInFAQ, setShowInFAQ] = React.useState(false);
   const [scrollId, setScrollId] = React.useState("");
+  const [layoutLength, setLayoutLength] = React.useState(0);
+  const [layoutDeletedList, setLayoutDeletedList] = React.useState([]);
+  const [layoutSelected, setLayoutSelected] = React.useState(null);
+  const [selectedTypeList, setSelectedTypeList] = React.useState([]);
 
   return (
     <Box p={2}>
       <Grid container justifyContent="center">
         {!collapseFullscreen && (
           <Grid item xs={2.5} position="relative">
-            <Typography variant="h4" color="secondary">
-              {formattedPageSection} page
-            </Typography>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="h4" color="secondary">
+                {formattedPageSection} page
+              </Typography>
+              {isInsert && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  sx={{ borderRadius: "50px", borderWidth: "2px", mr: "20px" }}
+                  onClick={() => {
+                    setIsInsert(false);
+                    setSelectedType(0);
+                    setIsDouble(false);
+                    setOnFormType(null);
+                    setLayoutSelected(null);
+                  }}
+                >
+                  Manage Layout
+                </Button>
+              )}
+            </Box>
             <div
               style={{
                 height: "100%",
@@ -536,15 +562,65 @@ function Home(props) {
                 width: "calc(100% - 10px)",
               }}
             >
+              {/* Layout configuration */}
               {!isInsert && (
                 <Button
                   variant="outlined"
                   color="secondary"
-                  sx={{ borderRadius: "50px", borderWidth: "2px", mt: "30px" }}
-                  onClick={() => setIsInsert(true)}
+                  sx={{ borderRadius: "50px", borderWidth: "2px", my: "30px" }}
+                  onClick={() => {
+                    const increment = 1 + layoutLength;
+                    setIsInsert(true);
+                    setLayoutLength(increment);
+                    setLayoutSelected(increment);
+                  }}
                 >
                   + Add Layout
                 </Button>
+              )}
+
+              {!isInsert && (
+                <>
+                  {[...new Array(layoutLength)].map((item, key) => {
+                    const next = 1 + key;
+
+                    if(!layoutDeletedList.find((_item) => _item === next)) {
+                      return (
+                        <Box
+                          sx={{
+                            backgroundColor: "#2e353b",
+                            width: "89%",
+                            p: 0.5,
+                            px: 2,
+                            mb: 1,
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                            display: 'flex',
+                            justifyContent: 'space-between'
+                          }}
+                          onClick={() => setLayoutSelected(next)}
+                        >
+                          <Typography color="#fff">
+                            Layout {next}/{layoutLength - layoutDeletedList.length}
+                          </Typography>
+                          <div
+                            onClick={() => {
+                              if (
+                                window.confirm("Want delete this item ?")
+                              ) {
+                                setLayoutDeletedList([...layoutDeletedList, ...[next]])
+                              }
+                            }}
+                          >
+                            <Tooltip title="Delete layout" arrow>
+                              <CloseIcon htmlColor="#fff" fontSize="12px" />
+                            </Tooltip>
+                          </div>
+                        </Box>
+                      );
+                    }
+                  })}
+                </>
               )}
 
               {/* Insert Layout step 1 */}
@@ -656,6 +732,7 @@ function Home(props) {
                         onClick={() => {
                           setIsOnForm(true);
                           setOnFormType("options");
+                          setSelectedTypeList([...selectedTypeList, ...[`${layoutSelected}_${selectedType}_${new Date().getTime()}`]])
                         }}
                       >
                         Apply
@@ -2983,227 +3060,240 @@ function Home(props) {
               overflowY: "auto",
             }}
           >
-            {isInsert && selectedType === 1 && (
-              <Box
-                id="content_tipe_1"
-                sx={{
-                  backgroundColor: "rgb(193, 193, 193)",
-                  border: "3px dashed #00a3d3",
-                  borderRadius: "10px",
-                }}
-                style={{
-                  minHeight: contentSelectedType?.[
-                    `1_${contentType}_${contentPosition}_${leftColumnSelected}`
-                  ]?.content
-                    ? "0px"
-                    : "50%",
-                  // width: "100%",
-                  padding: "20px",
-                  gap: 2,
-                  ...styleLayout,
-                }}
-              >
-                {[...new Array(leftColumnLength)].map((item, key) => {
-                  const next = 1 + key;
-                  if (
-                    !leftElementDeleteList.find(
-                      (items) => items === `left_${next}`
-                    )
-                  ) {
-                    return (
+            {selectedTypeList?.map((_items) => {
+              const currentType = parseInt(_items?.split("_")[1]);
+              if(currentType) {
+                return (
+                  <>
+                    {currentType === 1 && (
                       <Box
-                        // id="leftKolom"
+                        id="content_tipe_1"
                         sx={{
+                          backgroundColor: "rgb(193, 193, 193)",
                           border: "3px dashed #00a3d3",
                           borderRadius: "10px",
-                          marginBottom: "10px",
                         }}
                         style={{
-                          width: "100%",
-                          minHeight:
-                            contentSelectedType?.[
-                              `1_button_${contentPosition}_${next}`
-                            ]?.content ??
-                            contentSelectedType?.[
-                              `1_text_${contentPosition}_${next}`
-                            ]?.content ??
-                            contentSelectedType?.[
-                              `1_image_${contentPosition}_${next}`
-                            ]?.content ??
-                            contentSelectedType?.[
-                              `1_link_${contentPosition}_${next}`
-                            ]?.content
-                              ? "0px"
-                              : "380px",
+                          minHeight: contentSelectedType?.[
+                            `1_${contentType}_${contentPosition}_${leftColumnSelected}`
+                          ]?.content
+                            ? "0px"
+                            : "50%",
+                          // width: "100%",
+                          padding: "20px",
+                          gap: 2,
+                          marginBottom: "20px",
+                          ...styleLayout,
                         }}
                       >
-                        {contentSelectedType?.[
-                          `1_button_${contentPosition}_${next}`
-                        ]?.content ??
-                          contentSelectedType?.[
-                            `1_text_${contentPosition}_${next}`
-                          ]?.content ??
-                          contentSelectedType?.[
-                            `1_image_${contentPosition}_${next}`
-                          ]?.content ??
-                          contentSelectedType?.[
-                            `1_link_${contentPosition}_${next}`
-                          ]?.content}
+                        {[...new Array(leftColumnLength)].map((item, key) => {
+                          const next = 1 + key;
+                          if (
+                            !leftElementDeleteList.find(
+                              (items) => items === `left_${next}`
+                            )
+                          ) {
+                            return (
+                              <Box
+                                // id="leftKolom"
+                                sx={{
+                                  border: "3px dashed #00a3d3",
+                                  borderRadius: "10px",
+                                  marginBottom: "10px",
+                                }}
+                                style={{
+                                  width: "100%",
+                                  minHeight:
+                                    contentSelectedType?.[
+                                      `1_button_${contentPosition}_${next}`
+                                    ]?.content ??
+                                    contentSelectedType?.[
+                                      `1_text_${contentPosition}_${next}`
+                                    ]?.content ??
+                                    contentSelectedType?.[
+                                      `1_image_${contentPosition}_${next}`
+                                    ]?.content ??
+                                    contentSelectedType?.[
+                                      `1_link_${contentPosition}_${next}`
+                                    ]?.content
+                                      ? "0px"
+                                      : "380px",
+                                }}
+                              >
+                                {contentSelectedType?.[
+                                  `1_button_${contentPosition}_${next}`
+                                ]?.content ??
+                                  contentSelectedType?.[
+                                    `1_text_${contentPosition}_${next}`
+                                  ]?.content ??
+                                  contentSelectedType?.[
+                                    `1_image_${contentPosition}_${next}`
+                                  ]?.content ??
+                                  contentSelectedType?.[
+                                    `1_link_${contentPosition}_${next}`
+                                  ]?.content}
+                              </Box>
+                            );
+                          }
+                        })}
                       </Box>
-                    );
-                  }
-                })}
-              </Box>
-            )}
+                    )}
 
-            {isInsert && selectedType === 2 && (
-              <Box
-                id="content_tipe_2"
-                sx={{
-                  backgroundColor: "rgb(193, 193, 193)",
-                  border: "3px dashed #00a3d3",
-                  borderRadius: "10px",
-                }}
-                // style={{
-                //   minHeight: "50%",
-                //   // width: "100%",
-                //   padding: "20px",
-                //   display: "flex",
-                //   // alignItems: "center",
-                //   gap: 2,
-                //   ...styleLayout,
-                // }}
-                style={{
-                  width: "100%",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                  paddingTop: "1.25rem",
-                  paddingBottom: "1.25rem",
-                  gap: "20px",
-                  ...styleLayout,
-                }}
-              >
-                {/* Column Left */}
-                <Box
-                  id="leftKolom"
-                  style={{
-                    width: "100%",
-                    maxWidth: "480px",
-                    padding: "20px 20px",
-                    overflow: "hidden",
-                  }}
-                >
-                  {[...new Array(leftColumnLength)].map((item, key) => {
-                    const next = 1 + key;
-
-                    if (
-                      !leftElementDeleteList.find(
-                        (items) => items === `left_${next}`
-                      )
-                    ) {
-                      return (
+                    {currentType === 2 && (
+                      <Box
+                        id="content_tipe_2"
+                        sx={{
+                          backgroundColor: "rgb(193, 193, 193)",
+                          border: "3px dashed #00a3d3",
+                          borderRadius: "10px",
+                        }}
+                        // style={{
+                        //   minHeight: "50%",
+                        //   // width: "100%",
+                        //   padding: "20px",
+                        //   display: "flex",
+                        //   // alignItems: "center",
+                        //   gap: 2,
+                        //   ...styleLayout,
+                        // }}
+                        style={{
+                          width: "100%",
+                          overflow: "hidden",
+                          display: "flex",
+                          flexWrap: "wrap",
+                          justifyContent: "center",
+                          paddingTop: "1.25rem",
+                          paddingBottom: "1.25rem",
+                          gap: "20px",
+                          marginBottom: "20px",
+                          ...styleLayout,
+                        }}
+                      >
+                        {/* Column Left */}
                         <Box
-                          sx={{
-                            border: "3px dashed #00a3d3",
-                            borderRadius: "10px",
-                          }}
+                          id="leftKolom"
                           style={{
-                            // width: "100%",
-                            minHeight:
-                              contentSelectedType?.[`2_button_left_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_text_left_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_image_left_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_link_left_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[
-                                `2_${contentType2?.left}_left_${next}`
-                              ]?.content
-                                ? "0px"
-                                : "380px",
+                            width: "100%",
+                            maxWidth: "480px",
+                            padding: "20px 20px",
+                            overflow: "hidden",
                           }}
                         >
-                          {contentSelectedType?.[`2_button_left_${next}`]
-                            ?.content ??
-                            contentSelectedType?.[`2_text_left_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[`2_image_left_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[`2_link_left_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[
-                              `2_${contentType2?.left}_left_${next}`
-                            ]?.content}
-                        </Box>
-                      );
-                    }
-                  })}
-                </Box>
-                {/* Column Right */}
-                <Box
-                  style={{
-                    width: "100%",
-                    maxWidth: "480px",
-                    marginBottom: "20px",
-                    padding: "20px 20px",
-                    overflow: "hidden",
-                  }}
-                  id="rightKolom"
-                >
-                  {[...new Array(rightColumnLength)].map((item, key) => {
-                    const next = 1 + key;
+                          {[...new Array(leftColumnLength)].map((item, key) => {
+                            const next = 1 + key;
 
-                    if (
-                      !leftElementDeleteList.find(
-                        (items) => items === `right_${next}`
-                      )
-                    ) {
-                      return (
-                        <Box
-                          sx={{
-                            border: "3px dashed #00a3d3",
-                            borderRadius: "10px",
-                          }}
-                          style={{
-                            // width: "50%",
-                            minHeight:
-                              contentSelectedType?.[`2_button_right_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_text_right_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_image_right_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_link_right_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[
-                                `2_${contentType2?.right}_right_${next}`
-                              ]?.content
-                                ? "0px"
-                                : "380px",
-                          }}
-                        >
-                          {contentSelectedType?.[`2_button_right_${next}`]
-                            ?.content ??
-                            contentSelectedType?.[`2_text_right_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[`2_image_right_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[`2_link_right_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[
-                              `2_${contentType2?.right}_right_${next}`
-                            ]?.content}
+                            if (
+                              !leftElementDeleteList.find(
+                                (items) => items === `left_${next}`
+                              )
+                            ) {
+                              return (
+                                <Box
+                                  sx={{
+                                    border: "3px dashed #00a3d3",
+                                    borderRadius: "10px",
+                                  }}
+                                  style={{
+                                    // width: "100%",
+                                    minHeight:
+                                      contentSelectedType?.[`2_button_left_${next}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_text_left_${next}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_image_left_${next}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_link_left_${next}`]
+                                        ?.content ??
+                                      contentSelectedType?.[
+                                        `2_${contentType2?.left}_left_${next}`
+                                      ]?.content
+                                        ? "0px"
+                                        : "380px",
+                                  }}
+                                >
+                                  {contentSelectedType?.[`2_button_left_${next}`]
+                                    ?.content ??
+                                    contentSelectedType?.[`2_text_left_${next}`]
+                                      ?.content ??
+                                    contentSelectedType?.[`2_image_left_${next}`]
+                                      ?.content ??
+                                    contentSelectedType?.[`2_link_left_${next}`]
+                                      ?.content ??
+                                    contentSelectedType?.[
+                                      `2_${contentType2?.left}_left_${next}`
+                                    ]?.content}
+                                </Box>
+                              );
+                            }
+                          })}
                         </Box>
-                      );
-                    }
-                  })}
-                </Box>
-              </Box>
-            )}
+                        {/* Column Right */}
+                        <Box
+                          style={{
+                            width: "100%",
+                            maxWidth: "480px",
+                            marginBottom: "20px",
+                            padding: "20px 20px",
+                            overflow: "hidden",
+                          }}
+                          id="rightKolom"
+                        >
+                          {[...new Array(rightColumnLength)].map((item, key) => {
+                            const next = 1 + key;
+
+                            if (
+                              !leftElementDeleteList.find(
+                                (items) => items === `right_${next}`
+                              )
+                            ) {
+                              return (
+                                <Box
+                                  sx={{
+                                    border: "3px dashed #00a3d3",
+                                    borderRadius: "10px",
+                                  }}
+                                  style={{
+                                    // width: "50%",
+                                    minHeight:
+                                      contentSelectedType?.[`2_button_right_${next}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_text_right_${next}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_image_right_${next}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_link_right_${next}`]
+                                        ?.content ??
+                                      contentSelectedType?.[
+                                        `2_${contentType2?.right}_right_${next}`
+                                      ]?.content
+                                        ? "0px"
+                                        : "380px",
+                                  }}
+                                >
+                                  {contentSelectedType?.[`2_button_right_${next}`]
+                                    ?.content ??
+                                    contentSelectedType?.[`2_text_right_${next}`]
+                                      ?.content ??
+                                    contentSelectedType?.[`2_image_right_${next}`]
+                                      ?.content ??
+                                    contentSelectedType?.[`2_link_right_${next}`]
+                                      ?.content ??
+                                    contentSelectedType?.[
+                                      `2_${contentType2?.right}_right_${next}`
+                                    ]?.content}
+                                </Box>
+                              );
+                            }
+                          })}
+                        </Box>
+                      </Box>
+                    )}
+                  </>
+                )
+              }
+            })}
+
+            
           </Box>
           <Box
             sx={{
