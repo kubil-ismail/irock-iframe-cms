@@ -56,9 +56,11 @@ function Home(props) {
   const [styleSelectedType, setStyleSelectedType] = React.useState({}); // style
   const [eventSelectedType, setEventSelectedType] = React.useState({}); // event handler
   // core dari card
-
-  const [leftColumnLength, setLeftColumnLength] = React.useState(1);
-  const [rightColumnLength, setRightColumnLength] = React.useState(1);
+  const [layoutLength, setLayoutLength] = React.useState(0);
+  const [layoutSelected, setLayoutSelected] = React.useState(null);
+  const [listOfLayout, setListOfLayout] = React.useState([]);
+  const [leftColumnLength, setLeftColumnLength] = React.useState({});
+  const [rightColumnLength, setRightColumnLength] = React.useState({});
   const [leftColumnSelected, setLeftColumnSelected] = React.useState(0);
   const [leftElementList, setLeftElementList] = React.useState({});
   const [leftElementDeleteList, setLeftElementDeleteList] = React.useState([]);
@@ -78,7 +80,7 @@ function Home(props) {
     // Dapatkan elemen yang ingin Anda ubah gayanya
     const elementToUpdate =
       contentSelectedType?.[
-        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
       ]?.content;
 
     // // Buat elemen baru dengan gaya yang diubah
@@ -89,14 +91,14 @@ function Home(props) {
     setStyleSelectedType({
       ...styleSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
           value,
       },
     });
 
     // Perbarui elemen dalam state contentSelectedType
     contentSelectedType[
-      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
     ].content = updatedElement;
   };
 
@@ -104,10 +106,10 @@ function Home(props) {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
-          {
-            content: value,
-          },
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
+        {
+          content: value,
+        },
       },
     });
   };
@@ -116,7 +118,7 @@ function Home(props) {
     // Dapatkan elemen yang ingin Anda ubah event-nya
     const elementToUpdate =
       contentSelectedType?.[
-        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
       ]?.content;
 
     // Buat elemen baru dengan event yang diubah
@@ -135,14 +137,14 @@ function Home(props) {
     setEventSelectedType({
       ...eventSelectedType,
       ...{
-        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
+        [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
           value,
       },
     });
 
     // Perbarui elemen dalam state contentSelectedType
     contentSelectedType[
-      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+      `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
     ].content = updatedElement;
   };
 
@@ -152,7 +154,7 @@ function Home(props) {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [`${layout}_${type}_${position}_${leftColumnSelected}`]: value,
+        [`${layout}_${type}_${position}_${leftColumnSelected}_${layoutSelected}`]: value,
       },
     });
   };
@@ -168,7 +170,7 @@ function Home(props) {
           "Content-Type": "multipart/form-data",
         },
       });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleSave = async () => {
@@ -199,11 +201,11 @@ function Home(props) {
             leftElementList,
             leftColumnLength,
             rightColumnLength,
-            contentPosition
+            contentPosition,
           }), // susunan row & column
           right_content: JSON.stringify(contentSelectedType), // main content valuenya
           style_selected: JSON.stringify(styleSelectedType), // style tiap dari element,
-          style_layout: JSON.stringify({}) // style parent cardnya
+          style_layout: JSON.stringify({}), // style parent cardnya
         })
         .then(() => {
           Swal.fire({
@@ -213,7 +215,7 @@ function Home(props) {
             timer: 2000,
             showCancelButton: false,
             showConfirmButton: false,
-            language: langCard
+            language: langCard,
           });
 
           window.parent.postMessage(
@@ -234,17 +236,18 @@ function Home(props) {
           type: "card_v2",
           title: cardName,
           content: contentText,
-          section: pageSection,left_content: JSON.stringify({
+          section: pageSection,
+          left_content: JSON.stringify({
             selectedType,
             isDouble,
             leftElementList,
             leftColumnLength,
             rightColumnLength,
-            contentPosition
+            contentPosition,
           }), // susunan row & column
           right_content: JSON.stringify(contentSelectedType), // main content valuenya
           style_selected: JSON.stringify(styleSelectedType), // style tiap dari element,
-          style_layout: JSON.stringify({}) // style parent cardnya
+          style_layout: JSON.stringify({}), // style parent cardnya
         })
         .then(() => {
           Swal.fire({
@@ -268,11 +271,11 @@ function Home(props) {
     let temporaryObject = { ...contentSelectedType };
     setLeftElementDeleteList([
       ...leftElementDeleteList,
-      ...[`${position}_${index}`],
+      ...[`${position}_${index}_${layoutSelected}`],
     ]);
 
     Object.keys(temporaryObject)?.forEach((element) => {
-      if (contentSelectedType[element].position === `${position}_${index}`) {
+      if (contentSelectedType[element].position === `${position}_${index}_${layoutSelected}`) {
         delete temporaryObject[element];
       }
     });
@@ -435,7 +438,7 @@ function Home(props) {
           target={target}
           style={{
             ...styleSelectedType?.[
-              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
             ],
             color: "inherit",
             textDecoration: "inherit",
@@ -449,20 +452,20 @@ function Home(props) {
 
     setContentSelectedType((prevContentSelectedType) => ({
       ...prevContentSelectedType,
-      [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
-        {
-          content: updatedElement,
-        },
+      [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
+      {
+        content: updatedElement,
+      },
     }));
 
     setEventSelectedType((prevEventSelectedType) => ({
       ...prevEventSelectedType,
-      [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`]:
-        {
-          link,
-          target,
-          style,
-        },
+      [`${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
+      {
+        link,
+        target,
+        style,
+      },
     }));
   };
 
@@ -474,9 +477,30 @@ function Home(props) {
       <Grid container justifyContent="center">
         {!collapseFullscreen && (
           <Grid item xs={2.5} position="relative">
-            <Typography variant="h4" color="secondary">
-              {formattedPageSection} page
-            </Typography>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="h4" color="secondary">
+                {formattedPageSection} page
+              </Typography>
+              {isInsert && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  sx={{ borderRadius: "50px", borderWidth: "2px", mr: "20px" }}
+                  onClick={() => {
+                    setIsInsert(false);
+                    setSelectedType(0);
+                    setIsDouble(false);
+                    setOnFormType(null);
+                  }}
+                >
+                  Change Layout
+                </Button>
+              )}
+            </Box>
             <div
               style={{
                 height: "100%",
@@ -487,15 +511,54 @@ function Home(props) {
                 width: "calc(100% - 10px)",
               }}
             >
+              {/* Layout configuration */}
               {!isInsert && (
                 <Button
                   variant="outlined"
                   color="secondary"
-                  sx={{ borderRadius: "50px", borderWidth: "2px", mt: "30px" }}
-                  onClick={() => setIsInsert(true)}
+                  sx={{ borderRadius: "50px", borderWidth: "2px", my: "30px" }}
+                  onClick={() => {
+                    const increment = 1 + layoutLength;
+                    setLayoutSelected(increment);
+                    setIsInsert(true);
+                    setLayoutLength(increment);
+                    setOnFormType(null);
+                    setLeftColumnLength({
+                      ...leftColumnLength, ...{
+                        [increment]: 1
+                      }
+                    })
+                  }}
                 >
                   + Add Layout
                 </Button>
+              )}
+
+              {!isInsert && (
+                <>
+                  {[...new Array(layoutLength)].map((item, key) => {
+                    const next = 1 + key;
+
+                    return (
+                      <Box
+                        sx={{
+                          backgroundColor: "#2e353b",
+                          width: "89%",
+                          p: 0.5,
+                          px: 2,
+                          mb: 1,
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setLayoutSelected(next)}
+                      >
+                        <Typography color="#fff">
+                          Layout {next}/{layoutLength}
+                        </Typography>
+                      </Box>
+                    );
+                  })}
+                </>
               )}
 
               {/* Insert Layout step 1 */}
@@ -525,8 +588,8 @@ function Home(props) {
                           cursor: "pointer",
                           ...(selectedType === 1
                             ? {
-                                border: "2px solid #727CF5",
-                              }
+                              border: "2px solid #727CF5",
+                            }
                             : {}),
                         }}
                         onClick={() => {
@@ -555,14 +618,19 @@ function Home(props) {
                           cursor: "pointer",
                           ...(selectedType === 2
                             ? {
-                                border: "2px solid #727CF5",
-                              }
+                              border: "2px solid #727CF5",
+                            }
                             : {}),
                         }}
                         onClick={() => {
                           setSelectedType(2);
                           setIsOnForm(false);
                           setIsDouble(true);
+                          setRightColumnLength({
+                            ...rightColumnLength, ...{
+                              [layoutSelected]: 1
+                            }
+                          })
                         }}
                       >
                         <img
@@ -593,7 +661,7 @@ function Home(props) {
                         onClick={() => {
                           setIsInsert(false);
                           setSelectedType(0);
-                          setIsDouble(true);
+                          setIsDouble(false);
                         }}
                       >
                         Discard
@@ -605,8 +673,12 @@ function Home(props) {
                         fullWidth
                         disabled={selectedType === 0}
                         onClick={() => {
+                          let tempData = [...listOfLayout];
+                          tempData.push(selectedType);
+
                           setIsOnForm(true);
                           setOnFormType("options");
+                          setListOfLayout(tempData);
                         }}
                       >
                         Apply
@@ -743,12 +815,12 @@ function Home(props) {
                       <Typography variant="h6">Options</Typography>
 
                       <Box my={1}>
-                        <FormControl size="small" sx={{mb: 2}} fullWidth>
+                        <FormControl size="small" sx={{ mb: 2 }} fullWidth>
                           <InputLabel id="language">Language</InputLabel>
                           <Select
                             labelId="language"
                             onChange={(e) => {
-                             setLangCard(e.target.value)
+                              setLangCard(e.target.value);
                             }}
                             value={langCard}
                             label="Visibility"
@@ -817,11 +889,11 @@ function Home(props) {
                         borderRadius: "5px",
                         cursor: "pointer",
                       }}
-                      // onClick={() => {
-                      //   setContentPosition("left");
-                      //   // setLeftElementList(key);
-                      //   // setRightElementList(null);
-                      // }}
+                    // onClick={() => {
+                    //   setContentPosition("left");
+                    //   // setLeftElementList(key);
+                    //   // setRightElementList(null);
+                    // }}
                     >
                       <Typography
                         color="#fff"
@@ -845,12 +917,12 @@ function Home(props) {
                       width: "100%",
                     }}
                   >
-                    {[...new Array(leftColumnLength)].map((item, key) => {
+                    {[...new Array(leftColumnLength[layoutSelected])].map((item, key) => {
                       const next = 1 + key;
 
                       if (
                         !leftElementDeleteList.find(
-                          (items) => items === `left_${next}`
+                          (items) => items === `left_${next}_${layoutSelected}`
                         )
                       ) {
                         return (
@@ -873,24 +945,24 @@ function Home(props) {
                                 setContentPosition("left");
                                 setLeftColumnSelected(next);
 
-                                if (leftElementList[`left_${next}`]) {
+                                if (leftElementList[`left_${next}_${layoutSelected}`]) {
                                   setContentType(
-                                    leftElementList[`left_${next}`]
+                                    leftElementList[`left_${next}_${layoutSelected}`]
                                   );
                                   if (
-                                    leftElementList[`left_${next}`] === "button"
+                                    leftElementList[`left_${next}_${layoutSelected}`] === "button"
                                   ) {
                                     setSelectedFormType(1);
                                   } else if (
-                                    leftElementList[`left_${next}`] === "text"
+                                    leftElementList[`left_${next}_${layoutSelected}`] === "text"
                                   ) {
                                     setSelectedFormType(2);
                                   } else if (
-                                    leftElementList[`left_${next}`] === "image"
+                                    leftElementList[`left_${next}_${layoutSelected}`] === "image"
                                   ) {
                                     setSelectedFormType(3);
                                   } else if (
-                                    leftElementList[`left_${next}`] === "link"
+                                    leftElementList[`left_${next}_${layoutSelected}`] === "link"
                                   ) {
                                     setSelectedFormType(4);
                                   }
@@ -908,15 +980,15 @@ function Home(props) {
                                   display: "block",
                                 }}
                               >
-                                {leftElementList[`left_${next}`]
-                                  ? leftElementList[`left_${next}`]
+                                {leftElementList[`left_${next}_${layoutSelected}`]
+                                  ? leftElementList[`left_${next}_${layoutSelected}`]
                                   : "Element"}{" "}
                                 <span style={{ color: "rgb(193 188 188)" }}>
-                                  {next}/{leftColumnLength}
+                                  {next}/{leftColumnLength[layoutSelected]}
                                 </span>
                               </Typography>
                             </div>
-                            {leftColumnLength > 1 ? (
+                            {leftColumnLength[layoutSelected] > 1 ? (
                               <div
                                 onClick={() => {
                                   if (
@@ -945,8 +1017,8 @@ function Home(props) {
                       mt: 1,
                     }}
                     onClick={() => {
-                      const next = leftColumnLength + 1;
-                      setLeftColumnLength(next);
+                      const next = leftColumnLength[layoutSelected] + 1;
+                      setLeftColumnLength({ ...leftColumnLength, ...{ [layoutSelected]: next } });
                       setContentPosition("left");
                       setOnFormType("element");
                       setLeftColumnSelected(next);
@@ -1012,11 +1084,11 @@ function Home(props) {
                           width: "100%",
                         }}
                       >
-                        {[...new Array(rightColumnLength)].map((item, key) => {
+                        {[...new Array(rightColumnLength[layoutSelected])].map((item, key) => {
                           const next = 1 + key;
                           if (
                             !leftElementDeleteList.find(
-                              (items) => items === `right_${next}`
+                              (items) => items === `right_${next}_${layoutSelected}`
                             )
                           ) {
                             return (
@@ -1040,27 +1112,27 @@ function Home(props) {
                                     setContentPosition("right");
                                     setLeftColumnSelected(next);
 
-                                    if (leftElementList[`right_${next}`]) {
+                                    if (leftElementList[`right_${next}_${layoutSelected}`]) {
                                       setContentType(
-                                        leftElementList[`right_${next}`]
+                                        leftElementList[`right_${next}_${layoutSelected}`]
                                       );
                                       if (
-                                        leftElementList[`right_${next}`] ===
+                                        leftElementList[`right_${next}_${layoutSelected}`] ===
                                         "button"
                                       ) {
                                         setSelectedFormType(1);
                                       } else if (
-                                        leftElementList[`right_${next}`] ===
+                                        leftElementList[`right_${next}_${layoutSelected}`] ===
                                         "text"
                                       ) {
                                         setSelectedFormType(2);
                                       } else if (
-                                        leftElementList[`right_${next}`] ===
+                                        leftElementList[`right_${next}_${layoutSelected}`] ===
                                         "image"
                                       ) {
                                         setSelectedFormType(3);
                                       } else if (
-                                        leftElementList[`right_${next}`] ===
+                                        leftElementList[`right_${next}_${layoutSelected}`] ===
                                         "link"
                                       ) {
                                         setSelectedFormType(4);
@@ -1079,16 +1151,16 @@ function Home(props) {
                                     color="#fff"
                                     sx={{ textTransform: "capitalize" }}
                                   >
-                                    {leftElementList[`right_${next}`]
-                                      ? leftElementList[`right_${next}`]
+                                    {leftElementList[`right_${next}_${layoutSelected}`]
+                                      ? leftElementList[`right_${next}_${layoutSelected}`]
                                       : "Element"}{" "}
                                     <span style={{ color: "rgb(193 188 188)" }}>
-                                      {next}/{leftColumnLength}
+                                      {next}/{rightColumnLength[layoutSelected]}
                                     </span>
                                   </Typography>
                                 </div>
 
-                                {rightColumnLength > 1 ? (
+                                {rightColumnLength[layoutSelected] > 1 ? (
                                   <div
                                     onClick={() => {
                                       if (
@@ -1123,8 +1195,8 @@ function Home(props) {
                         }}
                         color="secondary"
                         onClick={() => {
-                          const next = rightColumnLength + 1;
-                          setRightColumnLength(next);
+                          const next = rightColumnLength[layoutSelected] + 1;
+                          setRightColumnLength({...rightColumnLength, ...{[layoutSelected]: next}});
                           setOnFormType("element");
                           setContentPosition("right");
                           setLeftColumnSelected(next);
@@ -1257,14 +1329,14 @@ function Home(props) {
                     size="small"
                     label="Border Radius"
                     onChange={handleChangeBorderRadiusKanan}
-                    // onChange={(e) => {
-                    //   const selectedRadius = `${e.target.value}px`;
-                    //   const rightKolom = document.getElementById("rightKolom");
+                  // onChange={(e) => {
+                  //   const selectedRadius = `${e.target.value}px`;
+                  //   const rightKolom = document.getElementById("rightKolom");
 
-                    //   if (rightKolom) {
-                    //     rightKolom.style.borderRadius = selectedRadius;
-                    //   }
-                    // }}
+                  //   if (rightKolom) {
+                  //     rightKolom.style.borderRadius = selectedRadius;
+                  //   }
+                  // }}
                   />
 
                   <FormControl size="small" margin="dense" fullWidth>
@@ -1344,8 +1416,8 @@ function Home(props) {
                           cursor: "pointer",
                           ...(selectedFormType === 1
                             ? {
-                                border: "2px solid #727CF5",
-                              }
+                              border: "2px solid #727CF5",
+                            }
                             : {}),
                         }}
                         onClick={() => {
@@ -1355,7 +1427,7 @@ function Home(props) {
                           setLeftElementList({
                             ...leftElementList,
                             ...{
-                              [`${contentPosition}_${leftColumnSelected}`]:
+                              [`${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
                                 "button",
                             },
                           });
@@ -1365,18 +1437,18 @@ function Home(props) {
                             position: contentPosition,
                             type: "button",
                             value: {
-                              position: `${contentPosition}_${leftColumnSelected}`,
+                              position: `${contentPosition}_${leftColumnSelected}_${layoutSelected}`,
                               style: {},
                               content: (
                                 <button
                                   style={
                                     contentSelectedType?.[
-                                      `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_button_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.style ?? {}
                                   }
                                 >
                                   {contentSelectedType?.[
-                                    `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_button_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ]?.content?.props?.children ??
                                     "insert content"}
                                 </button>
@@ -1407,8 +1479,8 @@ function Home(props) {
                           cursor: "pointer",
                           ...(selectedFormType === 2
                             ? {
-                                border: "2px solid #727CF5",
-                              }
+                              border: "2px solid #727CF5",
+                            }
                             : {}),
                         }}
                         onClick={() => {
@@ -1417,7 +1489,7 @@ function Home(props) {
                           setLeftElementList({
                             ...leftElementList,
                             ...{
-                              [`${contentPosition}_${leftColumnSelected}`]:
+                              [`${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
                                 "text",
                             },
                           });
@@ -1427,18 +1499,18 @@ function Home(props) {
                             position: contentPosition,
                             type: "text",
                             value: {
-                              position: `${contentPosition}_${leftColumnSelected}`,
+                              position: `${contentPosition}_${leftColumnSelected}_${layoutSelected}`,
                               style: {},
                               content: (
                                 <p
                                   style={
                                     contentSelectedType?.[
-                                      `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_text_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.style ?? {}
                                   }
                                 >
                                   {contentSelectedType?.[
-                                    `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_text_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ]?.content?.props?.children ?? "Test"}
                                 </p>
                               ),
@@ -1468,8 +1540,8 @@ function Home(props) {
                           cursor: "pointer",
                           ...(selectedFormType === 3
                             ? {
-                                border: "2px solid #727CF5",
-                              }
+                              border: "2px solid #727CF5",
+                            }
                             : {}),
                         }}
                         onClick={() => {
@@ -1478,7 +1550,7 @@ function Home(props) {
                           setLeftElementList({
                             ...leftElementList,
                             ...{
-                              [`${contentPosition}_${leftColumnSelected}`]:
+                              [`${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
                                 "image",
                             },
                           });
@@ -1487,19 +1559,19 @@ function Home(props) {
                             position: contentPosition,
                             type: "image",
                             value: {
-                              position: `${contentPosition}_${leftColumnSelected}`,
+                              position: `${contentPosition}_${leftColumnSelected}_${layoutSelected}`,
                               style: {},
                               content: (
                                 <img
                                   style={
                                     contentSelectedType?.[
-                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.style ?? {}
                                   }
                                   alt="image"
                                   src={
                                     contentSelectedType?.[
-                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_image_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.src ??
                                     "https://staging.cms.abracadabra-starquest.events/assets/backend/assets/images/image-picture-973-svgrepo-com.png"
                                   }
@@ -1531,8 +1603,8 @@ function Home(props) {
                           cursor: "pointer",
                           ...(selectedFormType === 4
                             ? {
-                                border: "2px solid #727CF5",
-                              }
+                              border: "2px solid #727CF5",
+                            }
                             : {}),
                         }}
                         onClick={() => {
@@ -1541,7 +1613,7 @@ function Home(props) {
                           setLeftElementList({
                             ...leftElementList,
                             ...{
-                              [`${contentPosition}_${leftColumnSelected}`]:
+                              [`${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
                                 "link",
                             },
                           });
@@ -1551,19 +1623,19 @@ function Home(props) {
                             position: contentPosition,
                             type: "link",
                             value: {
-                              position: `${contentPosition}_${leftColumnSelected}`,
+                              position: `${contentPosition}_${leftColumnSelected}_${layoutSelected}`,
                               style: {},
                               content: (
                                 <a
                                   style={
                                     contentSelectedType?.[
-                                      `${selectedType}_link_${contentPosition}_${leftColumnSelected}`
+                                      `${selectedType}_link_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                     ]?.content?.props?.style ?? {}
                                   }
                                   href="#"
                                 >
                                   {contentSelectedType?.[
-                                    `${selectedType}_link_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_link_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ]?.content?.props?.children ?? "Link"}
                                 </a>
                               ),
@@ -1642,7 +1714,7 @@ function Home(props) {
                           rows={4}
                           defaultValue={
                             contentSelectedType?.[
-                              `${selectedType}_button_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_button_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.content?.props?.children ?? ""
                           }
                           onChange={(e) =>
@@ -1650,7 +1722,7 @@ function Home(props) {
                               <button
                                 style={
                                   styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ]
                                 }
                               >
@@ -1667,7 +1739,7 @@ function Home(props) {
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ textTransform: e.target.value },
                               });
@@ -1675,7 +1747,7 @@ function Home(props) {
                             label="Letter Case"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.textTransform
                             }
                           >
@@ -1692,13 +1764,13 @@ function Home(props) {
                           type="color"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.backgroundColor
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{
                                 backgroundColor: e.target.value,
@@ -1716,13 +1788,13 @@ function Home(props) {
                           type="color"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.color
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{
                                 color: e.target.value,
@@ -1737,14 +1809,14 @@ function Home(props) {
                             labelId="Style"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.styleButton
                             }
                             onChange={(e) => {
                               if (e.target.value === "Outline") {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     styleButton: "Outline",
@@ -1755,7 +1827,7 @@ function Home(props) {
                               } else if (e.target.value === "Default") {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     styleButton: "Default",
@@ -1766,7 +1838,7 @@ function Home(props) {
                               } else {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     styleButton: "Simple",
@@ -1793,13 +1865,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.paddingTop?.replace("px", "") ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ paddingTop: `${e.target.value}px` },
                               });
@@ -1812,13 +1884,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.paddingRight?.replace("px", "") ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ paddingRight: `${e.target.value}px` },
                               });
@@ -1831,13 +1903,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.paddingBottom?.replace("px", "") ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ paddingBottom: `${e.target.value}px` },
                               });
@@ -1850,13 +1922,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.paddingLeft?.replace("px", "") ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ paddingLeft: `${e.target.value}px` },
                               });
@@ -1873,13 +1945,13 @@ function Home(props) {
                           variant="outlined"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.borderRadius?.replace("px", "") ?? ""
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ borderRadius: `${e.target.value}px` },
                             });
@@ -1893,13 +1965,13 @@ function Home(props) {
                             label="Expand"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.widthExpand ?? ""
                             }
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   widthExpand: true,
@@ -1923,7 +1995,7 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeEvent({
                               ...(eventSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ link: e.target.value },
                             });
@@ -1937,7 +2009,7 @@ function Home(props) {
                             onChange={(e) => {
                               handleChangeEvent({
                                 ...(eventSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ target: e.target.value },
                               });
@@ -1960,14 +2032,14 @@ function Home(props) {
                             label="Visibility"
                             defaultValue={
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.visibilityStatus ?? ""
                             }
                             onChange={(e) => {
                               if (e.target.value === true) {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     visibilityStatus: true,
@@ -1978,7 +2050,7 @@ function Home(props) {
                               } else {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     visibilityStatus: false,
@@ -2070,7 +2142,7 @@ function Home(props) {
                         rows={4}
                         defaultValue={
                           contentSelectedType?.[
-                            `${selectedType}_text_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_text_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.content?.props?.children ?? ""
                         }
                         onChange={(e) => {
@@ -2078,7 +2150,7 @@ function Home(props) {
                             <p
                               style={{
                                 ...styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ],
                                 margin: 0,
                               }}
@@ -2097,13 +2169,13 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={parseInt(
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.fontSize?.replace("px", "") ?? 0
                         )}
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ fontSize: `${e.target.value}px` },
                           });
@@ -2115,13 +2187,13 @@ function Home(props) {
                           labelId="font_weight"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.fontWeight ?? ""
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ fontWeight: e.target.value },
                             });
@@ -2141,13 +2213,13 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={parseInt(
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.lineHeight?.replace("px", "") ?? 0
                         )}
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ lineHeight: `${e.target.value}px`, margin: 0 },
                           });
@@ -2159,13 +2231,13 @@ function Home(props) {
                           labelId="text_align"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.textAlign ?? ""
                           }
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ textAlign: e.target.value },
                             });
@@ -2187,13 +2259,13 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.color ?? ""
                         }
                         onChange={(e) => {
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ color: e.target.value },
                           });
@@ -2212,7 +2284,7 @@ function Home(props) {
                             if (e.target.value === true) {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "block",
@@ -2222,7 +2294,7 @@ function Home(props) {
                             } else {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "none",
@@ -2333,7 +2405,7 @@ function Home(props) {
                                         display: "inline",
                                         borderRadius: "inherit",
                                         ...styleSelectedType?.[
-                                          `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                        `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                         ],
                                       }}
                                       src={result?.data?.image?.url}
@@ -2366,7 +2438,7 @@ function Home(props) {
                                   display: "inline",
                                   borderRadius: "inherit",
                                   ...styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ],
                                 }}
                                 src={e.target.value}
@@ -2384,13 +2456,13 @@ function Home(props) {
                           variant="outlined"
                           defaultValue={parseInt(
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.width?.replace("%", "") ?? 0
                           )}
                           onChange={(e) => {
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ width: `${e.target.value}%` },
                             });
@@ -2406,13 +2478,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={parseInt(
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.marginTop?.replace("px", "") ?? 0
                             )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ marginTop: `${e.target.value}px` },
                               });
@@ -2425,13 +2497,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={parseInt(
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.marginRight?.replace("px", "") ?? 0
                             )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ marginRight: `${e.target.value}px` },
                               });
@@ -2444,13 +2516,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={parseInt(
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.marginBottom?.replace("px", "") ?? 0
                             )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ marginBottom: `${e.target.value}px` },
                               });
@@ -2463,13 +2535,13 @@ function Home(props) {
                             variant="outlined"
                             defaultValue={parseInt(
                               styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ]?.marginLeft?.replace("px", "") ?? 0
                             )}
                             onChange={(e) => {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ marginLeft: `${e.target.value}px` },
                               });
@@ -2486,14 +2558,14 @@ function Home(props) {
                           onChange={(e) => {
                             handleChangeEvent({
                               ...(eventSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ link: e.target.value },
                             });
 
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ cursor: `pointer` },
                             });
@@ -2507,7 +2579,7 @@ function Home(props) {
                             onChange={(e) => {
                               handleChangeEvent({
                                 ...(eventSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{ target: e.target.value },
                               });
@@ -2532,7 +2604,7 @@ function Home(props) {
                               if (e.target.value === true) {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     display: "block",
@@ -2542,7 +2614,7 @@ function Home(props) {
                               } else {
                                 handleChangeStyle({
                                   ...(styleSelectedType?.[
-                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                    `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                   ] ?? {}),
                                   ...{
                                     display: "none",
@@ -2643,14 +2715,14 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.fontSize ?? 0
                         }
                         onChange={(e) => {
                           handleChangeFontSize(e.target.value);
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ fontSize: e.target.value },
                           });
@@ -2663,7 +2735,7 @@ function Home(props) {
                           value={fontWeightValue}
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.fontWeight ?? ""
                           }
                           onChange={(e) => {
@@ -2671,7 +2743,7 @@ function Home(props) {
 
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ fontWeight: e.target.value },
                             });
@@ -2691,14 +2763,14 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.lineHeight ?? 0
                         }
                         onChange={(e) => {
                           handleChangeLineHeight(e.target.value);
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ lineHeight: e.target.value },
                           });
@@ -2713,14 +2785,14 @@ function Home(props) {
                         variant="outlined"
                         defaultValue={
                           styleSelectedType?.[
-                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                            `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                           ]?.color ?? ""
                         }
                         onChange={(e) => {
                           handleChangeTextColor(e.target.value);
                           handleChangeStyle({
                             ...(styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ] ?? {}),
                             ...{ color: e.target.value },
                           });
@@ -2734,14 +2806,14 @@ function Home(props) {
                           label="Letter Case"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.textTransform ?? ""
                           }
                           onChange={(e) => {
                             handleChangeLetterCase(e.target.value);
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ textTransform: e.target.value },
                             });
@@ -2760,14 +2832,14 @@ function Home(props) {
                           label="Style"
                           defaultValue={
                             styleSelectedType?.[
-                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                              `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                             ]?.textDecoration ?? ""
                           }
                           onChange={(e) => {
                             handleChangeStyleLink(e.target.value);
                             handleChangeStyle({
                               ...(styleSelectedType?.[
-                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                               ] ?? {}),
                               ...{ textDecoration: e.target.value },
                             });
@@ -2811,7 +2883,7 @@ function Home(props) {
                             if (e.target.value === true) {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "block",
@@ -2821,7 +2893,7 @@ function Home(props) {
                             } else {
                               handleChangeStyle({
                                 ...(styleSelectedType?.[
-                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}`
+                                  `${selectedType}_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
                                 ] ?? {}),
                                 ...{
                                   display: "none",
@@ -2929,226 +3001,471 @@ function Home(props) {
               overflowY: "auto",
             }}
           >
-            {isInsert && selectedType === 1 && (
-              <Box
-                id="content_tipe_1"
-                sx={{
-                  backgroundColor: "rgb(193, 193, 193)",
-                  border: "3px dashed #00a3d3",
-                  borderRadius: "10px",
-                }}
-                style={{
-                  minHeight: contentSelectedType?.[
-                    `1_${contentType}_${contentPosition}_${leftColumnSelected}`
-                  ]?.content
-                    ? "0px"
-                    : "50%",
-                  // width: "100%",
-                  padding: "20px",
-                  gap: 2,
-                  ...styleLayout,
-                }}
-              >
-                {[...new Array(leftColumnLength)].map((item, key) => {
-                  const next = 1 + key;
-                  if (
-                    !leftElementDeleteList.find(
-                      (items) => items === `left_${next}`
-                    )
-                  ) {
-                    return (
-                      <Box
-                        // id="leftKolom"
-                        sx={{
-                          border: "3px dashed #00a3d3",
-                          borderRadius: "10px",
-                          marginBottom: "10px",
-                        }}
-                        style={{
-                          width: "100%",
-                          minHeight:
-                            contentSelectedType?.[
-                              `1_button_${contentPosition}_${next}`
-                            ]?.content ??
-                            contentSelectedType?.[
-                              `1_text_${contentPosition}_${next}`
-                            ]?.content ??
-                            contentSelectedType?.[
-                              `1_image_${contentPosition}_${next}`
-                            ]?.content ??
-                            contentSelectedType?.[
-                              `1_link_${contentPosition}_${next}`
+            
+                    {console.log("leftColumnLength", leftColumnLength)}
+                    {console.log("contentSelectedType", contentSelectedType)}
+                    {console.log("listOfLayout", listOfLayout)}
+            {/* preview in multiple layout */}
+            {listOfLayout?.length > 1 ? (
+              <>
+                {listOfLayout?.map((layoutItem, key) => {
+                  const nextItem = 1 + key;
+                  return (
+                    <>
+                      {layoutItem === 1 && (
+                        <Box
+                          id="content_tipe_1"
+                          sx={{
+                            backgroundColor: "rgb(193, 193, 193)",
+                            border: "3px dashed #00a3d3",
+                            borderRadius: "10px",
+                            marginBottom: '10px'
+                          }}
+                          style={{
+                            minHeight: contentSelectedType?.[
+                              `1_${contentType}_${contentPosition}_${leftColumnSelected}_${nextItem}`
                             ]?.content
                               ? "0px"
-                              : "380px",
-                        }}
-                      >
-                        {contentSelectedType?.[
-                          `1_button_${contentPosition}_${next}`
-                        ]?.content ??
-                          contentSelectedType?.[
-                            `1_text_${contentPosition}_${next}`
-                          ]?.content ??
-                          contentSelectedType?.[
-                            `1_image_${contentPosition}_${next}`
-                          ]?.content ??
-                          contentSelectedType?.[
-                            `1_link_${contentPosition}_${next}`
-                          ]?.content}
-                      </Box>
-                    );
-                  }
-                })}
-              </Box>
-            )}
-
-            {isInsert && selectedType === 2 && (
-              <Box
-                id="content_tipe_2"
-                sx={{
-                  backgroundColor: "rgb(193, 193, 193)",
-                  border: "3px dashed #00a3d3",
-                  borderRadius: "10px",
-                }}
-                // style={{
-                //   minHeight: "50%",
-                //   // width: "100%",
-                //   padding: "20px",
-                //   display: "flex",
-                //   // alignItems: "center",
-                //   gap: 2,
-                //   ...styleLayout,
-                // }}
-                style={{
-                  width: "100%",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                  paddingTop: "1.25rem",
-                  paddingBottom: "1.25rem",
-                  gap: "20px",
-                  ...styleLayout,
-                }}
-              >
-                {/* Column Left */}
-                <Box
-                  id="leftKolom"
-                  style={{
-                    width: "100%",
-                    maxWidth: "480px",
-                    padding: "20px 20px",
-                    overflow: "hidden",
-                  }}
-                >
-                  {[...new Array(leftColumnLength)].map((item, key) => {
-                    const next = 1 + key;
-
-                    if (
-                      !leftElementDeleteList.find(
-                        (items) => items === `left_${next}`
-                      )
-                    ) {
-                      return (
-                        <Box
-                          sx={{
-                            border: "3px dashed #00a3d3",
-                            borderRadius: "10px",
-                          }}
-                          style={{
+                              : "50%",
                             // width: "100%",
-                            minHeight:
-                              contentSelectedType?.[`2_button_left_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_text_left_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_image_left_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_link_left_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[
-                                `2_${contentType2?.left}_left_${next}`
-                              ]?.content
-                                ? "0px"
-                                : "380px",
+                            padding: "20px",
+                            gap: 2,
+                            ...styleLayout,
                           }}
                         >
-                          {contentSelectedType?.[`2_button_left_${next}`]
-                            ?.content ??
-                            contentSelectedType?.[`2_text_left_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[`2_image_left_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[`2_link_left_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[
-                              `2_${contentType2?.left}_left_${next}`
-                            ]?.content}
+                          {[...new Array(leftColumnLength)].map((item, key) => {
+                            const next = 1 + key;
+                            if (
+                              !leftElementDeleteList.find(
+                                (items) => items === `left_${next}_${nextItem}`
+                              )
+                            ) {
+                              return (
+                                <Box
+                                  // id="leftKolom"
+                                  sx={{
+                                    border: "3px dashed #00a3d3",
+                                    borderRadius: "10px",
+                                    marginBottom: "10px",
+                                  }}
+                                  style={{
+                                    width: "100%",
+                                    minHeight:
+                                      contentSelectedType?.[
+                                        `1_button_${contentPosition}_${next}_${nextItem}`
+                                      ]?.content ??
+                                        contentSelectedType?.[
+                                          `1_text_${contentPosition}_${next}_${nextItem}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `1_image_${contentPosition}_${next}_${nextItem}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `1_link_${contentPosition}_${next}_${nextItem}`
+                                        ]?.content
+                                        ? "0px"
+                                        : "380px",
+                                  }}
+                                >
+                                  {contentSelectedType?.[
+                                    `1_button_${contentPosition}_${next}_${nextItem}`
+                                  ]?.content ??
+                                    contentSelectedType?.[
+                                      `1_text_${contentPosition}_${next}_${nextItem}`
+                                    ]?.content ??
+                                    contentSelectedType?.[
+                                      `1_image_${contentPosition}_${next}_${nextItem}`
+                                    ]?.content ??
+                                    contentSelectedType?.[
+                                      `1_link_${contentPosition}_${next}_${nextItem}`
+                                    ]?.content}
+                                </Box>
+                              );
+                            }
+                          })}
                         </Box>
-                      );
-                    }
-                  })}
-                </Box>
-                {/* Column Right */}
-                <Box
-                  style={{
-                    width: "100%",
-                    maxWidth: "480px",
-                    marginBottom: "20px",
-                    padding: "20px 20px",
-                    overflow: "hidden",
-                  }}
-                  id="rightKolom"
-                >
-                  {[...new Array(rightColumnLength)].map((item, key) => {
-                    const next = 1 + key;
+                      )}
 
-                    if (
-                      !leftElementDeleteList.find(
-                        (items) => items === `right_${next}`
-                      )
-                    ) {
-                      return (
+                      {layoutItem === 2 && (
                         <Box
+                          id="content_tipe_2"
                           sx={{
+                            backgroundColor: "rgb(193, 193, 193)",
                             border: "3px dashed #00a3d3",
                             borderRadius: "10px",
+                            marginBottom: '10px'
                           }}
+                          // style={{
+                          //   minHeight: "50%",
+                          //   // width: "100%",
+                          //   padding: "20px",
+                          //   display: "flex",
+                          //   // alignItems: "center",
+                          //   gap: 2,
+                          //   ...styleLayout,
+                          // }}
                           style={{
-                            // width: "50%",
-                            minHeight:
-                              contentSelectedType?.[`2_button_right_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_text_right_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_image_right_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[`2_link_right_${next}`]
-                                ?.content ??
-                              contentSelectedType?.[
-                                `2_${contentType2?.right}_right_${next}`
-                              ]?.content
-                                ? "0px"
-                                : "380px",
+                            width: "100%",
+                            overflow: "hidden",
+                            display: "flex",
+                            flexWrap: "wrap",
+                            justifyContent: "center",
+                            paddingTop: "1.25rem",
+                            paddingBottom: "1.25rem",
+                            gap: "20px",
+                            ...styleLayout,
                           }}
                         >
-                          {contentSelectedType?.[`2_button_right_${next}`]
-                            ?.content ??
-                            contentSelectedType?.[`2_text_right_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[`2_image_right_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[`2_link_right_${next}`]
-                              ?.content ??
-                            contentSelectedType?.[
-                              `2_${contentType2?.right}_right_${next}`
-                            ]?.content}
+                          {/* Column Left */}
+                          <Box
+                            id="leftKolom"
+                            style={{
+                              width: "100%",
+                              maxWidth: "480px",
+                              padding: "20px 20px",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {[...new Array(leftColumnLength)].map((item, key) => {
+                              const next = 1 + key;
+
+                              if (
+                                !leftElementDeleteList.find(
+                                  (items) => items === `left_${next}_${nextItem}`
+                                )
+                              ) {
+                                return (
+                                  <Box
+                                    sx={{
+                                      border: "3px dashed #00a3d3",
+                                      borderRadius: "10px",
+                                    }}
+                                    style={{
+                                      // width: "100%",
+                                      minHeight:
+                                        contentSelectedType?.[`2_button_left_${next}_${nextItem}`]
+                                          ?.content ??
+                                          contentSelectedType?.[`2_text_left_${next}_${nextItem}`]
+                                            ?.content ??
+                                          contentSelectedType?.[`2_image_left_${next}_${nextItem}`]
+                                            ?.content ??
+                                          contentSelectedType?.[`2_link_left_${next}_${nextItem}`]
+                                            ?.content ??
+                                          contentSelectedType?.[
+                                            `2_${contentType2?.left}_left_${next}_${nextItem}`
+                                          ]?.content
+                                          ? "0px"
+                                          : "380px",
+                                    }}
+                                  >
+                                    {contentSelectedType?.[`2_button_left_${next}_${nextItem}`]
+                                      ?.content ??
+                                      contentSelectedType?.[`2_text_left_${next}_${nextItem}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_image_left_${next}_${nextItem}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_link_left_${next}_${nextItem}`]
+                                        ?.content ??
+                                      contentSelectedType?.[
+                                        `2_${contentType2?.left}_left_${next}_${nextItem}`
+                                      ]?.content}
+                                  </Box>
+                                );
+                              }
+                            })}
+                          </Box>
+                          {/* Column Right */}
+                          <Box
+                            style={{
+                              width: "100%",
+                              maxWidth: "480px",
+                              marginBottom: "20px",
+                              padding: "20px 20px",
+                              overflow: "hidden",
+                            }}
+                            id="rightKolom"
+                          >
+                            {[...new Array(rightColumnLength)].map((item, key) => {
+                              const next = 1 + key;
+
+                              if (
+                                !leftElementDeleteList.find(
+                                  (items) => items === `right_${next}_${nextItem}`
+                                )
+                              ) {
+                                return (
+                                  <Box
+                                    sx={{
+                                      border: "3px dashed #00a3d3",
+                                      borderRadius: "10px",
+                                    }}
+                                    style={{
+                                      // width: "50%",
+                                      minHeight:
+                                        contentSelectedType?.[
+                                          `2_button_right_${next}_${nextItem}`
+                                        ]?.content ??
+                                          contentSelectedType?.[`2_text_right_${next}_${nextItem}`]
+                                            ?.content ??
+                                          contentSelectedType?.[`2_image_right_${next}`]
+                                            ?.content ??
+                                          contentSelectedType?.[`2_link_right_${next}`]
+                                            ?.content ??
+                                          contentSelectedType?.[
+                                            `2_${contentType2?.right}_right_${next}`
+                                          ]?.content
+                                          ? "0px"
+                                          : "380px",
+                                    }}
+                                  >
+                                    {contentSelectedType?.[`2_button_right_${next}_${nextItem}`]
+                                      ?.content ??
+                                      contentSelectedType?.[`2_text_right_${next}_${nextItem}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_image_right_${next}_${nextItem}`]
+                                        ?.content ??
+                                      contentSelectedType?.[`2_link_right_${next}_${nextItem}`]
+                                        ?.content ??
+                                      contentSelectedType?.[
+                                        `2_${contentType2?.right}_right_${next}_${nextItem}`
+                                      ]?.content}
+                                  </Box>
+                                );
+                              }
+                            })}
+                          </Box>
                         </Box>
-                      );
-                    }
-                  })}
-                </Box>
-              </Box>
+                      )}
+                    </>
+                  )
+                })}
+              </>
+            ) : (
+              <>
+                {isInsert && selectedType === 1 && (
+                  <Box
+                    id="content_tipe_1"
+                    sx={{
+                      backgroundColor: "rgb(193, 193, 193)",
+                      border: "3px dashed #00a3d3",
+                      borderRadius: "10px",
+                    }}
+                    style={{
+                      minHeight: contentSelectedType?.[
+                        `1_${contentType}_${contentPosition}_${leftColumnSelected}_${layoutSelected}`
+                      ]?.content
+                        ? "0px"
+                        : "50%",
+                      // width: "100%",
+                      padding: "20px",
+                      gap: 2,
+                      ...styleLayout,
+                    }}
+                  >
+                    {[...new Array(leftColumnLength[layoutSelected])].map((item, key) => {
+                      const next = 1 + key;
+                      if (
+                        !leftElementDeleteList.find(
+                          (items) => items === `left_${next}_1`
+                        )
+                      ) {
+                        return (
+                          <Box
+                            // id="leftKolom"
+                            sx={{
+                              border: "3px dashed #00a3d3",
+                              borderRadius: "10px",
+                              marginBottom: "10px",
+                            }}
+                            style={{
+                              width: "100%",
+                              minHeight:
+                                contentSelectedType?.[
+                                  `1_button_${contentPosition}_${next}_${1}`
+                                ]?.content ??
+                                  contentSelectedType?.[
+                                    `1_text_${contentPosition}_${next}_${1}`
+                                  ]?.content ??
+                                  contentSelectedType?.[
+                                    `1_image_${contentPosition}_${next}_${1}`
+                                  ]?.content ??
+                                  contentSelectedType?.[
+                                    `1_link_${contentPosition}_${next}_${1}`
+                                  ]?.content
+                                  ? "0px"
+                                  : "380px",
+                            }}
+                          >
+                            {contentSelectedType?.[
+                              `1_button_${contentPosition}_${next}_${1}`
+                            ]?.content ??
+                              contentSelectedType?.[
+                                `1_text_${contentPosition}_${next}_${1}`
+                              ]?.content ??
+                              contentSelectedType?.[
+                                `1_image_${contentPosition}_${next}_${1}`
+                              ]?.content ??
+                              contentSelectedType?.[
+                                `1_link_${contentPosition}_${next}_${1}`
+                              ]?.content ?? "test"}
+                          </Box>
+                        );
+                      }
+                    })}
+                  </Box>
+                )}
+
+                {isInsert && selectedType === 2 && (
+                  <Box
+                    id="content_tipe_2"
+                    sx={{
+                      backgroundColor: "rgb(193, 193, 193)",
+                      border: "3px dashed #00a3d3",
+                      borderRadius: "10px",
+                    }}
+                    // style={{
+                    //   minHeight: "50%",
+                    //   // width: "100%",
+                    //   padding: "20px",
+                    //   display: "flex",
+                    //   // alignItems: "center",
+                    //   gap: 2,
+                    //   ...styleLayout,
+                    // }}
+                    style={{
+                      width: "100%",
+                      overflow: "hidden",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      paddingTop: "1.25rem",
+                      paddingBottom: "1.25rem",
+                      gap: "20px",
+                      ...styleLayout,
+                    }}
+                  >
+                    {/* Column Left */}
+                    <Box
+                      id="leftKolom"
+                      style={{
+                        width: "100%",
+                        maxWidth: "480px",
+                        padding: "20px 20px",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {[...new Array(leftColumnLength[layoutSelected])].map((item, key) => {
+                        const next = 1 + key;
+
+                        if (
+                          !leftElementDeleteList.find(
+                            (items) => items === `left_${next}_1`
+                          )
+                        ) {
+                          return (
+                            <Box
+                              sx={{
+                                border: "3px dashed #00a3d3",
+                                borderRadius: "10px",
+                              }}
+                              style={{
+                                // width: "100%",
+                                minHeight:
+                                  contentSelectedType?.[`2_button_left_${next}_${1}`]
+                                    ?.content ??
+                                    contentSelectedType?.[`2_text_left_${next}_${1}`]
+                                      ?.content ??
+                                    contentSelectedType?.[`2_image_left_${next}_${1}`]
+                                      ?.content ??
+                                    contentSelectedType?.[`2_link_left_${next}_${1}`]
+                                      ?.content ??
+                                    contentSelectedType?.[
+                                      `2_${contentType2?.left}_left_${next}_${1}`
+                                    ]?.content
+                                    ? "0px"
+                                    : "380px",
+                              }}
+                            >
+                              {contentSelectedType?.[`2_button_left_${next}_${1}`]
+                                ?.content ??
+                                contentSelectedType?.[`2_text_left_${next}_${1}`]
+                                  ?.content ??
+                                contentSelectedType?.[`2_image_left_${next}_${1}`]
+                                  ?.content ??
+                                contentSelectedType?.[`2_link_left_${next}_${1}`]
+                                  ?.content ??
+                                contentSelectedType?.[
+                                  `2_${contentType2?.left}_left_${next}_${1}`
+                                ]?.content}
+                            </Box>
+                          );
+                        }
+                      })}
+                    </Box>
+                    {/* Column Right */}
+                    <Box
+                      style={{
+                        width: "100%",
+                        maxWidth: "480px",
+                        marginBottom: "20px",
+                        padding: "20px 20px",
+                        overflow: "hidden",
+                      }}
+                      id="rightKolom"
+                    >
+                      {console.log("rightColumnLength", rightColumnLength)}
+                      {[...new Array(rightColumnLength[layoutSelected])].map((item, key) => {
+                        const next = 1 + key;
+
+                        if (
+                          !leftElementDeleteList.find(
+                            (items) => items === `right_${next}_1`
+                          )
+                        ) {
+                          return (
+                            <Box
+                              sx={{
+                                border: "3px dashed #00a3d3",
+                                borderRadius: "10px",
+                              }}
+                              style={{
+                                // width: "50%",
+                                minHeight:
+                                  contentSelectedType?.[
+                                    `2_button_right_${next}_${1}`
+                                  ]?.content ??
+                                    contentSelectedType?.[`2_text_right_${next}_${1}`]
+                                      ?.content ??
+                                    contentSelectedType?.[`2_image_right_${next}_${1}`]
+                                      ?.content ??
+                                    contentSelectedType?.[`2_link_right_${next}_${1}`]
+                                      ?.content ??
+                                    contentSelectedType?.[
+                                      `2_${contentType2?.right}_right_${next}_${1}`
+                                    ]?.content
+                                    ? "0px"
+                                    : "380px",
+                              }}
+                            >
+                              {contentSelectedType?.[`2_button_right_${next}_${1}`]
+                                ?.content ??
+                                contentSelectedType?.[`2_text_right_${next}_${1}`]
+                                  ?.content ??
+                                contentSelectedType?.[`2_image_right_${next}_${1}`]
+                                  ?.content ??
+                                contentSelectedType?.[`2_link_right_${next}_${1}`]
+                                  ?.content ??
+                                contentSelectedType?.[
+                                  `2_${contentType2?.right}_right_${next}_${1}`
+                                ]?.content}
+                            </Box>
+                          );
+                        }
+                      })}
+                    </Box>
+                  </Box>
+                )}
+              </>
             )}
           </Box>
           <Box
