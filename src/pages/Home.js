@@ -57,8 +57,8 @@ function Home(props) {
   const [eventSelectedType, setEventSelectedType] = React.useState({}); // event handler
   // core dari card
 
-  const [leftColumnLength, setLeftColumnLength] = React.useState({"1": 1});
-  const [rightColumnLength, setRightColumnLength] = React.useState({"1": 1});
+  const [leftColumnLength, setLeftColumnLength] = React.useState({ 1: 1 });
+  const [rightColumnLength, setRightColumnLength] = React.useState({ 1: 1 });
   const [leftColumnSelected, setLeftColumnSelected] = React.useState(0);
   const [leftElementList, setLeftElementList] = React.useState({});
   const [leftElementDeleteList, setLeftElementDeleteList] = React.useState([]);
@@ -175,7 +175,9 @@ function Home(props) {
     if (showInFAQ) {
       // jika show in FAQ ON
 
-      {/* ini jangan dibuang untuk show in faq */ }
+      {
+        /* ini jangan dibuang untuk show in faq */
+      }
       const divElement = document.createElement("div");
       divElement.id = scrollId;
       divElement.style.width = "100%";
@@ -183,31 +185,36 @@ function Home(props) {
       divElement.style.marginTop = "-50px";
       divElement.innerHTML = "<div></div>";
       const contentHTML = divElement.outerHTML;
-      {/* ini jangan dibuang untuk show in faq */ }
+      {
+        /* ini jangan dibuang untuk show in faq */
+      }
 
       // const contentElement = document.querySelector(
       //   `#content_tipe_${selectedType}`
       // );
 
-      const contentElement = document.querySelector(
-        `#content_main`
-      );
+      const contentElement = document.querySelector(`#content_main`);
 
       const contentText = contentElement.outerHTML;
 
-      {/* ini jangan dibuang untuk show in faq */ }
+      {
+        /* ini jangan dibuang untuk show in faq */
+      }
       const newId = await http.post("/ui-build/save-new-card", {
         type: "card_v2",
         title: `#${scrollId}`,
         content: contentHTML,
         section: pageSection,
-        parameter: 'show_in_faq',
+        parameter: "show_in_faq",
         sharetext: cardName,
-        enable: 1
+        enable: 1,
       });
-      {/* ini jangan dibuang untuk show in faq */ }
+      {
+        /* ini jangan dibuang untuk show in faq */
+      }
 
-      http.post("/ui-build/save-new-card", {
+      http
+        .post("/ui-build/save-new-card", {
           type: "card_v2",
           title: cardName,
           content: contentText,
@@ -218,16 +225,15 @@ function Home(props) {
             leftElementList,
             leftColumnLength,
             rightColumnLength,
-            contentPosition
+            contentPosition,
           }), // susunan row & column
           right_content: JSON.stringify(contentSelectedType), // main content valuenya
           style_selected: JSON.stringify(styleSelectedType), // style tiap dari element,
           style_layout: JSON.stringify({}), // style parent cardnya,
-          
-          // ini jangan dibuang untuk show in faq
-          parameter: 'parent_to_show_in_faq'
-          // ini jangan dibuang untuk show in faq
 
+          // ini jangan dibuang untuk show in faq
+          parameter: "parent_to_show_in_faq",
+          // ini jangan dibuang untuk show in faq
         })
         .then(() => {
           Swal.fire({
@@ -264,9 +270,7 @@ function Home(props) {
       //   `#content_tipe_${selectedType}`
       // );
 
-      const contentElement = document.querySelector(
-        `#content_main`
-      );
+      const contentElement = document.querySelector(`#content_main`);
 
       const contentText = contentElement.outerHTML;
 
@@ -276,9 +280,9 @@ function Home(props) {
         title: `#${scrollId}`,
         content: contentHTML,
         section: pageSection,
-        parameter: 'show_in_faq',
+        parameter: "show_in_faq",
         sharetext: cardName,
-        enable: 0
+        enable: 0,
       });
       // ini jangan dibuang untuk show in faq
 
@@ -287,20 +291,21 @@ function Home(props) {
           type: "card_v2",
           title: cardName,
           content: contentText,
-          section: pageSection,left_content: JSON.stringify({
+          section: pageSection,
+          left_content: JSON.stringify({
             selectedType,
             isDouble,
             leftElementList,
             leftColumnLength,
             rightColumnLength,
-            contentPosition
+            contentPosition,
           }), // susunan row & column
           right_content: JSON.stringify(contentSelectedType), // main content valuenya
           style_selected: JSON.stringify(styleSelectedType), // style tiap dari element,
           style_layout: JSON.stringify({}), // style parent cardnya
 
           // ini jangan dibuang untuk show in faq
-          parameter: 'parent_to_show_in_faq'
+          parameter: "parent_to_show_in_faq",
           // ini jangan dibuang untuk show in faq
         })
         .then(() => {
@@ -321,15 +326,18 @@ function Home(props) {
     }
   };
 
-  const handleDeleteElement = (position, index) => {
+  const handleDeleteElement = (position, index, layouts) => {
     let temporaryObject = { ...contentSelectedType };
     setLeftElementDeleteList([
       ...leftElementDeleteList,
-      ...[`${position}_${index}`],
+      ...[`${position}_${index}_${layouts}`],
     ]);
 
     Object.keys(temporaryObject)?.forEach((element) => {
-      if (contentSelectedType[element].position === `${position}_${index}`) {
+      if (
+        contentSelectedType[element].position ===
+        `${position}_${index}_${layouts}`
+      ) {
         delete temporaryObject[element];
       }
     });
@@ -530,6 +538,10 @@ function Home(props) {
   const [layoutSelected, setLayoutSelected] = React.useState(null);
   const [selectedTypeList, setSelectedTypeList] = React.useState([]);
 
+  console.log("leftColumnLength", leftColumnLength);
+  console.log("rightColumnLength", rightColumnLength);
+  console.log("leftElementList", leftElementList)
+
   return (
     <Box p={2}>
       <Grid container justifyContent="center">
@@ -592,7 +604,7 @@ function Home(props) {
                   {[...new Array(layoutLength)].map((item, key) => {
                     const next = 1 + key;
 
-                    if(!layoutDeletedList.find((_item) => _item === next)) {
+                    if (!layoutDeletedList.find((_item) => _item === next)) {
                       return (
                         <Box
                           sx={{
@@ -603,20 +615,23 @@ function Home(props) {
                             mb: 1,
                             borderRadius: "5px",
                             cursor: "pointer",
-                            display: 'flex',
-                            justifyContent: 'space-between'
+                            display: "flex",
+                            justifyContent: "space-between",
                           }}
                           onClick={() => setLayoutSelected(next)}
                         >
                           <Typography color="#fff">
-                            Layout {next}/{layoutLength - layoutDeletedList.length}
+                            Layout{" "}
+                            {next > 2 ? next - layoutDeletedList.length : next}/
+                            {layoutLength - layoutDeletedList.length}
                           </Typography>
                           <div
                             onClick={() => {
-                              if (
-                                window.confirm("Want delete this item ?")
-                              ) {
-                                setLayoutDeletedList([...layoutDeletedList, ...[next]])
+                              if (window.confirm("Want delete this item ?")) {
+                                setLayoutDeletedList([
+                                  ...layoutDeletedList,
+                                  ...[next],
+                                ]);
                               }
                             }}
                           >
@@ -740,7 +755,12 @@ function Home(props) {
                         onClick={() => {
                           setIsOnForm(true);
                           setOnFormType("options");
-                          setSelectedTypeList([...selectedTypeList, ...[`${layoutSelected}_${selectedType}_${new Date().getTime()}`]])
+                          setSelectedTypeList([
+                            ...selectedTypeList,
+                            ...[
+                              `${layoutSelected}_${selectedType}_${new Date().getTime()}`,
+                            ],
+                          ]);
                         }}
                       >
                         Apply
@@ -769,7 +789,6 @@ function Home(props) {
                       unmountOnExit
                       sx={{ p: 2 }}
                     >
-
                       <Typography variant="h6">Card Settings</Typography>
 
                       <Box mt={1} mb={2}>
@@ -783,7 +802,7 @@ function Home(props) {
                       </Box>
 
                       {/* ini jangan dibuang untuk show in faq */}
-                      {pageSection === 'faq' && (
+                      {pageSection === "faq" && (
                         <Box mt={1} mb={2}>
                           <FormControlLabel
                             control={
@@ -805,8 +824,8 @@ function Home(props) {
                               onChange={(e) => {
                                 const newValue = e.target.value
                                   .toLowerCase()
-                                  .replace(/\s+/g, '-')
-                                  .replace(/[^a-z0-9-]/g, '');
+                                  .replace(/\s+/g, "-")
+                                  .replace(/[^a-z0-9-]/g, "");
                                 setScrollId(newValue);
                               }}
                             />
@@ -984,96 +1003,108 @@ function Home(props) {
                       width: "100%",
                     }}
                   >
-                    {[...new Array(leftColumnLength[layoutSelected])].map((item, key) => {
-                      const next = 1 + key;
+                    {[...new Array(leftColumnLength[layoutSelected])].map(
+                      (item, key) => {
+                        const next = 1 + key;
 
-                      if (
-                        !leftElementDeleteList.find(
-                          (items) => items === `left_${next}`
-                        )
-                      ) {
-                        return (
-                          <Box
-                            sx={{
-                              backgroundColor: "#2e353b",
-                              width: "80%",
-                              p: 0.5,
-                              px: 2,
-                              mb: 1,
-                              borderRadius: "5px",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <div
-                              onClick={() => {
-                                setContentPosition("left");
-                                setLeftColumnSelected(next);
-
-                                if (leftElementList[`left_${next}`]) {
-                                  setContentType(
-                                    leftElementList[`left_${next}`]
-                                  );
-                                  if (
-                                    leftElementList[`left_${next}`] === "button"
-                                  ) {
-                                    setSelectedFormType(1);
-                                  } else if (
-                                    leftElementList[`left_${next}`] === "text"
-                                  ) {
-                                    setSelectedFormType(2);
-                                  } else if (
-                                    leftElementList[`left_${next}`] === "image"
-                                  ) {
-                                    setSelectedFormType(3);
-                                  } else if (
-                                    leftElementList[`left_${next}`] === "link"
-                                  ) {
-                                    setSelectedFormType(4);
-                                  }
-                                  setOnFormType("content");
-                                } else {
-                                  setOnFormType("element");
-                                }
+                        if (
+                          !leftElementDeleteList.find(
+                            (items) =>
+                              items === `left_${next}_${layoutSelected}`
+                          )
+                        ) {
+                          return (
+                            <Box
+                              sx={{
+                                backgroundColor: "#2e353b",
+                                width: "80%",
+                                p: 0.5,
+                                px: 2,
+                                mb: 1,
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
                               }}
-                              style={{ width: "100%" }}
                             >
-                              <Typography
-                                color="#fff"
-                                sx={{
-                                  textTransform: "capitalize",
-                                  display: "block",
-                                }}
-                              >
-                                {leftElementList[`left_${next}`]
-                                  ? leftElementList[`left_${next}`]
-                                  : "Element"}{" "}
-                                <span style={{ color: "rgb(193 188 188)" }}>
-                                  {next}/{leftColumnLength[layoutSelected]}
-                                </span>
-                              </Typography>
-                            </div>
-                            {leftColumnLength[layoutSelected] > 1 ? (
                               <div
                                 onClick={() => {
-                                  if (
-                                    window.confirm("Want delete this item ?")
-                                  ) {
-                                    handleDeleteElement("left", next);
+                                  setContentPosition("left");
+                                  setLeftColumnSelected(next);
+
+                                  if (leftElementList[`left_${next}_${layoutSelected}`]) {
+                                    setContentType(
+                                      leftElementList[`left_${next}_${layoutSelected}`]
+                                    );
+                                    if (
+                                      leftElementList[`left_${next}_${layoutSelected}`] ===
+                                      "button"
+                                    ) {
+                                      setSelectedFormType(1);
+                                    } else if (
+                                      leftElementList[`left_${next}_${layoutSelected}`] === "text"
+                                    ) {
+                                      setSelectedFormType(2);
+                                    } else if (
+                                      leftElementList[`left_${next}_${layoutSelected}`] ===
+                                      "image"
+                                    ) {
+                                      setSelectedFormType(3);
+                                    } else if (
+                                      leftElementList[`left_${next}_${layoutSelected}`] === "link"
+                                    ) {
+                                      setSelectedFormType(4);
+                                    }
+                                    setOnFormType("content");
+                                  } else {
+                                    setOnFormType("element");
                                   }
                                 }}
+                                style={{ width: "100%" }}
                               >
-                                <Tooltip title="Delete element" arrow>
-                                  <CloseIcon htmlColor="#fff" fontSize="12px" />
-                                </Tooltip>
+                                <Typography
+                                  color="#fff"
+                                  sx={{
+                                    textTransform: "capitalize",
+                                    display: "block",
+                                  }}
+                                >
+                                  {leftElementList[`left_${next}_${layoutSelected}`]
+                                    ? leftElementList[`left_${next}_${layoutSelected}`]
+                                    : "Element"}{" "}
+                                  <span style={{ color: "rgb(193 188 188)" }}>
+                                    {next}/{leftColumnLength[layoutSelected]}
+                                  </span>
+                                </Typography>
                               </div>
-                            ) : null}
-                          </Box>
-                        );
+                              {leftColumnLength[layoutSelected] > 1 ? (
+                                <div
+                                  onClick={() => {
+                                    if (
+                                      window.confirm("Want delete this item ?")
+                                    ) {
+                                      handleDeleteElement(
+                                        "left",
+                                        next,
+                                        layoutSelected
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <Tooltip title="Delete element" arrow>
+                                    <CloseIcon
+                                      htmlColor="#fff"
+                                      fontSize="12px"
+                                    />
+                                  </Tooltip>
+                                </div>
+                              ) : null}
+                            </Box>
+                          );
+                        }
                       }
-                    })}
+                    )}
                   </Box>
 
                   <Button
@@ -1084,8 +1115,11 @@ function Home(props) {
                       mt: 1,
                     }}
                     onClick={() => {
-                      const next = leftColumnLength[layoutSelected] + 1;
-                      setLeftColumnLength(next);
+                      const next = leftColumnLength?.[layoutSelected] ?? 1 + 1;
+                      setLeftColumnLength({
+                        ...leftColumnLength,
+                        ...{ [layoutSelected]: next },
+                      });
                       setContentPosition("left");
                       setOnFormType("element");
                       setLeftColumnSelected(next);
@@ -1151,106 +1185,113 @@ function Home(props) {
                           width: "100%",
                         }}
                       >
-                        {[...new Array(rightColumnLength[layoutSelected])].map((item, key) => {
-                          const next = 1 + key;
-                          if (
-                            !leftElementDeleteList.find(
-                              (items) => items === `right_${next}`
-                            )
-                          ) {
-                            return (
-                              <Box
-                                sx={{
-                                  backgroundColor: "#2e353b",
-                                  width: "80%",
-                                  p: 0.5,
-                                  px: 2,
-                                  mb: 1,
-                                  borderRadius: "5px",
-                                  cursor: "pointer",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                }}
-                              >
-                                <div
-                                  onClick={() => {
-                                    setOnFormType("element");
-                                    setContentPosition("right");
-                                    setLeftColumnSelected(next);
-
-                                    if (leftElementList[`right_${next}`]) {
-                                      setContentType(
-                                        leftElementList[`right_${next}`]
-                                      );
-                                      if (
-                                        leftElementList[`right_${next}`] ===
-                                        "button"
-                                      ) {
-                                        setSelectedFormType(1);
-                                      } else if (
-                                        leftElementList[`right_${next}`] ===
-                                        "text"
-                                      ) {
-                                        setSelectedFormType(2);
-                                      } else if (
-                                        leftElementList[`right_${next}`] ===
-                                        "image"
-                                      ) {
-                                        setSelectedFormType(3);
-                                      } else if (
-                                        leftElementList[`right_${next}`] ===
-                                        "link"
-                                      ) {
-                                        setSelectedFormType(4);
-                                      }
-                                      setOnFormType("content");
-                                    } else {
-                                      setOnFormType("element");
-                                    }
-
-                                    // setContentType("text");
-                                    // setSelectedFormType(2);
+                        {[...new Array(rightColumnLength[layoutSelected])].map(
+                          (item, key) => {
+                            const next = 1 + key;
+                            if (
+                              !leftElementDeleteList.find(
+                                (items) =>
+                                  items === `right_${next}_${layoutSelected}`
+                              )
+                            ) {
+                              return (
+                                <Box
+                                  sx={{
+                                    backgroundColor: "#2e353b",
+                                    width: "80%",
+                                    p: 0.5,
+                                    px: 2,
+                                    mb: 1,
+                                    borderRadius: "5px",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
                                   }}
-                                  style={{ width: "100%" }}
                                 >
-                                  <Typography
-                                    color="#fff"
-                                    sx={{ textTransform: "capitalize" }}
-                                  >
-                                    {leftElementList[`right_${next}`]
-                                      ? leftElementList[`right_${next}`]
-                                      : "Element"}{" "}
-                                    <span style={{ color: "rgb(193 188 188)" }}>
-                                      {next}/{leftColumnLength[layoutSelected]}
-                                    </span>
-                                  </Typography>
-                                </div>
-
-                                {rightColumnLength[layoutSelected] > 1 ? (
                                   <div
                                     onClick={() => {
-                                      if (
-                                        window.confirm(
-                                          "Want delete this item ?"
-                                        )
-                                      ) {
-                                        handleDeleteElement("right", next);
+                                      setOnFormType("element");
+                                      setContentPosition("right");
+                                      setLeftColumnSelected(next);
+
+                                      if (leftElementList[`right_${next}_${layoutSelected}`]) {
+                                        setContentType(
+                                          leftElementList[`right_${next}_${layoutSelected}`]
+                                        );
+                                        if (
+                                          leftElementList[`right_${next}_${layoutSelected}`] ===
+                                          "button"
+                                        ) {
+                                          setSelectedFormType(1);
+                                        } else if (
+                                          leftElementList[`right_${next}_${layoutSelected}`] ===
+                                          "text"
+                                        ) {
+                                          setSelectedFormType(2);
+                                        } else if (
+                                          leftElementList[`right_${next}_${layoutSelected}`] ===
+                                          "image"
+                                        ) {
+                                          setSelectedFormType(3);
+                                        } else if (
+                                          leftElementList[`right_${next}_${layoutSelected}`] ===
+                                          "link"
+                                        ) {
+                                          setSelectedFormType(4);
+                                        }
+                                        setOnFormType("content");
+                                      } else {
+                                        setOnFormType("element");
                                       }
                                     }}
+                                    style={{ width: "100%" }}
                                   >
-                                    <Tooltip title="Delete element" arrow>
-                                      <CloseIcon
-                                        htmlColor="#fff"
-                                        fontSize="12px"
-                                      />
-                                    </Tooltip>
+                                    <Typography
+                                      color="#fff"
+                                      sx={{ textTransform: "capitalize" }}
+                                    >
+                                      {leftElementList[`right_${next}_${layoutSelected}`]
+                                        ? leftElementList[`right_${next}_${layoutSelected}`]
+                                        : "Element"}{" "}
+                                      <span
+                                        style={{ color: "rgb(193 188 188)" }}
+                                      >
+                                        {next}/
+                                        {leftColumnLength[layoutSelected]}
+                                      </span>
+                                    </Typography>
                                   </div>
-                                ) : null}
-                              </Box>
-                            );
+
+                                  {rightColumnLength[layoutSelected] > 1 ? (
+                                    <div
+                                      onClick={() => {
+                                        if (
+                                          window.confirm(
+                                            "Want delete this item ?"
+                                          )
+                                        ) {
+                                          handleDeleteElement(
+                                            "right",
+                                            next,
+                                            layoutSelected
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      <Tooltip title="Delete element" arrow>
+                                        <CloseIcon
+                                          htmlColor="#fff"
+                                          fontSize="12px"
+                                        />
+                                      </Tooltip>
+                                    </div>
+                                  ) : null}
+                                </Box>
+                              );
+                            }
                           }
-                        })}
+                        )}
                       </Box>
 
                       <Button
@@ -1262,8 +1303,11 @@ function Home(props) {
                         }}
                         color="secondary"
                         onClick={() => {
-                          const next = rightColumnLength[layoutSelected] + 1;
-                          setRightColumnLength(next);
+                          const next = rightColumnLength?.[layoutSelected]??1 + 1;
+                          setRightColumnLength({
+                            ...rightColumnLength,
+                            ...{ [layoutSelected]: next },
+                          });
                           setOnFormType("element");
                           setContentPosition("right");
                           setLeftColumnSelected(next);
@@ -1494,7 +1538,7 @@ function Home(props) {
                           setLeftElementList({
                             ...leftElementList,
                             ...{
-                              [`${contentPosition}_${leftColumnSelected}`]:
+                              [`${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
                                 "button",
                             },
                           });
@@ -1504,7 +1548,7 @@ function Home(props) {
                             position: contentPosition,
                             type: "button",
                             value: {
-                              position: `${contentPosition}_${leftColumnSelected}`,
+                              position: `${contentPosition}_${leftColumnSelected}_${layoutSelected}`,
                               style: {},
                               content: (
                                 <button
@@ -1556,7 +1600,7 @@ function Home(props) {
                           setLeftElementList({
                             ...leftElementList,
                             ...{
-                              [`${contentPosition}_${leftColumnSelected}`]:
+                              [`${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
                                 "text",
                             },
                           });
@@ -1566,7 +1610,7 @@ function Home(props) {
                             position: contentPosition,
                             type: "text",
                             value: {
-                              position: `${contentPosition}_${leftColumnSelected}`,
+                              position: `${contentPosition}_${leftColumnSelected}_${layoutSelected}`,
                               style: {},
                               content: (
                                 <p
@@ -1617,7 +1661,7 @@ function Home(props) {
                           setLeftElementList({
                             ...leftElementList,
                             ...{
-                              [`${contentPosition}_${leftColumnSelected}`]:
+                              [`${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
                                 "image",
                             },
                           });
@@ -1626,7 +1670,7 @@ function Home(props) {
                             position: contentPosition,
                             type: "image",
                             value: {
-                              position: `${contentPosition}_${leftColumnSelected}`,
+                              position: `${contentPosition}_${leftColumnSelected}_${layoutSelected}`,
                               style: {},
                               content: (
                                 <img
@@ -1680,7 +1724,7 @@ function Home(props) {
                           setLeftElementList({
                             ...leftElementList,
                             ...{
-                              [`${contentPosition}_${leftColumnSelected}`]:
+                              [`${contentPosition}_${leftColumnSelected}_${layoutSelected}`]:
                                 "link",
                             },
                           });
@@ -1690,7 +1734,7 @@ function Home(props) {
                             position: contentPosition,
                             type: "link",
                             value: {
-                              position: `${contentPosition}_${leftColumnSelected}`,
+                              position: `${contentPosition}_${leftColumnSelected}_${layoutSelected}`,
                               style: {},
                               content: (
                                 <a
@@ -3072,7 +3116,7 @@ function Home(props) {
               {selectedTypeList?.map((_items) => {
                 const currentType = parseInt(_items?.split("_")[1]);
                 const currentIndex = parseInt(_items?.split("_")[0]);
-                if(currentType) {
+                if (currentType) {
                   return (
                     <>
                       {currentType === 1 && (
@@ -3096,56 +3140,59 @@ function Home(props) {
                             ...styleLayout,
                           }}
                         >
-                          {[...new Array(leftColumnLength[currentIndex])].map((item, key) => {
-                            const next = 1 + key;
-                            if (
-                              !leftElementDeleteList.find(
-                                (items) => items === `left_${next}`
-                              )
-                            ) {
-                              return (
-                                <Box
-                                  // id="leftKolom"
-                                  sx={{
-                                    border: "3px dashed #00a3d3",
-                                    borderRadius: "10px",
-                                    marginBottom: "10px",
-                                  }}
-                                  style={{
-                                    width: "100%",
-                                    minHeight:
-                                      contentSelectedType?.[
-                                        `1_button_${contentPosition}_${next}_${currentIndex}`
-                                      ]?.content ??
-                                      contentSelectedType?.[
-                                        `1_text_${contentPosition}_${next}_${currentIndex}`
-                                      ]?.content ??
-                                      contentSelectedType?.[
-                                        `1_image_${contentPosition}_${next}_${currentIndex}`
-                                      ]?.content ??
-                                      contentSelectedType?.[
-                                        `1_link_${contentPosition}_${next}_${currentIndex}`
-                                      ]?.content
-                                        ? "0px"
-                                        : "380px",
-                                  }}
-                                >
-                                  {contentSelectedType?.[
-                                    `1_button_${contentPosition}_${next}_${currentIndex}`
-                                  ]?.content ??
-                                    contentSelectedType?.[
-                                      `1_text_${contentPosition}_${next}_${currentIndex}`
+                          {[...new Array(leftColumnLength[currentIndex])].map(
+                            (item, key) => {
+                              const next = 1 + key;
+                              if (
+                                !leftElementDeleteList.find(
+                                  (items) =>
+                                    items === `left_${next}_${currentIndex}`
+                                )
+                              ) {
+                                return (
+                                  <Box
+                                    // id="leftKolom"
+                                    sx={{
+                                      border: "3px dashed #00a3d3",
+                                      borderRadius: "10px",
+                                      marginBottom: "10px",
+                                    }}
+                                    style={{
+                                      width: "100%",
+                                      minHeight:
+                                        contentSelectedType?.[
+                                          `1_button_left_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `1_text_left_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `1_image_left_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `1_link_left_${next}_${currentIndex}`
+                                        ]?.content
+                                          ? "0px"
+                                          : "380px",
+                                    }}
+                                  >
+                                    {contentSelectedType?.[
+                                      `1_button_left_${next}_${currentIndex}`
                                     ]?.content ??
-                                    contentSelectedType?.[
-                                      `1_image_${contentPosition}_${next}_${currentIndex}`
-                                    ]?.content ??
-                                    contentSelectedType?.[
-                                      `1_link_${contentPosition}_${next}_${currentIndex}`
-                                    ]?.content}
-                                </Box>
-                              );
+                                      contentSelectedType?.[
+                                        `1_text_left_${next}_${currentIndex}`
+                                      ]?.content ??
+                                      contentSelectedType?.[
+                                        `1_image_left_${next}_${currentIndex}`
+                                      ]?.content ??
+                                      contentSelectedType?.[
+                                        `1_link_left_${next}_${currentIndex}`
+                                      ]?.content}
+                                  </Box>
+                                );
+                              }
                             }
-                          })}
+                          )}
                         </Box>
                       )}
 
@@ -3189,53 +3236,64 @@ function Home(props) {
                               overflow: "hidden",
                             }}
                           >
-                            {[...new Array(leftColumnLength[currentIndex])].map((item, key) => {
-                              const next = 1 + key;
+                            {[...new Array(leftColumnLength[currentIndex])].map(
+                              (item, key) => {
+                                const next = 1 + key;
 
-                              if (
-                                !leftElementDeleteList.find(
-                                  (items) => items === `left_${next}`
-                                )
-                              ) {
-                                return (
-                                  <Box
-                                    sx={{
-                                      border: "3px dashed #00a3d3",
-                                      borderRadius: "10px",
-                                    }}
-                                    style={{
-                                      // width: "100%",
-                                      minHeight:
-                                        contentSelectedType?.[`2_button_left_${next}_${currentIndex}`]
-                                          ?.content ??
-                                        contentSelectedType?.[`2_text_left_${next}_${currentIndex}`]
-                                          ?.content ??
-                                        contentSelectedType?.[`2_image_left_${next}_${currentIndex}`]
-                                          ?.content ??
-                                        contentSelectedType?.[`2_link_left_${next}_${currentIndex}`]
-                                          ?.content ??
+                                if (
+                                  !leftElementDeleteList.find(
+                                    (items) =>
+                                      items === `left_${next}_${currentIndex}`
+                                  )
+                                ) {
+                                  return (
+                                    <Box
+                                      sx={{
+                                        border: "3px dashed #00a3d3",
+                                        borderRadius: "10px",
+                                      }}
+                                      style={{
+                                        // width: "100%",
+                                        minHeight:
+                                          contentSelectedType?.[
+                                            `2_button_left_${next}_${currentIndex}`
+                                          ]?.content ??
+                                          contentSelectedType?.[
+                                            `2_text_left_${next}_${currentIndex}`
+                                          ]?.content ??
+                                          contentSelectedType?.[
+                                            `2_image_left_${next}_${currentIndex}`
+                                          ]?.content ??
+                                          contentSelectedType?.[
+                                            `2_link_left_${next}_${currentIndex}`
+                                          ]?.content ??
+                                          contentSelectedType?.[
+                                            `2_${contentType2?.left}_left_${next}_${currentIndex}`
+                                          ]?.content
+                                            ? "0px"
+                                            : "380px",
+                                      }}
+                                    >
+                                      {contentSelectedType?.[
+                                        `2_button_left_${next}_${currentIndex}`
+                                      ]?.content ??
+                                        contentSelectedType?.[
+                                          `2_text_left_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `2_image_left_${next}_${currentIndex}`
+                                        ]?.content ??
+                                        contentSelectedType?.[
+                                          `2_link_left_${next}_${currentIndex}`
+                                        ]?.content ??
                                         contentSelectedType?.[
                                           `2_${contentType2?.left}_left_${next}_${currentIndex}`
-                                        ]?.content
-                                          ? "0px"
-                                          : "380px",
-                                    }}
-                                  >
-                                    {contentSelectedType?.[`2_button_left_${next}_${currentIndex}`]
-                                      ?.content ??
-                                      contentSelectedType?.[`2_text_left_${next}_${currentIndex}`]
-                                        ?.content ??
-                                      contentSelectedType?.[`2_image_left_${next}_${currentIndex}`]
-                                        ?.content ??
-                                      contentSelectedType?.[`2_link_left_${next}_${currentIndex}`]
-                                        ?.content ??
-                                      contentSelectedType?.[
-                                        `2_${contentType2?.left}_left_${next}_${currentIndex}`
-                                      ]?.content}
-                                  </Box>
-                                );
+                                        ]?.content}
+                                    </Box>
+                                  );
+                                }
                               }
-                            })}
+                            )}
                           </Box>
                           {/* Column Right */}
                           <Box
@@ -3248,12 +3306,15 @@ function Home(props) {
                             }}
                             id={`rightKolom-${currentIndex}`}
                           >
-                            {[...new Array(rightColumnLength[currentIndex])].map((item, key) => {
+                            {[
+                              ...new Array(rightColumnLength[currentIndex]),
+                            ].map((item, key) => {
                               const next = 1 + key;
 
                               if (
                                 !leftElementDeleteList.find(
-                                  (items) => items === `right_${next}`
+                                  (items) =>
+                                    items === `right_${next}_${currentIndex}`
                                 )
                               ) {
                                 return (
@@ -3307,7 +3368,7 @@ function Home(props) {
                         </Box>
                       )}
                     </>
-                  )
+                  );
                 }
               })}
             </Box>
