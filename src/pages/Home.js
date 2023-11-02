@@ -3116,7 +3116,9 @@ function Home(props) {
               {selectedTypeList?.map((_items) => {
                 const currentType = parseInt(_items?.split("_")[1]);
                 const currentIndex = parseInt(_items?.split("_")[0]);
-                if (currentType) {
+
+
+                if (currentType && !layoutDeletedList.find((_item) => _item == currentIndex)) {
                   return (
                     <>
                       {currentType === 1 && (
