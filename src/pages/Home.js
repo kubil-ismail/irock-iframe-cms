@@ -153,7 +153,8 @@ function Home(props) {
     setContentSelectedType({
       ...contentSelectedType,
       ...{
-        [`${layout}_${type}_${position}_${leftColumnSelected}`]: value,
+        [`${layout}_${type}_${position}_${leftColumnSelected}_${layoutSelected}`]:
+          value,
       },
     });
   };
@@ -542,6 +543,7 @@ function Home(props) {
   console.log("leftColumnLength", leftColumnLength);
   console.log("rightColumnLength", rightColumnLength);
   console.log("leftElementList", leftElementList);
+  console.log("content", contentSelectedType);
 
   return (
     <Box p={2}>
@@ -586,7 +588,7 @@ function Home(props) {
               {/* Layout configuration */}
               {!isInsert && (
                 <>
-                 <List sx={{ width: "95%" }}>
+                  <List sx={{ width: "95%" }}>
                     <ListItemButton
                       sx={{ borderBottom: "2px solid #C1C1C1" }}
                       onClick={() => {
@@ -610,14 +612,14 @@ function Home(props) {
                           type="color"
                           size="small"
                           label="Border Radius"
-                          sx={{mb: '20px'}}
+                          sx={{ mb: "20px" }}
                           onChange={(e) => {
-                            const leftKolom = document.getElementById("content_main");
+                            const leftKolom =
+                              document.getElementById("content_main");
 
                             if (leftKolom) {
                               leftKolom.style.backgroundColor = e.target.value;
                             }
-                    
                           }}
                         />
 
@@ -627,12 +629,12 @@ function Home(props) {
                           size="small"
                           label="Border Radius"
                           onChange={(e) => {
-                            const leftKolom = document.getElementById("content_main");
+                            const leftKolom =
+                              document.getElementById("content_main");
 
                             if (leftKolom) {
                               leftKolom.style.borderRadius = `${e.target.value}px`;
                             }
-                    
                           }}
                         />
                       </Box>
@@ -642,7 +644,11 @@ function Home(props) {
                   <Button
                     variant="outlined"
                     color="secondary"
-                    sx={{ borderRadius: "50px", borderWidth: "2px", mb: "30px" }}
+                    sx={{
+                      borderRadius: "50px",
+                      borderWidth: "2px",
+                      mb: "30px",
+                    }}
                     onClick={() => {
                       const increment = 1 + layoutLength;
                       setIsInsert(true);
@@ -1062,6 +1068,7 @@ function Home(props) {
                     {[...new Array(leftColumnLength[layoutSelected])].map(
                       (item, key) => {
                         const next = 1 + key;
+                        // const itemLeft
 
                         if (
                           !leftElementDeleteList.find(
@@ -1088,6 +1095,7 @@ function Home(props) {
                                 onClick={() => {
                                   setContentPosition("left");
                                   setLeftColumnSelected(next);
+                                  console.log();
 
                                   if (
                                     leftElementList[
@@ -1187,7 +1195,8 @@ function Home(props) {
                       mt: 1,
                     }}
                     onClick={() => {
-                      const next = leftColumnLength?.[layoutSelected] ?? 1 + 1;
+                      const next =
+                        (leftColumnLength?.[layoutSelected] ?? 1) + 1;
                       setLeftColumnLength({
                         ...leftColumnLength,
                         ...{ [layoutSelected]: next },
@@ -1390,7 +1399,7 @@ function Home(props) {
                         color="secondary"
                         onClick={() => {
                           const next =
-                            rightColumnLength?.[layoutSelected] ?? 1 + 1;
+                            (rightColumnLength?.[layoutSelected] ?? 1) + 1;
                           setRightColumnLength({
                             ...rightColumnLength,
                             ...{ [layoutSelected]: next },
