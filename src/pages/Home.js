@@ -539,11 +539,14 @@ function Home(props) {
   const [layoutDeletedList, setLayoutDeletedList] = React.useState([]);
   const [layoutSelected, setLayoutSelected] = React.useState(null);
   const [selectedTypeList, setSelectedTypeList] = React.useState([]);
+  const [selectedTypeLayout, setSelectedTypeLayout] = React.useState({});
 
   console.log("leftColumnLength", leftColumnLength);
   console.log("rightColumnLength", rightColumnLength);
   console.log("leftElementList", leftElementList);
   console.log("content", contentSelectedType);
+  console.log("selectedTypeLayout", selectedTypeLayout);
+  console.log(layoutSelected);
 
   return (
     <Box p={2}>
@@ -611,7 +614,7 @@ function Home(props) {
                           fullWidth
                           type="color"
                           size="small"
-                          label="Border Radius"
+                          label="Background Color"
                           sx={{ mb: "20px" }}
                           onChange={(e) => {
                             const leftKolom =
@@ -680,7 +683,18 @@ function Home(props) {
                             display: "flex",
                             justifyContent: "space-between",
                           }}
-                          onClick={() => setLayoutSelected(next)}
+                          onClick={() => {
+                            setLayoutSelected(next);
+                            setIsOnForm(true);
+                            setOnFormType("options");
+                            setIsInsert(true);
+                            setSelectedType(
+                              selectedTypeLayout[`layout_${next}`]?.type
+                            );
+                            setIsDouble(
+                              selectedTypeLayout[`layout_${next}`]?.double
+                            );
+                          }}
                         >
                           <Typography color="#fff">
                             Layout{" "}
@@ -823,6 +837,15 @@ function Home(props) {
                               `${layoutSelected}_${selectedType}_${new Date().getTime()}`,
                             ],
                           ]);
+                          setSelectedTypeLayout({
+                            ...selectedTypeLayout,
+                            ...{
+                              [`layout_${layoutSelected}`]: {
+                                type: selectedType,
+                                double: isDouble,
+                              },
+                            },
+                          });
                         }}
                       >
                         Apply
@@ -1095,7 +1118,6 @@ function Home(props) {
                                 onClick={() => {
                                   setContentPosition("left");
                                   setLeftColumnSelected(next);
-                                  console.log();
 
                                   if (
                                     leftElementList[
@@ -1158,28 +1180,23 @@ function Home(props) {
                                   </span>
                                 </Typography>
                               </div>
-                              {leftColumnLength[layoutSelected] > 1 ? (
-                                <div
-                                  onClick={() => {
-                                    if (
-                                      window.confirm("Want delete this item ?")
-                                    ) {
-                                      handleDeleteElement(
-                                        "left",
-                                        next,
-                                        layoutSelected
-                                      );
-                                    }
-                                  }}
-                                >
-                                  <Tooltip title="Delete element" arrow>
-                                    <CloseIcon
-                                      htmlColor="#fff"
-                                      fontSize="12px"
-                                    />
-                                  </Tooltip>
-                                </div>
-                              ) : null}
+                              <div
+                                onClick={() => {
+                                  if (
+                                    window.confirm("Want delete this item ?")
+                                  ) {
+                                    handleDeleteElement(
+                                      "left",
+                                      next,
+                                      layoutSelected
+                                    );
+                                  }
+                                }}
+                              >
+                                <Tooltip title="Delete element" arrow>
+                                  <CloseIcon htmlColor="#fff" fontSize="12px" />
+                                </Tooltip>
+                              </div>
                             </Box>
                           );
                         }
@@ -1358,30 +1375,28 @@ function Home(props) {
                                     </Typography>
                                   </div>
 
-                                  {rightColumnLength[layoutSelected] > 1 ? (
-                                    <div
-                                      onClick={() => {
-                                        if (
-                                          window.confirm(
-                                            "Want delete this item ?"
-                                          )
-                                        ) {
-                                          handleDeleteElement(
-                                            "right",
-                                            next,
-                                            layoutSelected
-                                          );
-                                        }
-                                      }}
-                                    >
-                                      <Tooltip title="Delete element" arrow>
-                                        <CloseIcon
-                                          htmlColor="#fff"
-                                          fontSize="12px"
-                                        />
-                                      </Tooltip>
-                                    </div>
-                                  ) : null}
+                                  <div
+                                    onClick={() => {
+                                      if (
+                                        window.confirm(
+                                          "Want delete this item ?"
+                                        )
+                                      ) {
+                                        handleDeleteElement(
+                                          "right",
+                                          next,
+                                          layoutSelected
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    <Tooltip title="Delete element" arrow>
+                                      <CloseIcon
+                                        htmlColor="#fff"
+                                        fontSize="12px"
+                                      />
+                                    </Tooltip>
+                                  </div>
                                 </Box>
                               );
                             }
